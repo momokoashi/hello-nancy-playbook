@@ -2258,148 +2258,235 @@ function renderThisMonth() {
       }).join('')}
     </div>
 
-    <h3 style="margin: 32px 0 16px 0; font-size: 18px;">📋 May 2026 — Sale prep checklist (Splashy May)</h3>
-    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">Sale-side prep across all channels. Click each task to mark done.</p>
+    <h3 style="margin: 32px 0 16px 0; font-size: 18px;">📋 Sale Prep — Splashy Sale (May 12 – Jun 4)</h3>
+    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">Master checklist by channel, broken down by sub-event. <strong>For product launches</strong>, full task lists live in <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click(); window.scrollTo(0,0);" style="color: var(--accent); font-weight: 600;">📊 Master Matrix</a> tab — this view shows only sale-side coordination tasks.</p>
 
-    <div class="checklist-grid" style="grid-template-columns: 1fr; gap: 12px;">
-      <div class="checklist-col" style="background: white; border: 1px solid var(--border); border-radius: 12px;">
-        <div class="ch-group">
-          <div class="ch-name">🌐 Website</div>
+    <style>
+      .sub-name { font-weight: 600; font-size: 11px; color: var(--accent-dark); text-transform: uppercase; letter-spacing: 0.06em; margin: 12px 0 4px 0; padding: 0; }
+      .sub-name:first-child { margin-top: 0; }
+      .sub-block ul { padding: 0 0 0 4px; margin: 0; list-style: none; }
+      .sub-block ul li { padding: 4px 0; display: flex; align-items: flex-start; gap: 8px; font-size: 13px; }
+    </style>
+
+    <div class="checklist-col" style="background: white; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px;">
+
+      <div class="ch-group">
+        <div class="ch-name">🌐 Website</div>
+        <div class="sub-block" style="padding: 0 20px 16px 20px;">
+          <div class="sub-name">Splashy Sale</div>
           <ul>
-            <li><span class="multi-cb" data-key="may.website.banner"></span><span class="when">May 11</span><span class="text">Announcement banner update — switch from Mother's Day to Splashy May Sale messaging</span></li>
-            <li><span class="multi-cb" data-key="may.website.hero"></span><span class="when">May 11</span><span class="text">Homepage banner / hero swap to Splashy May creative (designed + staged)</span></li>
-            <li><span class="multi-cb" data-key="may.website.popup"></span><span class="when">May 11</span><span class="text">Pop-up updated with Splashy May offer / VIP early access CTA</span></li>
-            <li><span class="multi-cb" data-key="may.website.bundle"></span><span class="when">May 11</span><span class="text">"Splash Pack" / "Snack & Splash" bundle SKUs configured + tested</span></li>
-          </ul>
-        </div>
-        <div class="ch-group">
-          <div class="ch-name">📱 Meta Ads</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.meta.creative"></span><span class="when">May 4 (TODAY)</span><span class="text">Submit launch creative library: ALL winning concepts duplicated + 5 new concepts (10-20 total)</span></li>
-            <li><span class="multi-cb" data-key="may.meta.audience"></span><span class="when">May 5</span><span class="text">Confirm retargeting audiences seeded (page visitors + cart abandoners + waitlist)</span></li>
-            <li><span class="multi-cb" data-key="may.meta.approval"></span><span class="when">May 7 Thu</span><span class="text">Verify Meta approval (target 90%+); backups queued for any rejected</span></li>
-            <li><span class="multi-cb" data-key="may.meta.test"></span><span class="when">May 8 Fri</span><span class="text">Test purchase: pixel + CAPI fires with NEW SKU product_ids (Blanket, Snack Pack, Lube)</span></li>
-          </ul>
-        </div>
-        <div class="ch-group">
-          <div class="ch-name">🔍 Google Ads</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.google.brand"></span><span class="when">May 5</span><span class="text">Brand search: confirm 95%+ impression share defense (always-on, no big work needed)</span></li>
-            <li><span class="multi-cb" data-key="may.google.youtube"></span><span class="when">May 8 (optional)</span><span class="text">YouTube ad ready (how-to / Splashy May creative) — optional</span></li>
-            <li><span class="multi-cb" data-key="may.google.pmax"></span><span class="when">May 11 (optional)</span><span class="text">PMax product listings updated with new SKUs — optional</span></li>
-          </ul>
-        </div>
-        <div class="ch-group">
-          <div class="ch-name">✉️ Email (Splashy Sale prep — includes Int'l Mast Day)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.email.mastday"></span><span class="when">May 7 9am ET</span><span class="text">Int'l Masturbation Day email fires (1 email — sale prep moment, founder POV / educational)</span></li>
-            <li><span class="multi-cb" data-key="may.email.mastday.draft"></span><span class="when">May 4-5</span><span class="text">Founder drafts + approves Int'l Mast Day email</span></li>
-            <li><span class="multi-cb" data-key="may.email.t1"></span><span class="when">May 4</span><span class="text">Splashy Sale teaser #1 (warm-up): "Something splashy is coming"</span></li>
-            <li><span class="multi-cb" data-key="may.email.t2"></span><span class="when">May 6</span><span class="text">Splashy Sale teaser #2: VIP early-access offer</span></li>
-            <li><span class="multi-cb" data-key="may.email.t3"></span><span class="when">May 8</span><span class="text">Final teaser email — "Tomorrow: VIP early access"</span></li>
-            <li><span class="multi-cb" data-key="may.email.vip"></span><span class="when">May 11 9am</span><span class="text">VIP early-access email + SMS fires (24-48hr window)</span></li>
-            <li><span class="multi-cb" data-key="may.email.launch1"></span><span class="when">May 12 9am</span><span class="text">Launch wave 1 (VIP + recent openers)</span></li>
-            <li><span class="multi-cb" data-key="may.email.launch2"></span><span class="when">May 12 12pm</span><span class="text">Launch wave 2 (full list)</span></li>
-            <li><span class="multi-cb" data-key="may.email.nonopen"></span><span class="when">May 12 6pm</span><span class="text">Non-openers resend</span></li>
-            <li><span class="multi-cb" data-key="may.email.snack"></span><span class="when">May 25-26</span><span class="text">Snack Pack launch wave (same multi-wave pattern)</span></li>
-            <li><span class="multi-cb" data-key="may.email.dirtyjack"></span><span class="when">May 12</span><span class="text">Dirty Jack content drop email (cheeky content, fires with Splashy Sale start)</span></li>
-            <li><span class="multi-cb" data-key="may.email.miami"></span><span class="when">May 28</span><span class="text">Miami Swim Week themed email — sale finale push</span></li>
-          </ul>
-        </div>
-        <div class="ch-group">
-          <div class="ch-name">📲 Social (Splashy + Wet theme + Int'l Mast Day post)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.social.calendar"></span><span class="when">May 4</span><span class="text">Content calendar locked: IG (3-5 feed + 5-10 stories) + TikTok (5+ teasers). Theme = Splashy / Wet across rest of month.</span></li>
-            <li><span class="multi-cb" data-key="may.social.daily"></span><span class="when">May 4-31</span><span class="text">Daily 2x cadence (incl. stories) sustained through end of month</span></li>
-            <li><span class="multi-cb" data-key="may.social.mast"></span><span class="when">May 7</span><span class="text">Int'l Masturbation Day post (founder POV / educational — sale prep moment)</span></li>
-            <li><span class="multi-cb" data-key="may.social.launch"></span><span class="when">May 12</span><span class="text">Splashy May big launch post + Founder personal post (Waterproof Blanket)</span></li>
-            <li><span class="multi-cb" data-key="may.social.dirtyjack"></span><span class="when">May 12</span><span class="text">Dirty Jack content drop on IG + TikTok (cheeky humor content — kicks off Splashy Sale)</span></li>
-            <li><span class="multi-cb" data-key="may.social.snackcontent"></span><span class="when">May 26</span><span class="text">Snack Pack launch content</span></li>
-            <li><span class="multi-cb" data-key="may.social.miami"></span><span class="when">May 28-31</span><span class="text">Miami Swim Week content — pool / beach / swim aesthetic</span></li>
-          </ul>
-        </div>
-        <div class="ch-group">
-          <div class="ch-name">📰 PR / Press</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.pr.kit"></span><span class="when">May 4</span><span class="text">Splashy May press kit ready (one-pager + assets + Lube + Blanket + Snack Pack details)</span></li>
-            <li><span class="multi-cb" data-key="may.pr.samples"></span><span class="when">May 4</span><span class="text">Confirm samples landed at journalists' hands (Blanket especially)</span></li>
-            <li><span class="multi-cb" data-key="may.pr.embargo"></span><span class="when">May 6</span><span class="text">Embargo agreements signed for May 12 launches</span></li>
-            <li><span class="multi-cb" data-key="may.pr.wire"></span><span class="when">May 8</span><span class="text">Press release wired (PR Newswire, scheduled May 12 6am ET)</span></li>
-            <li><span class="multi-cb" data-key="may.pr.lube"></span><span class="when">TBD</span><span class="text">Lube launch PR pitch — DATE PENDING (need to confirm Lube launch date)</span></li>
-            <li><span class="multi-cb" data-key="may.pr.miami"></span><span class="when">May 25</span><span class="text">Miami Swim Week PR angle pitched (HN at Miami Swim, body-positive swim feature)</span></li>
-          </ul>
-        </div>
-        <div class="ch-group">
-          <div class="ch-name">🎥 Creator / UGC + Influencer</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.creator.approve"></span><span class="when">May 4</span><span class="text">Final approval on creator content for May 12 launch (Blanket)</span></li>
-            <li><span class="multi-cb" data-key="may.creator.whitelist"></span><span class="when">May 7</span><span class="text">Whitelisting / Spark Ads access granted by creators</span></li>
-            <li><span class="multi-cb" data-key="may.creator.dirtyjack"></span><span class="when">May 4-8</span><span class="text">Finalize Dirty Jack content (fun creative piece) — must be ready for May 12 drop</span></li>
-            <li><span class="multi-cb" data-key="may.creator.snackbrief"></span><span class="when">May 4-10</span><span class="text">Brief Sideshift creators for Snack Pack launch content</span></li>
-            <li><span class="multi-cb" data-key="may.creator.miami"></span><span class="when">May 18-25</span><span class="text">Miami Swim Week creator outreach — partner with creators attending swim week</span></li>
+            <li><span class="multi-cb" data-key="may.website.banner.prep"></span><span class="when">May 4-10</span><span class="text">Homepage banner prep (design + stage)</span></li>
+            <li><span class="multi-cb" data-key="may.website.banner.update"></span><span class="when">May 12</span><span class="text">Homepage banner update — go live</span></li>
+            <li><span class="multi-cb" data-key="may.website.announce"></span><span class="when">May 12</span><span class="text">Announcement banner update — switch from Mother's Day to Splashy Sale</span></li>
           </ul>
         </div>
       </div>
+      <div class="ch-group">
+        <div class="ch-name">📱 Meta Ads</div>
+        <div class="sub-block" style="padding: 0 20px 16px 20px;">
+          <div class="sub-name">Splashy Sale (sale-wide)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.meta.prep"></span><span class="when">May 4-8</span><span class="text">Prepare ads (sale winners duplicate + new concepts)</span></li>
+            <li><span class="multi-cb" data-key="may.meta.setup"></span><span class="when">May 9-11</span><span class="text">Setup campaign (audiences, budgets, naming)</span></li>
+            <li><span class="multi-cb" data-key="may.meta.launch"></span><span class="when">May 12</span><span class="text">Launch ads</span></li>
+          </ul>
+          <div class="sub-name">Waterproof Blanket launch (May 18)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.meta.blanket"></span><span class="when">T-1w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → Meta Ads</a></span></li>
+          </ul>
+          <div class="sub-name">Snack Pack launch (May 26)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.meta.snack"></span><span class="when">T-3w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → Meta Ads</a></span></li>
+          </ul>
+          <div class="sub-name">Dirty Jack content (May 12)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.meta.dj"></span><span class="when">May 12-15</span><span class="text">Amplify Dirty Jack as paid ad if winning organically</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ch-group">
+        <div class="ch-name">🔍 Google Ads</div>
+        <div class="sub-block" style="padding: 0 20px 16px 20px;">
+          <div class="sub-name">Splashy Sale</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.google.prep"></span><span class="when">May 4-8</span><span class="text">Prepare copy for Splashy Sale</span></li>
+            <li><span class="multi-cb" data-key="may.google.setup"></span><span class="when">May 9-11</span><span class="text">Setup campaign</span></li>
+            <li><span class="multi-cb" data-key="may.google.launch"></span><span class="when">May 12</span><span class="text">Launch ads</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="ch-group">
+        <div class="ch-name">✉️ Email</div>
+        <div class="sub-block" style="padding: 0 20px 16px 20px;">
+          <div class="sub-name">Splashy Sale (sale-wide — 4 sends)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.email.announce"></span><span class="when">May 12</span><span class="text">Sale announcement on start day</span></li>
+            <li><span class="multi-cb" data-key="may.email.mid1"></span><span class="when">~May 19</span><span class="text">Mid-sale email #1 (social proof / customer reactions)</span></li>
+            <li><span class="multi-cb" data-key="may.email.mid2"></span><span class="when">~May 27</span><span class="text">Mid-sale email #2 (reviews / feature)</span></li>
+            <li><span class="multi-cb" data-key="may.email.finale"></span><span class="when">~Jun 2</span><span class="text">Sale finale "last chance"</span></li>
+          </ul>
+          <div class="sub-name">Int'l Mast Day (May 7)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.email.mastday.draft"></span><span class="when">May 4-5</span><span class="text">Founder drafts + approves email</span></li>
+            <li><span class="multi-cb" data-key="may.email.mastday.fire"></span><span class="when">May 7 9am</span><span class="text">Email fires (founder POV / educational)</span></li>
+          </ul>
+          <div class="sub-name">VIP early access (May 11)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.email.vip"></span><span class="when">May 11 9am</span><span class="text">VIP early-access email + SMS fires (24-48hr window)</span></li>
+          </ul>
+          <div class="sub-name">Dirty Jack content drop (May 12)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.email.dj"></span><span class="when">May 12</span><span class="text">Dirty Jack content email — fires with sale start</span></li>
+          </ul>
+          <div class="sub-name">Waterproof Blanket launch (May 18)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.email.blanket"></span><span class="when">T-1w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → Email</a></span></li>
+          </ul>
+          <div class="sub-name">Snack Pack launch (May 26)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.email.snack"></span><span class="when">T-3w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → Email</a></span></li>
+          </ul>
+          <div class="sub-name">Miami Swim Week (May 28-31)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.email.miami"></span><span class="when">May 28</span><span class="text">Miami Swim themed email — sale finale push</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ch-group">
+        <div class="ch-name">📲 Social</div>
+        <div class="sub-block" style="padding: 0 20px 16px 20px;">
+          <div class="sub-name">Overall (whole month)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.social.calendar"></span><span class="when">May 4</span><span class="text">Content calendar locked: IG (3-5 feed + 5-10 stories) + TikTok (5+ teasers). Theme = Splashy / Wet.</span></li>
+            <li><span class="multi-cb" data-key="may.social.daily"></span><span class="when">May 4-31</span><span class="text">Daily 2x cadence (incl. stories) sustained through end of month</span></li>
+          </ul>
+          <div class="sub-name">Splashy Sale</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.social.announce"></span><span class="when">May 12</span><span class="text">Sale announcement post</span></li>
+            <li><span class="multi-cb" data-key="may.social.theme"></span><span class="when">May 12-Jun 4</span><span class="text">Sale running theme content (Splashy / Wet aesthetic)</span></li>
+          </ul>
+          <div class="sub-name">Int'l Mast Day (May 7)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.social.mast"></span><span class="when">May 7</span><span class="text">Founder POV / educational post</span></li>
+          </ul>
+          <div class="sub-name">Dirty Jack content drop (May 12)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.social.dj"></span><span class="when">May 12</span><span class="text">Dirty Jack content on IG + TikTok</span></li>
+          </ul>
+          <div class="sub-name">Waterproof Blanket launch (May 18)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.social.blanket.post"></span><span class="when">May 18</span><span class="text">Founder personal launch post + launch day cadence</span></li>
+          </ul>
+          <div class="sub-name">Snack Pack launch (May 26)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.social.snack"></span><span class="when">May 26</span><span class="text">Snack Pack launch content</span></li>
+          </ul>
+          <div class="sub-name">Miami Swim Week (May 28-31)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.social.miami"></span><span class="when">May 28-31</span><span class="text">Daily Miami swim content across IG + TikTok</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ch-group">
+        <div class="ch-name">📰 PR / Press</div>
+        <div class="sub-block" style="padding: 0 20px 16px 20px;">
+          <div class="sub-name">Splashy Sale</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.pr.kit"></span><span class="when">May 4</span><span class="text">Splashy Sale press kit ready (one-pager + assets)</span></li>
+            <li><span class="multi-cb" data-key="may.pr.wire"></span><span class="when">May 8</span><span class="text">Press release wired (PR Newswire, fires May 12 6am ET)</span></li>
+          </ul>
+          <div class="sub-name">Waterproof Blanket launch (May 18)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.pr.blanket"></span><span class="when">T-1w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → PR/Press</a></span></li>
+          </ul>
+          <div class="sub-name">Snack Pack launch (May 26)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.pr.snack"></span><span class="when">T-3w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → PR/Press</a></span></li>
+          </ul>
+          <div class="sub-name">Miami Swim Week (May 28-31)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.pr.miami"></span><span class="when">May 25</span><span class="text">Miami Swim PR angle pitched (HN at swim week, body-positive feature)</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ch-group">
+        <div class="ch-name">🎥 Creator / UGC + Influencer</div>
+        <div class="sub-block" style="padding: 0 20px 16px 20px;">
+          <div class="sub-name">Dirty Jack content drop (May 12)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.creator.dj"></span><span class="when">May 4-8</span><span class="text">Finalize Dirty Jack creative</span></li>
+          </ul>
+          <div class="sub-name">Waterproof Blanket launch (May 18)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.creator.blanket"></span><span class="when">T-1w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → Creator/UGC + Influencer</a></span></li>
+          </ul>
+          <div class="sub-name">Snack Pack launch (May 26)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.creator.snack.brief"></span><span class="when">May 4-10</span><span class="text">Brief Sideshift creators for Snack Pack content</span></li>
+            <li><span class="multi-cb" data-key="may.creator.snack.full"></span><span class="when">T-3w</span><span class="text">Full per-launch tasks: <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → Creator/UGC</a></span></li>
+          </ul>
+          <div class="sub-name">Miami Swim Week (May 28-31)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.creator.miami"></span><span class="when">May 18-25</span><span class="text">Miami Swim creator outreach — partner with creators attending</span></li>
+          </ul>
+        </div>
+      </div>
+
     </div>
 
-    <h3 style="margin: 32px 0 16px 0; font-size: 18px;">🚀 Launch Prep (2 product launches + 1 content drop)</h3>
-    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">May has 2 product launches (Waterproof Blanket May 18, Snack Pack May 26) + 1 content drop (Dirty Jack May 12). Int'l Mast Day rolled into Sale Prep above. Miami Swim Week below.</p>
-    <div style="display: grid; gap: 12px;">
-      <details class="phase-block pre" open>
-        <summary>🚀 Waterproof Blanket ("Juicy Blanket") — May 12 (T-1w)</summary>
-        <div class="phase-body">
-          <p style="margin: 0 0 12px 0; font-size: 13px; color: var(--text-soft);">All standard launch playbook tasks (Tier 1-5) apply. Most prep should already be done — this is finalize + verify week.</p>
-          <ul class="tasks">
-            <li><span class="multi-cb" data-key="may.blanket.creative"></span><span class="when">May 4</span><span class="text">Submit Meta creative (72hr buffer)</span></li>
-            <li><span class="multi-cb" data-key="may.blanket.pdp"></span><span class="when">May 6</span><span class="text">PDP final + cross-browser test + reviews seeded (50+)</span></li>
-            <li><span class="multi-cb" data-key="may.blanket.test"></span><span class="when">May 8</span><span class="text">Test purchase: pixel + CAPI for Blanket product_id</span></li>
-            <li><span class="multi-cb" data-key="may.blanket.cs"></span><span class="when">May 8</span><span class="text">CS team trained on Blanket FAQ + macros loaded</span></li>
-            <li><span class="multi-cb" data-key="may.blanket.launch"></span><span class="when">May 12</span><span class="text">🚀 LAUNCH DAY — see week 2 below</span></li>
-          </ul>
-        </div>
-      </details>
+    <h3 style="margin: 32px 0 16px 0; font-size: 18px;">🚀 Launch Prep — see Master Matrix</h3>
+    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">2 product launches in May. Each follows the full launch playbook (Tier 1-5 channels × pre/launch/post phases). Click below to jump into Master Matrix and walk the full checklist per launch.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; margin-bottom: 24px;">
+      <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click(); window.scrollTo(0,0); return false;" style="background: var(--launch); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; text-decoration: none; color: var(--text); cursor: pointer;">
+        <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px;">🚀 Waterproof Blanket Launch</div>
+        <div style="font-size: 12px; color: var(--text-soft);">May 18 (Mon) — T-2w</div>
+        <div style="font-size: 11px; color: var(--accent-dark); margin-top: 6px; font-weight: 600;">Open Master Matrix →</div>
+      </a>
+      <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click(); window.scrollTo(0,0); return false;" style="background: var(--launch); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; text-decoration: none; color: var(--text); cursor: pointer;">
+        <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px;">🚀 Snack Pack Launch</div>
+        <div style="font-size: 12px; color: var(--text-soft);">May 26 (Tue) — T-3w</div>
+        <div style="font-size: 11px; color: var(--accent-dark); margin-top: 6px; font-weight: 600;">Open Master Matrix →</div>
+      </a>
+    </div>
 
-      <details class="phase-block pre">
-        <summary>🚀 Snack Pack — May 26 (T-3w)</summary>
-        <div class="phase-body">
-          <p style="margin: 0 0 12px 0; font-size: 13px; color: var(--text-soft);">In active production phase. Bundle pack launch.</p>
-          <ul class="tasks">
-            <li><span class="multi-cb" data-key="may.snack.creative"></span><span class="when">May 4-10</span><span class="text">Brief creative team for Snack Pack ads (5-10 winners + 5 new concepts)</span></li>
-            <li><span class="multi-cb" data-key="may.snack.creator"></span><span class="when">May 5-10</span><span class="text">Brief Sideshift creators for Snack Pack content</span></li>
-            <li><span class="multi-cb" data-key="may.snack.pdp"></span><span class="when">May 11-15</span><span class="text">Snack Pack PDP build + gallery assets + reviews seeded</span></li>
-            <li><span class="multi-cb" data-key="may.snack.pr"></span><span class="when">May 11-15</span><span class="text">Snack Pack PR pitches sent</span></li>
-            <li><span class="multi-cb" data-key="may.snack.email"></span><span class="when">May 18-25</span><span class="text">Email teaser sequence (3-4 sends pre-launch)</span></li>
-            <li><span class="multi-cb" data-key="may.snack.meta"></span><span class="when">May 22</span><span class="text">Submit Snack Pack Meta creative (72hr buffer)</span></li>
-            <li><span class="multi-cb" data-key="may.snack.launch"></span><span class="when">May 26</span><span class="text">🚀 LAUNCH DAY</span></li>
-          </ul>
-        </div>
-      </details>
-
-      <details class="phase-block launch">
-        <summary>🎬 Dirty Jack Content Drop — May 12 (NOT a product launch — fun creative)</summary>
-        <div class="phase-body">
-          <p style="margin: 0 0 12px 0; font-size: 13px; color: var(--text-soft);">Fun cheeky content piece dropping the same day Splashy Sale opens. Pure brand moment, no SKU.</p>
-          <ul class="tasks">
-            <li><span class="multi-cb" data-key="may.dj.finalize"></span><span class="when">May 4-8</span><span class="text">Finalize Dirty Jack creative (video / social / email asset)</span></li>
-            <li><span class="multi-cb" data-key="may.dj.schedule"></span><span class="when">May 9-11</span><span class="text">Schedule Dirty Jack across IG, TikTok, email — coordinated drop May 12</span></li>
-            <li><span class="multi-cb" data-key="may.dj.fire"></span><span class="when">May 12</span><span class="text">Dirty Jack drops alongside Splashy Sale launch — IG + TikTok + email same morning</span></li>
-            <li><span class="multi-cb" data-key="may.dj.amplify"></span><span class="when">May 12-15</span><span class="text">Watch performance — if winning, amplify as paid ad creative</span></li>
-          </ul>
-        </div>
-      </details>
-
+    <h3 style="margin: 32px 0 16px 0; font-size: 18px;">🎬 Content Drop — Dirty Jack (May 12)</h3>
+    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">Fun cheeky content piece, NOT a product. Drops with Splashy Sale start.</p>
+    <div class="checklist-col" style="background: white; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px;">
+      <div class="ch-group" style="padding-bottom: 12px;">
+        <ul style="padding: 12px 20px;">
+          <li><span class="multi-cb" data-key="may.dj.finalize"></span><span class="when">May 4-8</span><span class="text">Finalize Dirty Jack creative (video / social / email asset)</span></li>
+          <li><span class="multi-cb" data-key="may.dj.schedule"></span><span class="when">May 9-11</span><span class="text">Schedule across IG, TikTok, email — coordinated drop May 12</span></li>
+          <li><span class="multi-cb" data-key="may.dj.fire"></span><span class="when">May 12</span><span class="text">Drops alongside Splashy Sale launch — IG + TikTok + email same morning</span></li>
+          <li><span class="multi-cb" data-key="may.dj.amplify"></span><span class="when">May 12-15</span><span class="text">Watch performance — if winning, amplify as paid ad creative</span></li>
+        </ul>
+      </div>
     </div>
 
     <h3 style="margin: 32px 0 16px 0; font-size: 18px;">🎉 Event Prep — Miami Swim Week (May 28-31)</h3>
-    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">Last 4 days of Splashy Sale ride Miami Swim Week. Pool + beach + neon aesthetic.</p>
+    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">Last 4 days of Splashy Sale ride Miami Swim Week cultural moment. Pool + beach + neon aesthetic. Standard event prep checklist:</p>
     <div class="checklist-col" style="background: white; border: 1px solid var(--border); border-radius: 12px;">
-      <div class="ch-group">
-        <ul>
-          <li><span class="multi-cb" data-key="may.miami.partners"></span><span class="when">May 18-25</span><span class="text">Press / influencer outreach for swim-week-attending partners</span></li>
-          <li><span class="multi-cb" data-key="may.miami.shoot"></span><span class="when">May 25-27</span><span class="text">Miami Swim aesthetic content shot + queued (pool, beach, neon)</span></li>
-          <li><span class="multi-cb" data-key="may.miami.bundle"></span><span class="when">May 28</span><span class="text">"Pool Pack" or swim-themed bundle goes live</span></li>
-          <li><span class="multi-cb" data-key="may.miami.daily"></span><span class="when">May 28-31</span><span class="text">Daily Miami swim content across IG + TikTok</span></li>
-          <li><span class="multi-cb" data-key="may.miami.finale"></span><span class="when">May 31</span><span class="text">End-of-month "last chance" email + SMS — Splashy Sale closes Jun 4</span></li>
+      <div class="ch-group" style="padding-bottom: 12px;">
+        <ul style="padding: 12px 20px;">
+          <li><span class="multi-cb" data-key="may.event.venue"></span><span class="when">T-2w (May 14)</span><span class="text"><strong>Confirm venue</strong> (location + date + capacity locked)</span></li>
+          <li><span class="multi-cb" data-key="may.event.theme"></span><span class="when">T-2w (May 14)</span><span class="text"><strong>Confirm event theme</strong> (creative direction, mood, color palette)</span></li>
+          <li><span class="multi-cb" data-key="may.event.bags"></span><span class="when">T-1w (May 21)</span><span class="text"><strong>Confirm gift bags + props</strong> (contents, quantities, packaging)</span></li>
+          <li><span class="multi-cb" data-key="may.event.guestlist"></span><span class="when">T-2w (May 14)</span><span class="text">Guest list finalized (press + influencers + key contacts)</span></li>
+          <li><span class="multi-cb" data-key="may.event.invites"></span><span class="when">T-2w (May 14)</span><span class="text">Invitations sent + RSVP tracking active</span></li>
+          <li><span class="multi-cb" data-key="may.event.crew"></span><span class="when">T-2w (May 14)</span><span class="text">Photo + video crew booked</span></li>
+          <li><span class="multi-cb" data-key="may.event.catering"></span><span class="when">T-1w (May 21)</span><span class="text">Catering / food + drink confirmed</span></li>
+          <li><span class="multi-cb" data-key="may.event.av"></span><span class="when">T-1w (May 21)</span><span class="text">AV / sound / lighting / music playlist locked</span></li>
+          <li><span class="multi-cb" data-key="may.event.runofshow"></span><span class="when">T-1w (May 21)</span><span class="text">Run-of-show locked (founder talk, optional speaker, photo moment, timing)</span></li>
+          <li><span class="multi-cb" data-key="may.event.rsvps"></span><span class="when">T-3d (May 25)</span><span class="text">Final RSVPs + headcount confirmed</span></li>
+          <li><span class="multi-cb" data-key="may.event.presskit"></span><span class="when">T-3d (May 25)</span><span class="text">Press kits + take-aways prepped</span></li>
+          <li><span class="multi-cb" data-key="may.event.partners"></span><span class="when">May 18-25</span><span class="text">Press / influencer outreach for swim-week-attending partners</span></li>
+          <li><span class="multi-cb" data-key="may.event.bundle"></span><span class="when">May 28</span><span class="text">"Pool Pack" or swim-themed bundle goes live</span></li>
+          <li><span class="multi-cb" data-key="may.event.execute"></span><span class="when">May 28-31</span><span class="text">Event days: execute + capture content</span></li>
+          <li><span class="multi-cb" data-key="may.event.thanks"></span><span class="when">Day +1 (Jun 1)</span><span class="text">Founder thank-you to attendees + team thank-you with tag-asks</span></li>
+          <li><span class="multi-cb" data-key="may.event.cpm"></span><span class="when">Jun 7</span><span class="text">Calculate organic CPM (cost / earned impressions × 1000)</span></li>
         </ul>
       </div>
     </div>
