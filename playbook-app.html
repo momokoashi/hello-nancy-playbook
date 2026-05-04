@@ -1,0 +1,2524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hello Nancy — Launch Playbook App</title>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --bg-elev: #ffffff;
+    --bg-sidebar: #f4f1ec;
+    --text: #1a1a1a;
+    --text-soft: #555;
+    --text-faint: #888;
+    --accent: #ec4899;
+    --accent-soft: #fce7f3;
+    --accent-dark: #be185d;
+    --border: #e5e5e0;
+    --tier-1: #fef3c7;
+    --tier-2: #dbeafe;
+    --tier-3: #fce7f3;
+    --tier-4: #d1fae5;
+    --tier-5: #e0e7ff;
+    --pre: #fef3c7;
+    --launch: #fce7f3;
+    --post: #d1fae5;
+    --ok: #10b981;
+    --partial: #f59e0b;
+    --fail: #ef4444;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; font-size: 15px; line-height: 1.6; }
+
+  /* ===== Header / Goal Banner ===== */
+  header.goal {
+    background: linear-gradient(135deg, #fdf2f8 0%, #fff7ed 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 32px;
+  }
+  .goal-inner { max-width: 1400px; margin: 0 auto; }
+  .goal h1 { margin: 0; font-size: 22px; font-weight: 700; color: var(--text); }
+  .goal h1 small { color: var(--text-soft); font-weight: 500; font-size: 14px; margin-left: 8px; }
+  .goal p.tagline { margin: 4px 0 14px 0; color: var(--text-soft); font-size: 14px; }
+  .goal-targets { display: flex; gap: 24px; flex-wrap: wrap; }
+  .goal-target {
+    background: white; padding: 10px 16px; border-radius: 8px;
+    border: 1px solid var(--border); display: flex; align-items: center; gap: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  .goal-target .num { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .goal-target .lbl { font-size: 12px; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* ===== Tabs ===== */
+  nav.tabs {
+    background: var(--bg-elev); border-bottom: 1px solid var(--border);
+    padding: 0 32px; position: sticky; top: 0; z-index: 50;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  }
+  .tabs-inner { max-width: 1400px; margin: 0 auto; display: flex; gap: 4px; }
+  .tab {
+    background: none; border: none; padding: 14px 18px; cursor: pointer;
+    font-size: 14px; font-weight: 600; color: var(--text-faint);
+    border-bottom: 3px solid transparent; transition: all 0.15s;
+    font-family: inherit;
+  }
+  .tab:hover { color: var(--text); background: var(--accent-soft); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ===== Main content ===== */
+  main { max-width: 1400px; margin: 0 auto; padding: 28px 32px 80px 32px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  h2.section-title { font-size: 24px; font-weight: 700; margin: 0 0 8px 0; }
+  p.section-sub { margin: 0 0 24px 0; color: var(--text-soft); font-size: 14px; }
+
+  /* ===== Tab 1: Master Matrix ===== */
+  table.matrix {
+    width: 100%; border-collapse: separate; border-spacing: 0;
+    background: var(--bg-elev); border-radius: 12px; overflow: hidden;
+    box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+  }
+  table.matrix th, table.matrix td {
+    padding: 0; vertical-align: top; border-bottom: 1px solid var(--border);
+  }
+  table.matrix thead th {
+    background: #fafaf7; font-weight: 600; font-size: 12px; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--text-faint); padding: 14px 16px;
+    text-align: left; position: sticky; top: 60px; z-index: 5;
+  }
+  table.matrix thead th.phase-pre { background: var(--pre); color: #92400e; }
+  table.matrix thead th.phase-launch { background: var(--launch); color: var(--accent-dark); }
+  table.matrix thead th.phase-post { background: var(--post); color: #065f46; }
+  table.matrix tbody tr.tier-row {
+    background: var(--bg-sidebar);
+  }
+  table.matrix tbody tr.tier-row td {
+    padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-soft);
+  }
+  table.matrix tbody td.channel-name {
+    width: 220px; padding: 14px 16px; font-weight: 600; background: #fdfdfa;
+    border-right: 1px solid var(--border); position: sticky; left: 0;
+  }
+  table.matrix tbody td.channel-name .icon { font-size: 18px; margin-right: 8px; }
+  table.matrix tbody td.channel-name .ch-summary {
+    display: block; font-weight: 400; font-size: 12px; color: var(--text-faint);
+    margin-top: 2px; line-height: 1.4;
+  }
+  table.matrix tbody td.cell {
+    padding: 12px 14px; cursor: pointer; transition: background 0.12s;
+    width: 33%; font-size: 13px; color: var(--text-soft);
+  }
+  table.matrix tbody td.cell:hover { background: var(--accent-soft); }
+  table.matrix tbody td.cell .cell-tasks {
+    font-weight: 500; color: var(--text); margin-bottom: 4px;
+  }
+  table.matrix tbody td.cell .cell-kpi {
+    font-size: 11px; color: var(--text-faint); display: block;
+  }
+  table.matrix tbody td.cell .cell-progress {
+    display: inline-block; margin-top: 4px; padding: 1px 8px; font-size: 11px;
+    background: var(--accent-soft); color: var(--accent-dark); border-radius: 10px; font-weight: 500;
+  }
+  table.matrix tbody td.cell.empty { color: var(--text-faint); font-style: italic; cursor: default; }
+  table.matrix tbody td.cell.empty:hover { background: transparent; }
+
+  /* ===== Drawer (slide-in detail panel) ===== */
+  .drawer-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; width: 720px; max-width: 100vw;
+    background: var(--bg-elev); z-index: 101;
+    box-shadow: var(--shadow-lg); transform: translateX(100%); transition: transform 0.25s ease-out;
+    overflow-y: auto;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer header.dh {
+    padding: 24px 32px 16px 32px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--bg-elev); z-index: 1;
+  }
+  .drawer .dh-bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 8px; }
+  .drawer .dh-tag { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+  .drawer .dh-tag.pre { background: var(--pre); color: #92400e; }
+  .drawer .dh-tag.launch { background: var(--launch); color: var(--accent-dark); }
+  .drawer .dh-tag.post { background: var(--post); color: #065f46; }
+  .drawer .close-btn {
+    background: none; border: 1px solid var(--border); cursor: pointer;
+    width: 32px; height: 32px; border-radius: 50%; font-size: 18px; color: var(--text-soft);
+  }
+  .drawer .close-btn:hover { background: var(--accent-soft); }
+  .drawer h3 { margin: 0; font-size: 22px; font-weight: 700; }
+  .drawer .dh-channel { color: var(--text-soft); font-size: 13px; margin-top: 4px; }
+  .drawer .body { padding: 24px 32px; }
+  .drawer .body h4 {
+    margin: 24px 0 8px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-soft); font-weight: 600;
+  }
+  .drawer .body h4:first-child { margin-top: 0; }
+  .drawer .think-box {
+    background: var(--accent-soft); padding: 16px 18px; border-radius: 8px;
+    border-left: 4px solid var(--accent); font-size: 14px; line-height: 1.65;
+  }
+  .drawer ul.tasks { list-style: none; padding: 0; margin: 0; }
+  .drawer ul.tasks li {
+    display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px;
+    background: #fafaf7;
+  }
+  .drawer ul.tasks li .when { font-size: 11px; color: var(--text-faint); padding: 2px 8px; background: white; border: 1px solid var(--border); border-radius: 4px; white-space: nowrap; flex-shrink: 0; font-weight: 500; }
+  .drawer ul.tasks li .text { flex: 1; font-size: 14px; }
+  .drawer ul.tasks li .owner { font-size: 11px; color: var(--text-faint); }
+  .drawer table.kpi { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .drawer table.kpi th, .drawer table.kpi td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; }
+  .drawer table.kpi th { background: #fafaf7; font-weight: 600; font-size: 12px; }
+  .drawer table.kpi td.floor { background: #fee2e2; }
+  .drawer table.kpi td.good { background: #fef3c7; }
+  .drawer table.kpi td.great { background: #d1fae5; }
+  .drawer .example {
+    background: #fafaf7; padding: 14px 16px; border-radius: 8px;
+    border: 1px dashed var(--border); margin-bottom: 10px;
+  }
+  .drawer .example .ex-type { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+  .drawer .example .ex-title { font-weight: 600; margin: 4px 0 6px 0; font-size: 14px; }
+  .drawer .example .ex-text { font-size: 13px; color: var(--text-soft); }
+  .drawer .example .placeholder {
+    border: 2px dashed #d4d4d0; padding: 24px; text-align: center; color: var(--text-faint);
+    border-radius: 6px; margin-top: 8px; font-size: 12px;
+  }
+
+  /* ===== Tab 2: Phase Checklists ===== */
+  .checklist-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .checklist-col {
+    background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px;
+    padding: 0; overflow: hidden;
+  }
+  .checklist-col h3 {
+    margin: 0; padding: 16px 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border);
+  }
+  .checklist-col.pre h3 { background: var(--pre); color: #92400e; }
+  .checklist-col.launch h3 { background: var(--launch); color: var(--accent-dark); }
+  .checklist-col.post h3 { background: var(--post); color: #065f46; }
+  .checklist-col h3 small { font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 12px; opacity: 0.8; margin-left: 6px; }
+  .checklist-col .ch-group {
+    padding: 0; border-bottom: 1px solid var(--border);
+  }
+  .checklist-col .ch-group:last-child { border-bottom: none; }
+  .checklist-col .ch-group .ch-name {
+    padding: 10px 20px; font-weight: 600; font-size: 13px; background: #fafaf7;
+    color: var(--text); display: flex; align-items: center; gap: 8px;
+  }
+  .checklist-col .ch-group ul { list-style: none; padding: 0 20px 12px 20px; margin: 0; }
+  .checklist-col .ch-group li { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 13px; }
+  .checklist-col .ch-group li .when { font-size: 11px; color: var(--text-faint); white-space: nowrap; }
+  .checklist-col .ch-group li .text { flex: 1; }
+  .checklist-col .ch-group li.done .text { text-decoration: line-through; color: var(--text-faint); }
+  .checklist-col .ch-group li.partial .text { color: var(--partial); }
+  .checklist-col .ch-group li.skipped .text { color: var(--text-faint); text-decoration: line-through; opacity: 0.6; }
+  .multi-cb { width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; border: 1.5px solid var(--border); border-radius: 4px; background: white; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; line-height: 1; user-select: none; transition: all 0.12s; }
+  .multi-cb:hover { border-color: var(--accent); }
+  .multi-cb.done { background: var(--ok); border-color: var(--ok); color: white; }
+  .multi-cb.partial { background: var(--partial); border-color: var(--partial); color: white; }
+  .multi-cb.skipped { background: #999; border-color: #999; color: white; }
+
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+  .filter-bar .lbl { font-size: 12px; color: var(--text-soft); margin-right: 4px; }
+  .chip { padding: 4px 10px; font-size: 12px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 14px; cursor: pointer; user-select: none; }
+  .chip.active { background: var(--accent); color: white; border-color: var(--accent); }
+  .chip:hover { border-color: var(--accent); }
+
+  /* ===== Tab 3: Channel Playbooks ===== */
+  .playbook-layout { display: grid; grid-template-columns: 240px 1fr; gap: 24px; }
+  .playbook-nav { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px; padding: 8px; height: fit-content; position: sticky; top: 80px; }
+  .playbook-nav button {
+    display: block; width: 100%; text-align: left; padding: 10px 14px; background: none;
+    border: none; cursor: pointer; font-family: inherit; font-size: 13px; color: var(--text-soft);
+    border-radius: 6px; margin: 2px 0;
+  }
+  .playbook-nav button:hover { background: var(--accent-soft); color: var(--text); }
+  .playbook-nav button.active { background: var(--accent); color: white; font-weight: 600; }
+  .playbook-content { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; }
+  .playbook-content h2 { margin: 0 0 4px 0; }
+  .playbook-content .ch-summary { color: var(--text-soft); margin-bottom: 24px; }
+  .phase-block {
+    border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; overflow: hidden;
+  }
+  .phase-block summary {
+    padding: 14px 18px; font-weight: 700; cursor: pointer; list-style: none;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .phase-block summary::-webkit-details-marker { display: none; }
+  .phase-block.pre summary { background: var(--pre); color: #92400e; }
+  .phase-block.launch summary { background: var(--launch); color: var(--accent-dark); }
+  .phase-block.post summary { background: var(--post); color: #065f46; }
+  .phase-block .phase-body { padding: 16px 18px; background: white; }
+
+  /* ===== Tab 4: Launch Tracker ===== */
+  .tracker-form { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; }
+  .tracker-form .row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .tracker-form .row:last-child { margin-bottom: 0; }
+  .tracker-form label { font-size: 12px; font-weight: 600; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 4px; }
+  .tracker-form input[type="text"], .tracker-form input[type="date"] { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 14px; }
+  .tracker-form input[type="text"] { width: 280px; }
+  .tracker-form button.action { padding: 8px 16px; background: var(--accent); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; }
+  .tracker-form button.action:hover { background: var(--accent-dark); }
+  .tracker-form button.secondary { padding: 8px 14px; background: white; color: var(--text-soft); border: 1px solid var(--border); border-radius: 6px; font-size: 13px; cursor: pointer; }
+  .tracker-week {
+    background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px;
+    margin-bottom: 16px; overflow: hidden;
+  }
+  .tracker-week summary {
+    padding: 14px 20px; font-weight: 700; cursor: pointer; list-style: none;
+    background: #fafaf7; display: flex; justify-content: space-between; align-items: center;
+  }
+  .tracker-week summary::-webkit-details-marker { display: none; }
+  .tracker-week .week-title { display: flex; gap: 12px; align-items: baseline; }
+  .tracker-week .week-tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--accent-soft); color: var(--accent-dark); font-weight: 600; }
+  .tracker-week.pre summary { border-left: 4px solid #f59e0b; }
+  .tracker-week.launch summary { border-left: 4px solid var(--accent); background: var(--accent-soft); }
+  .tracker-week.post summary { border-left: 4px solid #10b981; }
+  .tracker-week .week-body { padding: 16px 20px; background: white; }
+  .tracker-week .progress { font-size: 12px; color: var(--text-faint); }
+
+  .tracker-empty { text-align: center; padding: 60px 20px; color: var(--text-faint); }
+  .tracker-empty h3 { font-size: 16px; color: var(--text); margin-bottom: 4px; }
+
+  /* ===== Reset / Print buttons header ===== */
+  .toolbar { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+  .toolbar .progress-pill {
+    padding: 4px 12px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 14px;
+    font-size: 12px; color: var(--text-soft);
+  }
+
+  /* Mobile */
+  @media (max-width: 900px) {
+    main { padding: 16px 16px 80px 16px; }
+    .checklist-grid { grid-template-columns: 1fr; }
+    .playbook-layout { grid-template-columns: 1fr; }
+    .playbook-nav { position: static; }
+    table.matrix tbody td.channel-name { width: 140px; padding: 10px; position: static; }
+    .drawer { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header class="goal">
+  <div class="goal-inner">
+    <h1>🎯 Hello Nancy — Product Launch Roadmap <small>Make every product a proven product</small></h1>
+    <p class="tagline">A product is "proven" when it hits BOTH targets. Below either, the product needs work, not more marketing spend.</p>
+    <div class="goal-targets">
+      <div class="goal-target"><span class="num">50+</span><div><div class="lbl">Sales / Day</div><div style="font-size:12px;color:var(--text-soft)">Sustained velocity post-launch</div></div></div>
+      <div class="goal-target"><span class="num">3.5★</span><div><div class="lbl">Avg Rating</div><div style="font-size:12px;color:var(--text-soft)">50+ verified reviews in 4-6w</div></div></div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tabs-inner">
+    <button class="tab active" data-tab="thismonth">🚨 This Month</button>
+    <button class="tab" data-tab="merchcal">📅 Merch Calendar</button>
+    <button class="tab" data-tab="matrix">📊 Master Matrix</button>
+    <button class="tab" data-tab="checklists">✅ Phase Checklists</button>
+    <button class="tab" data-tab="playbooks">📖 Channel Playbooks</button>
+    <button class="tab" data-tab="tracker">📅 Launch Tracker</button>
+    <div class="toolbar">
+      <span class="progress-pill" id="progress-pill">0 / 0 done</span>
+      <button class="chip" id="reset-btn" title="Clear all checks">Reset</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============ TAB: THIS MONTH (May 2026 focused execution view) ============ -->
+<section class="panel active" id="panel-thismonth">
+  <div id="thismonth-content"></div>
+</section>
+
+<!-- ============ TAB: MERCH CALENDAR (year view) ============ -->
+<section class="panel" id="panel-merchcal">
+  <div id="merchcal-content"></div>
+</section>
+
+<!-- ============ TAB: MATRIX ============ -->
+<section class="panel" id="panel-matrix">
+  <h2 class="section-title">Master Matrix</h2>
+  <p class="section-sub">Every channel × every phase, on one page. <strong>Click any cell</strong> to see what to do, the KPI, examples, and how to think about it.</p>
+  <div style="overflow-x:auto;">
+    <table class="matrix" id="matrix-table"></table>
+  </div>
+</section>
+
+<!-- ============ TAB 2: CHECKLISTS ============ -->
+<section class="panel" id="panel-checklists">
+  <h2 class="section-title">Phase Checklists</h2>
+  <p class="section-sub">Same tasks as Matrix, reorganized by phase. Click the box to cycle: ☐ → ☑ done → ◐ partial → ✗ skipped → ☐.</p>
+  <div class="filter-bar" id="filter-bar"><span class="lbl">Filter channels:</span></div>
+  <div class="checklist-grid">
+    <div class="checklist-col pre"><h3>Pre-launch <small id="pre-count"></small></h3><div id="pre-list"></div></div>
+    <div class="checklist-col launch"><h3>Launch <small id="launch-count"></small></h3><div id="launch-list"></div></div>
+    <div class="checklist-col post"><h3>Post-launch <small id="post-count"></small></h3><div id="post-list"></div></div>
+  </div>
+</section>
+
+<!-- ============ TAB 3: PLAYBOOKS ============ -->
+<section class="panel" id="panel-playbooks">
+  <h2 class="section-title">Channel Playbooks</h2>
+  <p class="section-sub">Pick a channel on the left to see its full pre-launch / launch / post-launch playbook in one place.</p>
+  <div class="playbook-layout">
+    <nav class="playbook-nav" id="playbook-nav"></nav>
+    <div class="playbook-content" id="playbook-content"></div>
+  </div>
+</section>
+
+<!-- ============ TAB 4: LAUNCH TRACKER ============ -->
+<section class="panel" id="panel-tracker">
+  <h2 class="section-title">Launch Tracker</h2>
+  <p class="section-sub">Pick a launch date. Toggle channels you'll use. The calendar generates from your date, week by week (T-12w → T+6w).</p>
+  <div class="tracker-form">
+    <div class="row">
+      <div><label>Launch Name</label><input type="text" id="t-name" placeholder="e.g., Lube launch"></div>
+      <div><label>Launch Date</label><input type="date" id="t-date"></div>
+      <div><label>Runway</label>
+        <select id="t-runway" style="padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;font-family:inherit;">
+          <option value="2">Small — 2 weeks pre</option>
+          <option value="6">Medium — 6 weeks pre</option>
+          <option value="12" selected>Big — 12 weeks pre</option>
+        </select>
+      </div>
+      <button class="action" id="t-build">Generate Calendar →</button>
+      <button class="secondary" id="t-clear">Clear</button>
+    </div>
+    <div class="row">
+      <div style="width:100%;"><label>Channels (toggle off any you'll skip for THIS launch)</label>
+        <div class="filter-bar" id="t-channels" style="margin-bottom:0;margin-top:6px;"></div>
+      </div>
+    </div>
+  </div>
+  <div id="t-output"></div>
+</section>
+
+</main>
+
+<!-- Drawer -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<aside class="drawer" id="drawer">
+  <header class="dh">
+    <div class="dh-bar">
+      <span class="dh-tag" id="d-phase">PRE-LAUNCH</span>
+      <button class="close-btn" id="d-close">×</button>
+    </div>
+    <h3 id="d-title">—</h3>
+    <div class="dh-channel" id="d-channel">—</div>
+  </header>
+  <div class="body" id="d-body"></div>
+</aside>
+
+<!-- Data lives in separate well-commented files you can edit anytime -->
+<script src="playbook-data.js"></script>
+<script src="events-data.js"></script>
+<script>
+// ============================================================
+//  PLAYBOOK DATA loaded from playbook-data.js
+//  Edit that file to change channels, tasks, KPIs, examples.
+//  Refresh this page after saving — your changes show up.
+// ============================================================
+
+const _DATA_INLINE_DISABLED = {
+  tiers: [
+    { id: 1, name: "Demand Generation", color: "#fef3c7" },
+    { id: 2, name: "Capture & Convert", color: "#dbeafe" },
+    { id: 3, name: "Trust & Seeding", color: "#fce7f3" },
+    { id: 4, name: "Amplification", color: "#d1fae5" },
+    { id: 5, name: "Foundation", color: "#e0e7ff" }
+  ],
+
+  channels: [
+    // ============ TIER 1: DEMAND GENERATION ============
+    {
+      id: "meta", name: "Meta Ads", tier: 1, icon: "📱",
+      summary: "Largest spend channel. Volume engine. 72hr Meta review buffer is non-negotiable.",
+      phases: {
+        pre: {
+          summary: "Build creative. Submit early. Get approved before launch.",
+          howToThink: "Pre-launch Meta is invisible. You're not running ads yet. You're shooting, briefing, building, and submitting. Treat the 72-hour Meta review window as sacred — wellness/intimate is among the strictest categories. Push to launch day = account ban risk.",
+          tasks: [
+            { when: "T-8w", text: "Eyeball Factory shoot day (full)", owner: "Creative" },
+            { when: "T-6w", text: "Brief Meta cold creative (5+ variants per product)", owner: "Creative" },
+            { when: "T-4w", text: "Build Meta retargeting audiences", owner: "Paid" },
+            { when: "T-3w", text: "Build retargeting creative (3+ variants)", owner: "Creative" },
+            { when: "T-1w Mon", text: "Submit ALL creative to Meta for review", owner: "Paid" },
+            { when: "T-1w Thu", text: "Verify 90%+ approved; backups queued for rejected", owner: "Paid" },
+            { when: "T-1w Fri", text: "Test purchase: pixel + CAPI fires with NEW SKU's product_id", owner: "Paid" }
+          ],
+          kpis: [
+            { metric: "Account health (rejected ads %)", floor: ">5%", good: "<2%", great: "<0.5%" },
+            { metric: "Creative variants ready by T-2w", floor: "<5", good: "5-10", great: "15+" }
+          ],
+          examples: [
+            { type: "creative_ratio", title: "Creative type mix at launch", text: "60% UGC (Sideshift) / 40% studio (Eyeball Factory). UGC outperforms studio in feed by 30-50% in wellness." },
+            { type: "screenshot", title: "Example launch creative" }
+          ]
+        },
+        launch: {
+          summary: "Go live coordinated with embargo lift. Monitor account health.",
+          howToThink: "All campaigns live within 60 minutes of 6am ET embargo lift. Cold prospecting, retargeting, advertorial-funnel ads, all coordinated. The first 48 hours produce signal — DON'T optimize yet, let frequency build. Watch account health more than ROAS.",
+          tasks: [
+            { when: "Day 0 6am", text: "Meta cold prospecting live (sync with PR embargo)", owner: "Paid" },
+            { when: "Day 0 6am", text: "Meta retargeting live", owner: "Paid" },
+            { when: "Day 0 10am", text: "Confirm all campaigns active + spend pacing", owner: "Paid" },
+            { when: "Day 0 4pm", text: "Mid-day account health check", owner: "Paid" },
+            { when: "Day 0 11pm", text: "Backup ad account status check (Meta-ban contingency)", owner: "Paid" },
+            { when: "Day +1 to +4", text: "Daily creative monitoring; cut underperforming variants Day +3", owner: "Paid" }
+          ],
+          kpis: [
+            { metric: "Blended ROAS (launch week)", floor: "<1.0x kill", good: "1.5-2.5x", great: "3x+" },
+            { metric: "First-order CAC (intimate wellness)", floor: ">$180", good: "$80-140", great: "<$80" },
+            { metric: "CTR (feed)", floor: "<0.8%", good: "1.5-3%", great: "4%+" },
+            { metric: "Frequency (cold)", floor: ">7 fatigue", good: "3-5", great: "2-4" }
+          ],
+          examples: [
+            { type: "structure", title: "Day 0 campaign structure", text: "1 cold prospecting CBO ($X/day) + 1 retargeting CBO + 1 advertorial-funnel CBO. 5+ ad sets per CBO. 3+ creatives per ad set. Auto-placement on." }
+          ]
+        },
+        post: {
+          summary: "Iterate creative. Scale winners. Refresh fatigued.",
+          howToThink: "Week 1 produces winners and losers. Cut bottom 50% of creative by Day 7. Scale top 20% spend by 50%. Refresh creative every 5-7 days; frequency over 5-6 = creative fatigue. Move to always-on by Week 2 with a steady-state always-on budget that's 60-80% of launch-week spend.",
+          tasks: [
+            { when: "T+1w", text: "Score launch-week ROAS, CAC, CTR, frequency", owner: "Paid" },
+            { when: "T+1w", text: "Cut underperforming variants (bottom 50%)", owner: "Paid" },
+            { when: "T+1w", text: "Scale winners (top 20%) by 50%+ budget", owner: "Paid" },
+            { when: "T+2w", text: "Brief Refresh batch of creative (Sideshift UGC)", owner: "Creative" },
+            { when: "T+2w", text: "Transition to always-on budget level", owner: "Paid" },
+            { when: "T+4w", text: "Final Meta launch retro: what worked, what didn't", owner: "Paid" }
+          ],
+          kpis: [
+            { metric: "Creative refresh rate", floor: "<1/wk", good: "2-3/wk", great: "3+/wk" },
+            { metric: "Always-on ROAS (T+2w onwards)", floor: "<1.5x", good: "2-3x", great: "3.5x+" }
+          ],
+          examples: [
+            { type: "decision_rule", title: "Kill rule for creative", text: "Cut a creative if: spent ≥ 3x AOV with no purchase, OR CTR < 0.5%, OR frequency > 7 with declining ROAS." }
+          ]
+        }
+      }
+    },
+
+    {
+      id: "google", name: "Google Ads", tier: 1, icon: "🔍",
+      summary: "Brand defense + high-intent search capture. PMax / YouTube / Search.",
+      phases: {
+        pre: {
+          summary: "Build campaigns. Map keywords. Structure account.",
+          howToThink: "Brand defense is non-negotiable: someone Googles your brand on launch day, you better own page 1. Non-brand keyword research takes 1-2 weeks of careful work. PMax is for 'when you're confident in feed and creative quality' — usually post-Week-2.",
+          tasks: [
+            { when: "T-3w", text: "Brand search campaigns built (95%+ impression share target)", owner: "Paid" },
+            { when: "T-3w", text: "Non-brand keyword research (50+ keywords)", owner: "Paid" },
+            { when: "T-2w", text: "YouTube ads built (how-to + brand cuts)", owner: "Paid" },
+            { when: "T-1w", text: "PMax campaigns built (asset groups + audience signals)", owner: "Paid" }
+          ],
+          kpis: [
+            { metric: "Keywords mapped", floor: "<20", good: "50-100", great: "150+" }
+          ],
+          examples: [
+            { type: "structure", title: "Account structure", text: "Brand campaign (exact match) → Brand campaign (phrase) → Non-brand category (broad) → Non-brand competitor (exact). Separate budgets per intent tier." }
+          ]
+        },
+        launch: {
+          summary: "All Google live by 7am ET.",
+          howToThink: "Google Ads ramps slower than Meta — give it 3-5 days to find rhythm before judging. Brand search will spike on Day 0 from PR + influencer mentions; budget for it.",
+          tasks: [
+            { when: "Day 0 7am", text: "Brand + non-brand Search live", owner: "Paid" },
+            { when: "Day 0 7am", text: "YouTube ads live", owner: "Paid" },
+            { when: "Day 0 7am", text: "PMax / Demand Gen live", owner: "Paid" }
+          ],
+          kpis: [
+            { metric: "Brand search CVR", floor: "<8%", good: "12-18%", great: "25%+" },
+            { metric: "Brand impression share", floor: "<80%", good: "90%+", great: "98%+" },
+            { metric: "Non-brand CPC (wellness)", floor: ">$6", good: "$2-4", great: "<$2" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Iterate keywords. Optimize bid strategy.",
+          howToThink: "After 2 weeks of data, you know which non-brand keywords convert. Pause keywords with 0 conversions after $X spent. Move winners to exact match with raised bids.",
+          tasks: [
+            { when: "T+2w", text: "Pause non-brand keywords with 0 conversions", owner: "Paid" },
+            { when: "T+2w", text: "Move winners to exact match", owner: "Paid" },
+            { when: "T+4w", text: "Negative keyword audit + add to exclusions", owner: "Paid" }
+          ],
+          kpis: [
+            { metric: "Non-brand CAC", floor: ">$200", good: "$80-140", great: "<$80" }
+          ],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "press", name: "PR / Press", tier: 1, icon: "📰",
+      summary: "Earned media. Tier-1 trust signal. 6+ week lead time.",
+      phases: {
+        pre: {
+          summary: "Pitch. Sample. Embargo. Long lead times matter.",
+          howToThink: "PR is a relationship business. Tier-1 placements (Vogue, Goop, Well+Good, Refinery29, NYT) need 6 weeks notice MINIMUM and prefer relationships built months in advance. Pitch the founder's story, NOT the product spec sheet. Wellness/intimate has 5-10 sharp angles available — pick one.",
+          tasks: [
+            { when: "T-12w", text: "Refresh press kit (high-res images, founder bio, FAQ)", owner: "PR" },
+            { when: "T-12w", text: "Lock expert quote bank (5+ doctors / PT / therapists)", owner: "PR" },
+            { when: "T-10w", text: "Pitch list locked (50+ contacts tier 1+2)", owner: "PR" },
+            { when: "T-8w", text: "Tier-1 long-lead pitches sent (20+)", owner: "PR" },
+            { when: "T-6w", text: "Tier-1 short-lead pitches sent (15+)", owner: "PR" },
+            { when: "T-6w", text: "Tier-2 + affiliate roundup pitches (20+)", owner: "PR" },
+            { when: "T-4w", text: "Samples + press kits in journalists' hands", owner: "PR" },
+            { when: "T-3w", text: "Embargo agreements signed in writing", owner: "PR" },
+            { when: "T-1w", text: "Press release wired (PR Newswire, Day 0 6am ET)", owner: "PR" }
+          ],
+          kpis: [
+            { metric: "Pitches sent (Big launch)", floor: "<30", good: "50-80", great: "100+" },
+            { metric: "Embargo confirmations", floor: "<2", good: "5-10", great: "15+" }
+          ],
+          examples: [
+            { type: "pitch_angle", title: "Sharp pitch angles for HN", text: "1. 'Why women's pleasure is a public health issue'. 2. 'The wellness category VCs forgot'. 3. 'What 100 pelvic floor PTs told us'. 4. 'The body-safe certification crisis'. Lead with 1. Backup with the rest." },
+            { type: "screenshot", title: "Sample press kit page" }
+          ]
+        },
+        launch: {
+          summary: "Embargo lifts at 6am ET. First placements drop. Field journalist follow-ups.",
+          howToThink: "Reality check: embargoes prevent EARLY publish, they don't compel SAME-DAY publish. Long-lead pubs publish on their editorial calendar. Expect 1-2 tier-1 hits Day 0, the rest land Days +1 to +21 as a second wave. Track all of them.",
+          tasks: [
+            { when: "Day 0 6am", text: "Embargo lifts. Confirmed Day-0 placements go live.", owner: "PR" },
+            { when: "Day 0", text: "Founder available for press interview requests", owner: "Founder" },
+            { when: "Day 0 → +21d", text: "Track second-wave placements + amplify each", owner: "PR" }
+          ],
+          kpis: [
+            { metric: "Day-0 tier-1 placements", floor: "<1", good: "1-2", great: "3+" },
+            { metric: "Total tier-1 placements (rolling 21d)", floor: "<2", good: "3-5", great: "6+" },
+            { metric: "Brand search lift (coverage week)", floor: "<10%", good: "+20-50%", great: "+100%+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Amplify wins. Pitch follow-up angles. Build for next launch.",
+          howToThink: "Each placement is 6 months of relationship value, not a one-shot. Thank, repost, send a follow-up note. Pitch follow-up stories (founder retro, customer reactions, milestone news). The pubs that covered you ONCE will cover you again — if you nurture.",
+          tasks: [
+            { when: "T+1w", text: "Thank journalists who placed coverage; share their work", owner: "PR + Founder" },
+            { when: "T+2w", text: "Pitch follow-up angles (customer stories, milestones)", owner: "PR" },
+            { when: "T+4w", text: "Post-launch retro with PR partner; pitch list updated", owner: "PR" }
+          ],
+          kpis: [
+            { metric: "Backlinks DR40+ from coverage", floor: "<5", good: "10-20", great: "30+" }
+          ],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "influencer", name: "Influencer (Paid)", tier: 1, icon: "📸",
+      summary: "Mid-tier + macro paid creators. Trust-deficit category fix.",
+      phases: {
+        pre: {
+          summary: "Identify, sign, brief, ship, get content shot. 6 weeks lead time.",
+          howToThink: "Whitelisting (running creator content as ads from THEIR handle) is non-negotiable — typically 1.5-2x ROAS lift over brand-direct creative in wellness. Every contract MUST include 6-month usage rights + whitelisting access. Mid-tier (200-500K) outperforms macro (500K+) for conversion in this category. Plan 80/20 mid/macro split.",
+          tasks: [
+            { when: "T-8w", text: "Influencer identification + outreach list (30+)", owner: "Influencer" },
+            { when: "T-6w", text: "Outreach sent (20+ pitches)", owner: "Influencer" },
+            { when: "T-5w", text: "Contracts signed (rates + 6mo usage rights + whitelisting)", owner: "Influencer" },
+            { when: "T-4w", text: "Briefs delivered + products shipped", owner: "Influencer" },
+            { when: "T-3w to T-1w", text: "Content shot + approved (creator + brand sign-off)", owner: "Influencer" },
+            { when: "T-1w", text: "Whitelisting / Spark Ads access granted by creators", owner: "Paid" }
+          ],
+          kpis: [
+            { metric: "Contracts with 6mo usage + whitelisting", floor: "<50%", good: "90%+", great: "100%" },
+            { metric: "Cost per content piece (mid-tier)", floor: ">$8K", good: "$1-5K", great: "<$1K" }
+          ],
+          examples: [
+            { type: "brief_template", title: "Influencer brief structure", text: "1. The why (1 sentence). 2. The product (3 features). 3. The audience (who they speak to). 4. The format (1 IG reel + 3 stories + 1 TikTok). 5. CTA (your code). 6. What NOT to say (claims, comparisons). 7. Approval timeline (48hr review)." }
+          ]
+        },
+        launch: {
+          summary: "Coordinated drops, 11am-2pm ET window. Late-deliverer fallbacks ready.",
+          howToThink: "Realistic compliance is 60-75% on-time, 15-20% land Day +1 to +3, 5-10% never deliver. Over-recruit by 30%. Stagger drops to avoid feed fatigue (don't have all 30 creators post at exactly 11am). 11am-2pm window is the sweet spot — after morning email, before evening creator content.",
+          tasks: [
+            { when: "Day 0 11am-2pm", text: "Coordinated creator content drops (75%+ on-time target)", owner: "Influencer" },
+            { when: "Day 0", text: "Whitelisting ads pulled from approved creator content", owner: "Paid" },
+            { when: "Day +1 to +3", text: "Late-delivery posts go live (~20% of pool)", owner: "Influencer" }
+          ],
+          kpis: [
+            { metric: "On-time compliance", floor: "<50%", good: "70-80%", great: "90%+" },
+            { metric: "Whitelisting ROAS uplift vs brand creative", floor: "<1x", good: "1.5-2x", great: "3x+" },
+            { metric: "Engagement rate (sponsored)", floor: "<1%", good: "2-5%", great: "6%+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Score per-creator ROAS. Lock the re-book list.",
+          howToThink: "30 days of post-content data tells you which creators are worth re-booking. Top 20% of creators drive 60%+ of attributed revenue — these become long-term partnerships, not one-off bookings. Bottom 30% don't return.",
+          tasks: [
+            { when: "T+2w", text: "Score per-creator ROAS (whitelisting + organic attribution)", owner: "Paid" },
+            { when: "T+4w", text: "Lock re-book list for next launch", owner: "Influencer" },
+            { when: "T+4w", text: "Long-term partnership conversations with top 5 creators", owner: "Influencer" }
+          ],
+          kpis: [
+            { metric: "Top 20% creator ROAS", floor: "<2x", good: "3-5x", great: "6x+" }
+          ],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "creator", name: "Creator / UGC (Sideshift)", tier: 1, icon: "🎥",
+      summary: "Volume content for ad creative refresh. Sideshift creator program. Also HN's community.",
+      phases: {
+        pre: {
+          summary: "Brief. Outreach via Sideshift. Ship. QC. Approve.",
+          howToThink: "UGC is volume + authenticity. Brief should be ONE objective, ONE format, ONE shot list — vague briefs get rejected content. Sideshift is HN's recurring relationship layer (this IS the community). Aim for 30-50 assets per launch, 60%+ usable rate after QC. Authentic UGC outperforms studio in feed by 30-50% in wellness.",
+          tasks: [
+            { when: "T-6w", text: "Brief written (single objective, format, shot list)", owner: "Creative" },
+            { when: "T-5w", text: "Sideshift creator outreach (30-50 creators)", owner: "Creative" },
+            { when: "T-4w", text: "Products shipped to all creators", owner: "Ops" },
+            { when: "T-3w", text: "First-wave content delivered (30+ assets)", owner: "Creative" },
+            { when: "T-2w", text: "QC + edits complete (60%+ pass)", owner: "Creative" },
+            { when: "T-1w", text: "Approved content loaded into ad account + organic queue", owner: "Paid" }
+          ],
+          kpis: [
+            { metric: "Asset volume (Big launch)", floor: "<15", good: "30-50", great: "75+" },
+            { metric: "Asset usable rate (passes brand QC)", floor: "<40%", good: "60-75%", great: "85%+" },
+            { metric: "Cost per asset", floor: ">$500", good: "$50-300", great: "<$50" }
+          ],
+          examples: [
+            { type: "brief_template", title: "Sideshift brief — example", text: "OBJECTIVE: Show the product being unboxed and used in a 30-second TikTok-native reel. FORMAT: vertical 9:16, 25-35 seconds. SHOT LIST: (1) unboxing, (2) reaction shot, (3) one product feature shown, (4) closing 'why I love it'. NO: medical claims, comparisons, before/afters. YES: real reactions, your real bathroom/bedroom, your real voice." }
+          ]
+        },
+        launch: {
+          summary: "UGC seeded reviews go live (separate from paid ads).",
+          howToThink: "UGC reviews seeded for SOCIAL PROOF on PDP — they count for trust signal, NOT for the 3.5★ verified-buyer gate. The ad account uses approved UGC creative starting Day 0. Don't confuse these two streams.",
+          tasks: [
+            { when: "Day 0", text: "UGC creatives running in Meta cold + retargeting", owner: "Paid" },
+            { when: "Day 0 → +7d", text: "UGC seeded reviews go live on PDP (social proof tag)", owner: "Reviews" }
+          ],
+          kpis: [
+            { metric: "ROAS uplift when UGC used in ads", floor: "<1x", good: "1.3-1.8x", great: "2x+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Refresh batch. Long-term Sideshift relationships.",
+          howToThink: "Top creators from Sideshift become recurring partners. Build a roster. Aim for 5-10 creators you ship every product to, regardless of launch. They become your community over time.",
+          tasks: [
+            { when: "T+2w", text: "Brief refresh batch (10-20 new assets)", owner: "Creative" },
+            { when: "T+4w", text: "Identify top 5 Sideshift creators for ongoing relationship", owner: "Creative" }
+          ],
+          kpis: [],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "social", name: "Social Organic", tier: 1, icon: "📲",
+      summary: "Brand IG + TikTok. Founder is the killer asset. Daily cadence during launch.",
+      phases: {
+        pre: {
+          summary: "Ramp cadence. Founder content. Pre-launch storytelling.",
+          howToThink: "Brand IG is buyer's check #2 (after PDP). A weak feed kills conversion silently. Founder TikTok is highest-leverage channel for early-stage DTC wellness right now (Cocokind, Honey Pot precedent). Reddit organic seeding (founder's PERSONAL handle, disclosed) = high-trust + low-cost.",
+          tasks: [
+            { when: "T-4w", text: "Content calendar locked (daily through launch + 4w post)", owner: "Social" },
+            { when: "T-2w", text: "Daily cadence ramps (was 3-5/wk, now daily)", owner: "Social" },
+            { when: "T-2w", text: "Reddit organic seeding (founder personal, disclosed)", owner: "Founder" },
+            { when: "T-1w", text: "IG / TikTok Shop product tagging tested", owner: "Social" },
+            { when: "Day -1", text: "Announcement bar + countdown content", owner: "Social" }
+          ],
+          kpis: [
+            { metric: "IG engagement rate", floor: "<2%", good: "3-6%", great: "6%+" },
+            { metric: "TikTok views/follower ratio", floor: "<10%", good: "30-50%", great: "100%+" }
+          ],
+          examples: [
+            { type: "post_calendar", title: "Daily cadence content mix", text: "Mon: Founder POV. Tue: Product detail. Wed: UGC repost. Thu: Education / clinical. Fri: Behind-scenes. Sat: Customer voice. Sun: Story / culture. 1 IG feed + 2-3 stories per day." }
+          ]
+        },
+        launch: {
+          summary: "2x/day cadence. Founder live in DMs. IG Live evening.",
+          howToThink: "Founder presence is the channel. 4-6 hours of founder live in DMs/comments is non-negotiable for Day 0. Reply to top 20 comments per post (algorithm signal). IG Live in the evening locks in the launch as a community moment, not just a transaction.",
+          tasks: [
+            { when: "Day 0 8am", text: "Founder personal launch post on IG + TikTok", owner: "Founder" },
+            { when: "Day 0", text: "Founder live in DMs/comments 4-6 hours", owner: "Founder" },
+            { when: "Day 0 evening", text: "Founder IG Live (30+ min)", owner: "Founder" },
+            { when: "Day +1 to +7", text: "Maintain 2x/day, reply to top 20 comments per post", owner: "Social" }
+          ],
+          kpis: [
+            { metric: "Save rate (IG)", floor: "<0.5%", good: "1-2%", great: "3%+" },
+            { metric: "Founder content engagement rate", floor: "<2%", good: "4-7%", great: "10%+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Sustain cadence. Customer voice content. Iterate winners.",
+          howToThink: "Don't drop cadence post-launch — algorithm penalty lasts 4-6 weeks. Sustain at 70-80% of launch-week cadence. Customer voice content (review screenshots, UGC reposts, real reactions) carries the moment forward without requiring new product news.",
+          tasks: [
+            { when: "T+1w", text: "Customer voice content (UGC reposts, screenshots)", owner: "Social" },
+            { when: "T+2w", text: "Behind-scenes founder content (retrospective)", owner: "Founder" },
+            { when: "T+4w", text: "Score post performance, identify recurring winners", owner: "Social" }
+          ],
+          kpis: [
+            { metric: "Follower growth (launch + 4w)", floor: "<5%", good: "15-25%", great: "40%+" }
+          ],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "blog", name: "Blog / SEO", tier: 1, icon: "📝",
+      summary: "Long-tail + backlink target for PR. Compounds for next launch.",
+      phases: {
+        pre: {
+          summary: "Research, write, publish. Index by launch.",
+          howToThink: "Blog content is a 6-12 month investment, not a launch tactic. But it serves THIS launch as backlink target for PR + email content + long-tail capture. Focus on 1-2 pillar posts per launch with FAQ/Article schema. Internal link every relevant page → PDP.",
+          tasks: [
+            { when: "T-6w", text: "Topic research (5+ keywords mapped, intent clear)", owner: "Content" },
+            { when: "T-4w", text: "Blog post #1 outline + draft (how-to / educational)", owner: "Content" },
+            { when: "T-3w", text: "Blog post #1 designed + schema applied", owner: "Content" },
+            { when: "T-2w", text: "Blog post #1 published (live, indexable, → PDP)", owner: "Content" },
+            { when: "T-1w", text: "Blog post #2 drafted (deeper dive)", owner: "Content" }
+          ],
+          kpis: [
+            { metric: "Posts published per launch", floor: "<1", good: "2-4", great: "5+" }
+          ],
+          examples: [
+            { type: "structure", title: "Pillar post structure", text: "1. Problem (the user's pain). 2. Education (the science / clinical context). 3. The product (subtle — your solution as ONE option). 4. FAQ (schema-tagged). 5. Related products. Aim 1500-2500 words. Target ONE keyword cluster, not many." }
+          ]
+        },
+        launch: {
+          summary: "Blog post #2 published. PR backlinks land.",
+          howToThink: "PR placements should link back to your blog/PDP — the backlink density spikes during launch week. Make sure the destination pages are ready and not 404'd.",
+          tasks: [
+            { when: "Day 0", text: "Blog post #2 publishes (deeper dive / FAQ)", owner: "Content" },
+            { when: "Day 0", text: "Blog post #1 featured in launch email + social", owner: "Content + Social" }
+          ],
+          kpis: [],
+          examples: []
+        },
+        post: {
+          summary: "Index. Backlink audit. Internal linking.",
+          howToThink: "Track indexing speed. Track backlinks landing from PR. Build internal linking graph: every blog post → 1-2 PDPs. The compounding shows up in months 3-6 as organic traffic ramps.",
+          tasks: [
+            { when: "T+1w", text: "Internal linking audit (every relevant page → PDP)", owner: "Content" },
+            { when: "T+4w", text: "Backlink count check (PR placements should link back)", owner: "Content" }
+          ],
+          kpis: [
+            { metric: "Indexed within 30 days", floor: "<50%", good: "80%+", great: "100%" },
+            { metric: "Backlinks per pillar post (DR40+)", floor: "<2", good: "5-10", great: "15+" },
+            { metric: "Organic traffic ramp (month 6)", floor: "<500/mo", good: "2-5K/mo", great: "10K+/mo" }
+          ],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "podcast", name: "Podcast (Founder Guesting)", tier: 1, icon: "🎙",
+      summary: "Founder guesting only. Highest-trust medium. Warm intros to friendly pods.",
+      phases: {
+        pre: {
+          summary: "Pitch (cold + warm). Book. Record.",
+          howToThink: "Cold pods need 6-12 weeks lead time. Warm intros to friendly pods can happen 1-2 weeks out. Founder pitches the STORY, not the product spec. AG1's compounding came from years of guesting — this is a multi-launch investment, not a single-launch ROI.",
+          tasks: [
+            { when: "T-12w", text: "Podcast pitch list (cold + warm) — 30+ pods", owner: "Founder + PR" },
+            { when: "T-10w", text: "Cold pitch outreach (20+ pitches)", owner: "Founder + PR" },
+            { when: "T-8w", text: "Booking confirmations (5+ cold)", owner: "Founder + PR" },
+            { when: "T-4w to T-2w", text: "Recordings (cold pods)", owner: "Founder" },
+            { when: "T-3w", text: "Warm-intro outreach (5+ friendly pods)", owner: "Founder" }
+          ],
+          kpis: [
+            { metric: "Pitches sent", floor: "<10", good: "20-40", great: "60+" },
+            { metric: "Bookings landed", floor: "<2", good: "5-10", great: "15+" }
+          ],
+          examples: [
+            { type: "pitch_template", title: "Cold pitch (3-4 sentences)", text: "Subject: 'Founder of [HN] — guest pitch on [topic]'. Body: I'm [name], founder of [HN]. We make [one-line]. Your audience cares about [topic] and I have [unique POV / data / story]. I'd love to be a guest in [month]. Here's a previous appearance: [link]. Quick yes/no?" }
+          ]
+        },
+        launch: {
+          summary: "Episodes air across the launch window. Cross-promote each.",
+          howToThink: "Episodes airing in T-2w to T+4w window matter for sustained traffic, not Day-0 spike. Each episode = 6 months of relationship. Cross-promote with founder's social on each launch.",
+          tasks: [
+            { when: "T-2w to T+4w", text: "Episodes air on their schedule", owner: "Founder + PR" },
+            { when: "Per-episode launch day", text: "Founder cross-promo on social", owner: "Founder" }
+          ],
+          kpis: [
+            { metric: "Episode listenership (per pod)", floor: "<5K", good: "15-50K", great: "100K+" },
+            { metric: "Brand search lift (week of episode)", floor: "<5%", good: "10-25%", great: "50%+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Re-engage hosts. Pitch follow-up appearances.",
+          howToThink: "Best pods re-book founders 6-12 months later. Build the relationship: thank, repost, send follow-up notes. Track which pods drive brand search lift — those are the targets for re-booking.",
+          tasks: [
+            { when: "T+2w", text: "Thank hosts; share their work; engage with their audience", owner: "Founder" },
+            { when: "T+4w", text: "Score per-pod brand search lift; re-book top 3", owner: "Founder + PR" }
+          ],
+          kpis: [
+            { metric: "Code redemption rate", floor: "<0.2%", good: "0.5-1.5%", great: "2%+" }
+          ],
+          examples: []
+        }
+      }
+    },
+
+    // ============ TIER 2: CAPTURE & CONVERT ============
+    {
+      id: "waitlist", name: "Waitlist", tier: 2, icon: "📋",
+      summary: "Pre-launch capture. VIP early access tier. Referral mechanic.",
+      phases: {
+        pre: {
+          summary: "Build LP. Capture leads. Nurture.",
+          howToThink: "Waitlist is the only PUBLIC pre-launch channel. Everything else is hidden. The LP is your single-purpose conversion surface — minimal, clear value prop, signup form. Referral mechanic doubles list growth without doubling spend. Nurture sequence (3-4 drip emails) keeps the list warm.",
+          tasks: [
+            { when: "T-8w", text: "Waitlist landing page designed + built", owner: "Web" },
+            { when: "T-6w", text: "Waitlist live, capturing leads", owner: "Web" },
+            { when: "T-6w", text: "Referral mechanic active (referrer rewards)", owner: "Web" },
+            { when: "T-4w", text: "VIP early-access tier defined (top 10%)", owner: "Email" },
+            { when: "T-2w", text: "Waitlist nurture sequence active (3-4 drip emails)", owner: "Email" }
+          ],
+          kpis: [
+            { metric: "List size at launch", floor: "<500", good: "2-5K", great: "10K+" },
+            { metric: "Cost per signup (organic)", floor: ">$5", good: "$1-3", great: "<$1" },
+            { metric: "Referral velocity (% via referral)", floor: "<3%", good: "8-12%", great: "15%+" }
+          ],
+          examples: [
+            { type: "lp_structure", title: "Waitlist LP — minimal structure", text: "1. Hero: product visual + 1 sentence promise. 2. Email capture form. 3. Referral CTA: 'Refer 3 friends, jump the line'. 4. P.S.: launch date countdown. NO: long copy, multiple CTAs, navigation." }
+          ]
+        },
+        launch: {
+          summary: "VIP early access fires Day -1. Public launch fires Day 0.",
+          howToThink: "VIP segment converts 2-3x higher than full list. Give them 24-48hr early access to lock loyalty. Day 0 main wave fires for full waitlist + non-waitlist marketing. Score waitlist → buyer conversion at T+1w.",
+          tasks: [
+            { when: "Day -1 9am", text: "VIP early access goes live (24-48hr early window)", owner: "Email" },
+            { when: "Day 0", text: "Public launch — waitlist email + SMS fires", owner: "Email" }
+          ],
+          kpis: [
+            { metric: "Waitlist → Launch buyer CVR", floor: "<15%", good: "25-40%", great: "50%+" },
+            { metric: "VIP CVR (early access)", floor: "<25%", good: "40-60%", great: "70%+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Convert non-buyers. Migrate list to retention flows.",
+          howToThink: "Non-purchasers from waitlist are highest-intent leads you have. Build a 'bridge' email flow: launch retro + customer reactions + softer offer (sample, bundle). Migrate the list to general retention flows after 2 weeks.",
+          tasks: [
+            { when: "T+1w", text: "Score waitlist → buyer CVR; segment non-buyers", owner: "Email" },
+            { when: "T+2w", text: "Non-buyer bridge flow (launch retro + softer offer)", owner: "Email" }
+          ],
+          kpis: [],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "pdp", name: "PDP", tier: 2, icon: "🛒",
+      summary: "The conversion surface. Reviews live here. The 3.5★ gate is rendered here.",
+      phases: {
+        pre: {
+          summary: "Build it tight. Test it. Seed reviews for social proof.",
+          howToThink: "PDP CVR is the single most important conversion metric. Every other channel routes here. Mobile CVR matters more than desktop for HN's audience. Reviews seeded from Sideshift count for SOCIAL PROOF, NOT for the 3.5★ verified-buyer gate. Critical: pixel + CAPI must fire with NEW SKU's product_id, verified with test purchase.",
+          tasks: [
+            { when: "T-4w", text: "PDP copy written (hero, benefits, ingredients, FAQ)", owner: "Content" },
+            { when: "T-3w", text: "PDP gallery assets delivered (8-12 images + 1-2 videos)", owner: "Creative" },
+            { when: "T-3w", text: "PDP designed in Shopify", owner: "Web" },
+            { when: "T-2w", text: "Reviews section seeded (50+ from Sideshift, 'social proof' tag)", owner: "Reviews" },
+            { when: "T-2w", text: "Sticky ATC tested mobile + desktop", owner: "Web" },
+            { when: "T-2w", text: "FAQ schema applied + validated in Google", owner: "Web" },
+            { when: "T-2w", text: "Mobile load time tested (<2s on 4G)", owner: "Web" },
+            { when: "T-1w", text: "Final cross-browser + mobile test", owner: "Web" },
+            { when: "T-1w", text: "Test purchase: pixel + CAPI fires with NEW product_id", owner: "Paid" }
+          ],
+          kpis: [
+            { metric: "Mobile load time", floor: ">3s", good: "<2s", great: "<1s" },
+            { metric: "Reviews count at launch (seeded)", floor: "0", good: "50+", great: "200+" }
+          ],
+          examples: [
+            { type: "pdp_structure", title: "PDP above-fold structure", text: "1. Product gallery (left/main). 2. Title + price + ATC (right). 3. Star rating + review count. 4. 3 key benefits (icons). 5. Sticky ATC follows scroll. Below fold: ingredients, how to use, FAQ, reviews, related." },
+            { type: "screenshot", title: "Example PDP layout" }
+          ]
+        },
+        launch: {
+          summary: "Launch swap: PDP set canonical. All traffic routes here.",
+          howToThink: "Day 0 spike means traffic 5-10x baseline. Verify CVR doesn't drop under load. Mobile CVR especially — if it craters, find the friction (slow image, broken add-to-cart, missing review widget) and fix within hours.",
+          tasks: [
+            { when: "Day 0", text: "PDP set as canonical, indexed", owner: "Web" },
+            { when: "Day 0", text: "Monitor PDP CVR hour-by-hour for first 8 hours", owner: "Web + Paid" }
+          ],
+          kpis: [
+            { metric: "CVR (sessions → orders)", floor: "<1.5%", good: "3-5%", great: "6-8%" },
+            { metric: "Add-to-cart rate", floor: "<5%", good: "8-12%", great: "15%+" },
+            { metric: "Mobile CVR (% of desktop)", floor: "<50%", good: "80%+", great: "100%+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Iterate based on data. Add real reviews. A/B test.",
+          howToThink: "Real reviews start landing T+1w. Pin best reviews to top of section. As 50+ verified reviews accumulate, the 3.5★ score becomes meaningful. A/B test: hero image variants, headline, ATC copy. Small tests with statistical confidence.",
+          tasks: [
+            { when: "T+2w", text: "Pin best verified reviews to top of section", owner: "Reviews" },
+            { when: "T+2w", text: "A/B test hero image / headline (1 test at a time)", owner: "Web" },
+            { when: "T+4w", text: "PDP retro: CVR by traffic source, mobile vs desktop", owner: "Web" }
+          ],
+          kpis: [
+            { metric: "Reviews count at T+6w (verified buyer)", floor: "<30", good: "50-150", great: "200+" }
+          ],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "homepage", name: "Homepage", tier: 2, icon: "🏠",
+      summary: "Hero swap. Announcement bar. Pop-up. Quiz funnel routing.",
+      phases: {
+        pre: {
+          summary: "Design swap. Test. Stage.",
+          howToThink: "Homepage is the second-most-important conversion surface. Day-0 hero swap announces the launch. Quiz funnel updates ensure 'find your match' recommends the new SKU. Pop-up converts first-time visitors to email subscribers.",
+          tasks: [
+            { when: "T-2w", text: "Hero swap design ready (launch creative)", owner: "Web" },
+            { when: "T-2w", text: "Announcement bar copy + scheduling", owner: "Web" },
+            { when: "T-1w", text: "Pop-up designed (welcome offer or launch promo)", owner: "Web" },
+            { when: "T-1w", text: "Quiz funnel updated (recommends new SKU)", owner: "Web" }
+          ],
+          kpis: [],
+          examples: []
+        },
+        launch: {
+          summary: "All swaps live by 9am ET.",
+          howToThink: "",
+          tasks: [
+            { when: "Day 0 9am", text: "Hero swap + announcement bar live", owner: "Web" },
+            { when: "Day 0", text: "Pop-up active (1-2 weeks runtime)", owner: "Web" }
+          ],
+          kpis: [
+            { metric: "Homepage → PDP CTR", floor: "<15%", good: "25-40%", great: "50%+" },
+            { metric: "Pop-up email capture rate", floor: "<1%", good: "3-7%", great: "10%+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Performance review. Iterate.",
+          howToThink: "Pop-up usually retires after 2 weeks (fatigue). Hero may rotate. Quiz performance becomes meaningful at T+4w.",
+          tasks: [
+            { when: "T+2w", text: "Pop-up performance review", owner: "Web" },
+            { when: "T+4w", text: "Hero rotation (transition to always-on)", owner: "Web" }
+          ],
+          kpis: [
+            { metric: "Quiz-assisted CVR", floor: "<2%", good: "4-8%", great: "12%+" }
+          ],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "email", name: "Email", tier: 2, icon: "✉️",
+      summary: "Most reliable revenue driver. 25-35% of DTC revenue post-launch.",
+      phases: {
+        pre: {
+          summary: "Audit flows. Tease. Build VIP segment.",
+          howToThink: "Pre-launch email is about WARMTH not URGENCY. You're building anticipation, not closing. Tease subject lines hint at WHAT but don't reveal. The VIP segment (top 10% of openers/buyers) gets early access. Klaviyo flows (welcome / cart / browse / post-purchase) all need to mention the new launch.",
+          tasks: [
+            { when: "T-4w", text: "Klaviyo flows audited + updated to mention launch", owner: "Email" },
+            { when: "T-2w", text: "Email teaser #1 sends (warm-up)", owner: "Email" },
+            { when: "T-1w Mon", text: "Email teaser #2 sends", owner: "Email" },
+            { when: "T-1w Wed", text: "Email teaser #3 + VIP early-access offer", owner: "Email" },
+            { when: "T-1w Fri", text: "Final teaser email", owner: "Email" }
+          ],
+          kpis: [
+            { metric: "List growth (launch window)", floor: "<10%", good: "20-30%", great: "40%+" },
+            { metric: "Open rate (teaser sends)", floor: "<25%", good: "30-40%", great: "45%+" }
+          ],
+          examples: [
+            { type: "subject_line", title: "Pre-launch teaser SLs that work", text: "Tier A: 'Something's coming.' / 'Mark your calendar.' / 'You're going to want to be first.' Tier B: 'I made you something.' / 'For the women who get it.' Tier C (VIP): 'Early access starts tomorrow.'" },
+            { type: "structure", title: "Pre-launch teaser email body", text: "1. Hook (single sentence). 2. Founder voice — why this product, why now. 3. Visual tease (lifestyle, not product). 4. CTA: Join VIP. 5. P.S. with countdown." },
+            { type: "screenshot", title: "Example pre-launch teaser email" }
+          ]
+        },
+        launch: {
+          summary: "Multi-wave launch sends. VIP / full / non-openers / follow-up.",
+          howToThink: "Email is the highest-revenue Day-0 channel. 4 distinct sends in 24 hours: VIP wave (9am), full list (12pm), non-opener resend (6pm), Day +1 social proof. Each wave has a different angle: VIP is exclusive, full list is public excitement, non-opener resend is FOMO, Day +1 is social proof.",
+          tasks: [
+            { when: "Day -1 9am", text: "VIP early-access email + SMS fires", owner: "Email" },
+            { when: "Day 0 9am", text: "Email launch wave 1 (VIP + recent openers)", owner: "Email" },
+            { when: "Day 0 12pm", text: "Email launch wave 2 (full list)", owner: "Email" },
+            { when: "Day 0 6pm", text: "Non-openers resend", owner: "Email" },
+            { when: "Day +2", text: "Follow-up #1 (social proof)", owner: "Email" },
+            { when: "Day +4", text: "Follow-up #2 (reviews + UGC)", owner: "Email" }
+          ],
+          kpis: [
+            { metric: "Open rate (full list, launch send)", floor: "<25%", good: "30-40%", great: "45%+" },
+            { metric: "Click rate (launch send)", floor: "<2%", good: "3-7%", great: "10%+" },
+            { metric: "Email % of DTC revenue", floor: "<15%", good: "25-35%", great: "40%+" },
+            { metric: "VIP segment open rate", floor: "<40%", good: "50-60%", great: "70%+" }
+          ],
+          examples: [
+            { type: "subject_line", title: "Day-0 launch SLs", text: "Wave 1 (VIP): 'It's here. You're in.' Wave 2 (full): 'Meet [product name].' Resend (non-opener): 'In case you missed it...' Day +2: '[N] reviews already. Here's what they said.'" },
+            { type: "screenshot", title: "Example launch wave email" }
+          ]
+        },
+        post: {
+          summary: "Retention flows. Customer voice. Subscription nudge.",
+          howToThink: "Post-launch email shifts from acquisition to retention. UGC and review screenshots in retention emails drive 2-3x higher engagement than brand creative. Subscription upsell happens 7-14 days after first purchase (the 'first impression' window).",
+          tasks: [
+            { when: "T+2w", text: "Post-launch retention flow (UGC reviews) active", owner: "Email" },
+            { when: "T+2w", text: "Subscription upsell email (7-14d post first purchase)", owner: "Email" },
+            { when: "T+4w", text: "Score email KPIs vs benchmark", owner: "Email" }
+          ],
+          kpis: [
+            { metric: "Unsubscribe rate", floor: ">0.5%", good: "<0.3%", great: "<0.15%" }
+          ],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "sms", name: "SMS", tier: 2, icon: "💬",
+      summary: "Higher CTR, lower volume than email. Use for VIP + last call.",
+      phases: {
+        pre: {
+          summary: "Segment list. Tease.",
+          howToThink: "SMS is more intimate than email — every message disrupts. Use sparingly. Pre-launch: ONE teaser to subscribers. Save the volume for launch wave + last call.",
+          tasks: [
+            { when: "T-4w", text: "SMS list segmentation (opt-in, recent buyer, browser)", owner: "Email" },
+            { when: "T-1w", text: "SMS teaser sends (one only)", owner: "Email" }
+          ],
+          kpis: [
+            { metric: "List growth (via popup)", floor: "<5%", good: "10-20%", great: "25%+" }
+          ],
+          examples: [
+            { type: "sms_template", title: "Pre-launch SMS", text: "'[Brand]: Sneak peek - [product] drops Tuesday. VIP gets 24hr early access tomorrow at 9am. Reply STOP to unsub.'" }
+          ]
+        },
+        launch: {
+          summary: "VIP last call Day -1. Launch send Day 0. Non-clicker Day +1.",
+          howToThink: "SMS launch send at 10am ET (1hr after email wave 1) — captures attention email missed. Non-clicker resend Day +1 if launch performance is below target, otherwise skip (over-messaging burns the list).",
+          tasks: [
+            { when: "Day -1 5pm", text: "Final teaser SMS to full list", owner: "Email" },
+            { when: "Day 0 10am", text: "SMS launch send to subscribed list", owner: "Email" },
+            { when: "Day +1", text: "Non-clicker SMS resend (if performance below target)", owner: "Email" }
+          ],
+          kpis: [
+            { metric: "CTR (launch send)", floor: "<5%", good: "8-15%", great: "18%+" },
+            { metric: "Conversion rate", floor: "<1%", good: "3-5%", great: "8%+" },
+            { metric: "Unsubscribe rate", floor: ">3%", good: "<2%", great: "<1%" }
+          ],
+          examples: [
+            { type: "sms_template", title: "Launch SMS", text: "'[Brand]: [Product] is LIVE. [Hook line]. Shop here: [link]. First 100 get [bonus].'" }
+          ]
+        },
+        post: {
+          summary: "Score. Mostly quiet through retention period.",
+          howToThink: "Post-launch SMS goes mostly silent. One review-request SMS at T+2w for buyers who haven't reviewed yet (gentle nudge). Otherwise, retention is email's job.",
+          tasks: [
+            { when: "T+2w", text: "Review-request SMS to non-reviewers (one only)", owner: "Email" },
+            { when: "T+1w", text: "Score SMS KPIs", owner: "Email" }
+          ],
+          kpis: [],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "quiz", name: "Quiz Funnel", tier: 2, icon: "❓",
+      summary: "'Find your match' funnel. Recommends new SKU as match.",
+      phases: {
+        pre: {
+          summary: "Update logic. Test paths.",
+          howToThink: "Quiz logic should recommend new SKU as the right match for relevant answer paths. Test EVERY answer combination — broken quiz on launch day = lost sales.",
+          tasks: [
+            { when: "T-3w", text: "Quiz updated to recommend new SKU appropriately", owner: "Web" },
+            { when: "T-2w", text: "Quiz tested across all answer paths", owner: "Web" }
+          ],
+          kpis: [],
+          examples: []
+        },
+        launch: {
+          summary: "Featured in nav.",
+          howToThink: "",
+          tasks: [
+            { when: "Day 0", text: "Quiz featured on homepage nav", owner: "Web" }
+          ],
+          kpis: [
+            { metric: "Quiz completion rate", floor: "<30%", good: "50-70%", great: "80%+" },
+            { metric: "Quiz → PDP CTR", floor: "<40%", good: "60-75%", great: "85%+" }
+          ],
+          examples: []
+        },
+        post: { summary: "Score. Iterate questions if performance weak.", howToThink: "", tasks: [{ when: "T+4w", text: "Quiz performance review", owner: "Web" }], kpis: [], examples: [] }
+      }
+    },
+
+    {
+      id: "ldp", name: "Dedicated Landing Page", tier: 2, icon: "📄",
+      summary: "Paid-traffic-optimized LP separate from PDP. Story-driven.",
+      phases: {
+        pre: {
+          summary: "Build. A/B test vs PDP.",
+          howToThink: "Dedicated LP is for paid traffic, NOT organic. Story-driven, conversion-optimized, often with longer-form copy than PDP. A/B test it against PDP — winner gets the paid traffic Day 0.",
+          tasks: [
+            { when: "T-3w", text: "LP built (separate from PDP, conversion-optimized)", owner: "Web" },
+            { when: "T-2w", text: "LP A/B tested vs PDP for paid traffic", owner: "Paid" },
+            { when: "T-1w", text: "Paid traffic routed to winner", owner: "Paid" }
+          ],
+          kpis: [],
+          examples: []
+        },
+        launch: { summary: "Live for paid traffic.", howToThink: "", tasks: [{ when: "Day 0", text: "LP live for Meta + Google paid traffic", owner: "Paid" }], kpis: [{ metric: "LP CVR (paid traffic)", floor: "<2%", good: "4-7%", great: "10%+" }, { metric: "LP CVR uplift vs PDP", floor: "<0%", good: "+20-40%", great: "+50%+" }], examples: [] },
+        post: { summary: "Score. Keep / kill / iterate.", howToThink: "", tasks: [{ when: "T+1w", text: "Score LP CVR vs PDP. Decide: keep / kill / iterate.", owner: "Paid" }], kpis: [], examples: [] }
+      }
+    },
+
+    // ============ TIER 3: TRUST & SEEDING ============
+    {
+      id: "vip", name: "VIP Seeding", tier: 3, icon: "👑",
+      summary: "Hand-delivered to celebrity / doctor / ambassador / investor. Story-led.",
+      phases: {
+        pre: {
+          summary: "Lock list. Pack premium kits. Ship. Lands T-2w.",
+          howToThink: "Three sub-tiers: celebrity (reach), expert (credibility), ambassador (alignment). Premium presentation matters — kit cost $200-2000 each. Hand-written founder note is non-negotiable. NEVER prompt for posts; organic only or it reads transactional.",
+          tasks: [
+            { when: "T-8w", text: "VIP list locked across 3 sub-tiers (30-50 names)", owner: "Founder + PR" },
+            { when: "T-6w", text: "Personalized notes drafted per VIP (founder voice)", owner: "Founder" },
+            { when: "T-4w", text: "VIP kits packed (premium presentation)", owner: "Ops" },
+            { when: "T-3w", text: "Kits ship", owner: "Ops" },
+            { when: "T-2w", text: "Kits land in hands; track organic posts (DO NOT prompt)", owner: "PR + Social" }
+          ],
+          kpis: [
+            { metric: "Organic post rate (celebrity tier)", floor: "<20%", good: "30-50%", great: "60%+" },
+            { metric: "Organic post rate (expert tier)", floor: "<30%", good: "40-60%", great: "70%+" }
+          ],
+          examples: [
+            { type: "kit_structure", title: "VIP kit contents", text: "1. Product (premium packaging). 2. Hand-written founder note. 3. Story card (why this product, what it stands for). 4. Discovery card (here's what's inside, here's how to use). 5. Optional: gift add-on (silk pouch, candle, etc.). NO: marketing collateral, ask-for-post card." }
+          ]
+        },
+        launch: {
+          summary: "VIPs may post around launch (organic). Founder DMs thank-yous.",
+          howToThink: "If a VIP posts on launch day, that's a gift. Repost (with permission), thank publicly + privately, build relationship. If they don't post, fine — relationship is the asset, not the post.",
+          tasks: [
+            { when: "Day 0 → +14d", text: "Founder DMs / texts thank-yous to all VIPs (regardless of post)", owner: "Founder" }
+          ],
+          kpis: [],
+          examples: []
+        },
+        post: {
+          summary: "Convert short-term to long-term ambassadors.",
+          howToThink: "VIPs who engaged become long-term ambassador candidates. 10-30% conversion is the target depending on tier. Ambassador = paid retainer or product comp + sustained content over 6-12 months.",
+          tasks: [
+            { when: "T+4w", text: "Identify long-term ambassador candidates from engaged VIPs", owner: "PR" },
+            { when: "T+6w", text: "Long-term ambassador conversations with top 5", owner: "Founder + PR" }
+          ],
+          kpis: [
+            { metric: "Long-term ambassador conversion", floor: "<5%", good: "10-20%", great: "30%+" }
+          ],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "event", name: "Event / IRL", tier: 3, icon: "🎉",
+      summary: "Launch dinner / popup. Best CPM in marketing if executed well.",
+      phases: {
+        pre: {
+          summary: "Concept. Venue. Guest list. Production.",
+          howToThink: "Event is the highest organic-CPM channel if done right ($1-3 CPM target). Recess, Maude, Foria all run launch dinners. Lead metric is organic CPM (cost / earned post impressions × 1000), NOT attendance. Get the right 100 people, not the most people.",
+          tasks: [
+            { when: "T-12w", text: "Event concept locked (dinner / popup / partner activation)", owner: "Events" },
+            { when: "T-10w", text: "Venue booked", owner: "Events" },
+            { when: "T-8w", text: "Guest list (press + influencers + doctors + ambassadors)", owner: "Events" },
+            { when: "T-6w", text: "Invitations sent", owner: "Events" },
+            { when: "T-4w", text: "Production / catering / photo / video locked", owner: "Events" },
+            { when: "T-2w", text: "Final RSVP confirmation calls", owner: "Events" },
+            { when: "T-1w", text: "Press kits + take-aways prepped", owner: "Events" }
+          ],
+          kpis: [
+            { metric: "Press / influencer attendance", floor: "<3", good: "5-15", great: "20+" }
+          ],
+          examples: [
+            { type: "event_structure", title: "Launch dinner — proven format", text: "30-50 person seated dinner. Founder welcome (5min). Surprise + delight: VIP gift bag. Photo moment with product. Optional: pelvic floor PT or expert speaks (10min). Music. Walk-aways: high-quality kit. Aim 2-3 hours, end early enough that posts go up that night." }
+          ]
+        },
+        launch: {
+          summary: "Event runs in T-1w to T+1w window. Track posts.",
+          howToThink: "Event itself is logistics. Post-event: track every organic post that mentions the brand, count impressions, calculate CPM. $30K dinner with 150 attendees and 300 posts averaging 50K impressions = 15M impressions = $2 CPM. Beats paid Meta by 3-5x.",
+          tasks: [
+            { when: "Event day", text: "Execute event smoothly", owner: "Events" },
+            { when: "Event +1d to +7d", text: "Track organic posts from attendees", owner: "Social" }
+          ],
+          kpis: [
+            { metric: "Organic CPM (cost / earned impressions × 1000)", floor: ">$5 kill", good: "$1-3", great: "<$1 (Recess-tier)" },
+            { metric: "Earned content posts (organic)", floor: "<30", good: "100-200", great: "300+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Calculate CPM. Build for next event.",
+          howToThink: "If CPM beat $3, this becomes the always-on channel for category permission. If CPM > $5, the format needs work (wrong guest list, wrong production budget, no shareable moments).",
+          tasks: [
+            { when: "T+2w", text: "Calculate organic CPM; decide if event becomes recurring", owner: "Events" }
+          ],
+          kpis: [],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "expert", name: "Expert / Clinical Content", tier: 3, icon: "👩‍⚕️",
+      summary: "Doctor / PT / therapist. Highest-trust voice in wellness/intimate.",
+      phases: {
+        pre: {
+          summary: "Contract experts. Brief. Shoot. Publish pre-launch.",
+          howToThink: "1 doctor video = 10x trust signal of brand video. 3-5 experts is enough. They become quotable for press. Content publishes T-2w as warm-up signal — by launch day, the trust groundwork is laid.",
+          tasks: [
+            { when: "T-8w", text: "Expert partners identified + contracted (3-5)", owner: "PR + Creative" },
+            { when: "T-6w", text: "Briefs delivered (talking points aligned)", owner: "PR" },
+            { when: "T-4w", text: "Content shot (3+ pieces per expert)", owner: "Creative" },
+            { when: "T-2w", text: "Content publishes (pre-launch warm-up)", owner: "Social" }
+          ],
+          kpis: [
+            { metric: "Expert content pieces", floor: "<2", good: "3-5", great: "6+" }
+          ],
+          examples: [
+            { type: "format", title: "Expert content formats", text: "1. Q&A interview (founder asks expert). 2. Educational explainer (expert solo, 60-90s). 3. Product demonstration (expert reviews + uses). 4. Common myths debunked. Aim 3 of these per expert." }
+          ]
+        },
+        launch: {
+          summary: "Amplify in launch wave. Quote bank deployed in PR responses.",
+          howToThink: "Expert content gets featured in launch email + social. PR pubs cite expert quotes — your quote bank is journalism gold during the coverage cycle.",
+          tasks: [
+            { when: "Day 0", text: "Expert content featured in launch email + social", owner: "Social" },
+            { when: "Day 0 → +14d", text: "Expert quote bank deployed in 5+ press stories", owner: "PR" }
+          ],
+          kpis: [
+            { metric: "Press placements citing expert", floor: "<1", good: "3-5", great: "6+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Long-term clinical partnerships.",
+          howToThink: "Best experts become recurring clinical advisors. Pay them retainer. They become the trust layer for every future launch.",
+          tasks: [
+            { when: "T+4w", text: "Top 2 experts moved to recurring retainer", owner: "PR + Founder" }
+          ],
+          kpis: [],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "founder", name: "Founder POV", tier: 3, icon: "🎤",
+      summary: "Founder is the brand. Cocokind / Maude / Honey Pot precedent.",
+      phases: {
+        pre: {
+          summary: "Brand-story video. Founder content publishes T-2w.",
+          howToThink: "Founder is the highest-leverage trust asset HN has. Brand-story video (3-5min) is the single most-shared piece of content in launch window. Founder TikTok cadence ramps T-2w.",
+          tasks: [
+            { when: "T-8w", text: "Founder brand-story video shot", owner: "Creative" },
+            { when: "T-2w", text: "Founder POV content publishes (founder's why)", owner: "Founder + Social" }
+          ],
+          kpis: [
+            { metric: "Founder content engagement rate", floor: "<2%", good: "4-7%", great: "10%+" }
+          ],
+          examples: [
+            { type: "video_structure", title: "Founder brand-story video — 3-5min", text: "1. Hook: the moment you knew (15s). 2. The problem you saw (45s). 3. What you tried first that didn't work (30s). 4. The breakthrough (45s). 5. Why this product (45s). 6. What you hope for the customer (30s). End on customer outcome, not product features." }
+          ]
+        },
+        launch: {
+          summary: "Founder leads launch comms. DMs, IG Live, podcast cross-promo.",
+          howToThink: "Day 0 the founder IS the brand. 4-6 hours in DMs + IG Live + responding to every single press request. This is non-delegable.",
+          tasks: [
+            { when: "Day 0", text: "Founder leads launch comms (DMs, IG Live, podcast cross-promo)", owner: "Founder" },
+            { when: "Day 0 → +14d", text: "Founder behind-scenes / customer reactions content", owner: "Founder" }
+          ],
+          kpis: [
+            { metric: "Brand search lift attributed to founder content", floor: "flat", good: "+10-20%", great: "+40%+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Retrospective content. Customer voice amplification.",
+          howToThink: "Post-launch founder content shifts to retrospective: 'here's what week 1 looked like', 'here's what surprised us', 'here's what customers said'. This sustains the moment without requiring new product news.",
+          tasks: [
+            { when: "T+1w", text: "Founder retrospective content (week 1 reactions)", owner: "Founder" },
+            { when: "T+4w", text: "Founder + customer voice content (review screenshots)", owner: "Founder" }
+          ],
+          kpis: [],
+          examples: []
+        }
+      }
+    },
+
+    // ============ TIER 4: AMPLIFICATION ============
+    {
+      id: "reviews", name: "Reviews Engine", tier: 4, icon: "⭐",
+      summary: "LOAD-BEARING for 3.5★ gate. Verified-buyer filter ON. Seeded reviews excluded from gate.",
+      phases: {
+        pre: {
+          summary: "Configure platform. Trigger built. Dashboard live.",
+          howToThink: "This channel produces the data that scores the launch's success. Without it, the 3.5★ gate is unmeasurable. Verified-buyer filter must be ON. Seeded UGC reviews count for SOCIAL PROOF (PDP visual signal) but NOT for the 3.5★ gate (which uses verified buyers only). Set up tag system before launch: fit / scent / performance / packaging / instructions / durability.",
+          tasks: [
+            { when: "T-4w", text: "Reviews platform configured (Yotpo/Junip/Okendo) — verified-buyer filter ON", owner: "Reviews" },
+            { when: "T-3w", text: "Post-purchase email/SMS trigger built (4-7 days after delivery)", owner: "Email" },
+            { when: "T-2w", text: "Insert card with QR → review request printed", owner: "Ops" },
+            { when: "T-2w", text: "Reviews dashboard built (verified-buyer 3.5★ trajectory)", owner: "Reviews" },
+            { when: "T-1w", text: "Review incentive logic locked (small thank-you, NOT pay-for-positive)", owner: "Reviews" }
+          ],
+          kpis: [
+            { metric: "Dashboard live before launch", floor: "no", good: "yes (verified-buyer filter on)", great: "yes + tag system pre-set" }
+          ],
+          examples: [
+            { type: "dashboard_spec", title: "Reviews dashboard fields", text: "Total reviews (all). Verified-buyer reviews (only count for 3.5★ gate). Avg rating (verified). Distribution 1-5. Tag breakdown (fit, scent, performance, packaging, instructions, durability). Trajectory line: weeks since launch × rating × count." }
+          ]
+        },
+        launch: {
+          summary: "Trigger fires Day +1. First wave reviews land T+1w.",
+          howToThink: "Post-purchase trigger fires 4-7 days after delivery (NOT after order — wait until they've received and used). First wave of reviews lands T+1w. Tag every review against the taxonomy as it comes in.",
+          tasks: [
+            { when: "Day +1", text: "Post-purchase trigger fires for Day-0 buyers", owner: "Email" },
+            { when: "Day 0 → +7d", text: "UGC seeded reviews go live on PDP (social proof — NOT for 3.5★)", owner: "Reviews" }
+          ],
+          kpis: [
+            { metric: "Review request open rate", floor: "<30%", good: "45-60%", great: "70%+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "3.5★ GATE SCORED at T+6w. Decision: PROVEN / MARGINAL / FAIL / INCONCLUSIVE.",
+          howToThink: "This is the most important deliverable in the entire playbook. Mid-window check at T+4w — if trending below 3.0★, pause paid spend. Final scoring at T+6w with operational signals (return rate, refund rate, 60-day repeat) as co-equal gates. A 3.5★ product with 25% return rate is NOT proven. All co-equal gates must clear.",
+          tasks: [
+            { when: "T+1w", text: "First verified reviews land (target 15-25)", owner: "Reviews" },
+            { when: "T+2w", text: "Tag system applied to all reviews", owner: "Reviews + CS" },
+            { when: "T+4w", text: "MID-WINDOW CHECK: 3.5★ trajectory healthy? Pause paid if trending below 3.0", owner: "Founder + Reviews" },
+            { when: "T+6w", text: "FINAL 3.5★ GATE SCORED: PROVEN / MARGINAL / FAIL / INCONCLUSIVE", owner: "Founder" },
+            { when: "T+6w", text: "Operational signals scored (return / refund / 60-day repeat)", owner: "Founder + CS" }
+          ],
+          kpis: [
+            { metric: "Review submission rate (% of buyers)", floor: "<5%", good: "10-20%", great: "25%+" },
+            { metric: "Verified-buyer reviews count by T+6w", floor: "<30 (INCONCLUSIVE)", good: "50-150", great: "200+" },
+            { metric: "Verified-buyer review average", floor: "<3.0 (FAIL)", good: "3.5-4.4 (PROVEN)", great: "4.5+" },
+            { metric: "Return rate (operational gate)", floor: ">12%", good: "5-8%", great: "<5%" },
+            { metric: "60-day repeat rate (operational gate)", floor: "<10%", good: "15-25%", great: "30%+" }
+          ],
+          examples: [
+            { type: "decision_tree", title: "3.5★ Gate decision logic", text: "PROVEN: 3.5+ stars AND 50+ verified reviews AND return rate <8% AND 60-day repeat >15% → ship to always-on. MARGINAL: 3.0-3.4 stars OR ops signals borderline → tag negative reviews; if 60%+ concentrate in fixable area (packaging, instructions) → patch. FAIL: <3.0 stars OR ops signals flag core issue → product back to design. INCONCLUSIVE: <30 reviews after 6 weeks → run launch demand-gen 4 more weeks." }
+          ]
+        }
+      }
+    },
+
+    {
+      id: "affiliate", name: "Affiliate / Publisher", tier: 4, icon: "🤝",
+      summary: "Top publishers (zenify, bestadulttoys). Commission bump during launch.",
+      phases: {
+        pre: {
+          summary: "Identify. Bump commission. Seed.",
+          howToThink: "Top 10 publishers drive 80% of affiliate revenue. Bump commission from 15% → 20% during launch window. Hero codes per affiliate. Ship seed kits.",
+          tasks: [
+            { when: "T-6w", text: "Top 10 publishers identified", owner: "Affiliate" },
+            { when: "T-4w", text: "Commission bump locked (15% → 20% during launch)", owner: "Affiliate" },
+            { when: "T-3w", text: "Hero codes + dedicated landing pages for top affiliates", owner: "Affiliate" },
+            { when: "T-2w", text: "Seed kits to top 10 affiliates", owner: "Ops" }
+          ],
+          kpis: [],
+          examples: []
+        },
+        launch: {
+          summary: "Bump active. Mid-point check Day +4.",
+          howToThink: "",
+          tasks: [
+            { when: "Day 0", text: "Commission bump active", owner: "Affiliate" },
+            { when: "Day +4", text: "Affiliate surge mid-point check", owner: "Affiliate" }
+          ],
+          kpis: [
+            { metric: "Affiliate revenue (% of launch revenue)", floor: "<5%", good: "10-20%", great: "25%+" },
+            { metric: "Top affiliate revenue concentration", floor: ">80% (1 partner)", good: "40-60%", great: "<40% (diversified)" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "End bump or transition to always-on.",
+          howToThink: "If a publisher drove >$10K in launch window, transition to always-on relationship at standard commission. Otherwise, retire the launch surge.",
+          tasks: [
+            { when: "T+2w", text: "End commission bump (or transition to always-on)", owner: "Affiliate" }
+          ],
+          kpis: [],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "referral", name: "Referral Program", tier: 4, icon: "🔗",
+      summary: "Customer-to-customer. Bonus during launch window.",
+      phases: {
+        pre: {
+          summary: "Configure launch-window bonus.",
+          howToThink: "For new product launches, existing customers get bonus rewards (2x points or $X credit) for referring during the window. Referred friend gets launch incentive (free shipping, sample, $X off). Drives velocity from your most-trusted source: real users.",
+          tasks: [
+            { when: "T-4w", text: "Referral program audit (existing program working?)", owner: "Email" },
+            { when: "T-3w", text: "Launch-window bonus logic configured (2x reward / launch incentive)", owner: "Email" },
+            { when: "T-2w", text: "Email to existing buyers re: launch + referral bonus", owner: "Email" }
+          ],
+          kpis: [],
+          examples: [
+            { type: "mechanic", title: "Referral mechanic for new launch", text: "Existing customers: 'Refer a friend during launch week — both get $X off the new [product].' OR '2x your usual reward when they buy [new product].' Friend gets launch-day-only incentive (free shipping or sample with first order)." }
+          ]
+        },
+        launch: {
+          summary: "Featured in email + SMS + post-purchase flow.",
+          howToThink: "",
+          tasks: [
+            { when: "Day 0", text: "Referral mechanic featured in launch comms (email + SMS + post-purchase)", owner: "Email" },
+            { when: "Days 0-14", text: "Referral bonus active", owner: "Email" }
+          ],
+          kpis: [
+            { metric: "Referral revenue (% of launch revenue)", floor: "<2%", good: "5-10%", great: "15%+" },
+            { metric: "Referrer participation rate", floor: "<2%", good: "5-10%", great: "15%+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Retire bonus. Transition to always-on.",
+          howToThink: "",
+          tasks: [
+            { when: "T+2w", text: "End launch-window bonus, transition to always-on", owner: "Email" }
+          ],
+          kpis: [],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "subscription", name: "Subscription / Replenishment", tier: 4, icon: "🔄",
+      summary: "Subscribe-and-save. Convert launch buyers to subscribers within 30d.",
+      phases: {
+        pre: {
+          summary: "Configure on PDP. Build upsell flow.",
+          howToThink: "Lube is replenishable. AG1 / Ritual built businesses on subscription from Day 1. Convert launch buyers to subscribers within 30 days = 'first impression' window for retention. Discount 10-15% off retail.",
+          tasks: [
+            { when: "T-4w", text: "Subscription option configured on PDP", owner: "Web" },
+            { when: "T-2w", text: "Subscribe-and-save discount locked (10-15% off)", owner: "Web" },
+            { when: "T-1w", text: "Post-purchase upsell to subscription configured", owner: "Email" }
+          ],
+          kpis: [],
+          examples: []
+        },
+        launch: {
+          summary: "Pushed in PDP + post-purchase flow.",
+          howToThink: "",
+          tasks: [
+            { when: "Day 0", text: "Subscription pushed in PDP + post-purchase flow", owner: "Web + Email" }
+          ],
+          kpis: [
+            { metric: "Subscription % of launch orders", floor: "<5%", good: "15-25%", great: "35%+" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Score conversion. Test save-flow (pause/skip/cancel).",
+          howToThink: "",
+          tasks: [
+            { when: "T+2w", text: "First subscription conversion data scored", owner: "Email" },
+            { when: "T+30d", text: "Subscription save flow (pause / skip / cancel) tested", owner: "Email" }
+          ],
+          kpis: [
+            { metric: "Subscription churn (90 days)", floor: ">40%", good: "20-30%", great: "<20%" }
+          ],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "loyalty", name: "Loyalty Program", tier: 4, icon: "💎",
+      summary: "Bonus points for new launch.",
+      phases: {
+        pre: {
+          summary: "Configure 2x bonus.",
+          howToThink: "",
+          tasks: [
+            { when: "T-3w", text: "Loyalty bonus for new launch (2x points) configured", owner: "Email" }
+          ],
+          kpis: [],
+          examples: []
+        },
+        launch: {
+          summary: "Live.",
+          howToThink: "",
+          tasks: [
+            { when: "Day 0", text: "Loyalty bonus live", owner: "Email" }
+          ],
+          kpis: [
+            { metric: "Loyalty member % of launch revenue", floor: "<15%", good: "25-40%", great: "50%+" }
+          ],
+          examples: []
+        },
+        post: { summary: "Retire bonus.", howToThink: "", tasks: [{ when: "T+2w", text: "End bonus, transition to always-on", owner: "Email" }], kpis: [], examples: [] }
+      }
+    },
+
+    // ============ TIER 5: FOUNDATION ============
+    {
+      id: "inventory", name: "Inventory & 3PL", tier: 5, icon: "📦",
+      summary: "Forecast. Manufacture. Land at 3PL with 7-day buffer.",
+      phases: {
+        pre: {
+          summary: "Forecast. PO. Ship to 3PL.",
+          howToThink: "Inventory is the most operational, least forgiving channel. Stockout on launch day kills momentum. 7-day buffer at 3PL is the minimum. Demand forecast in 3 scenarios (small / medium / big) — over-order by 20% on the most likely scenario.",
+          tasks: [
+            { when: "T-12w", text: "Demand forecast (small / medium / big scenarios)", owner: "Ops" },
+            { when: "T-10w", text: "Manufacturing PO placed", owner: "Ops" },
+            { when: "T-6w", text: "Inventory shipping to 3PL", owner: "Ops" },
+            { when: "T-4w", text: "Inventory landed at 3PL", owner: "Ops" },
+            { when: "T-2w", text: "7-day buffer confirmed (no stockout risk through Day +7)", owner: "Ops" },
+            { when: "T-1w", text: "Packaging + insert cards stocked", owner: "Ops" }
+          ],
+          kpis: [
+            { metric: "Forecast accuracy (actual vs forecast)", floor: "<60%", good: "80-95%", great: "95%+" }
+          ],
+          examples: []
+        },
+        launch: {
+          summary: "Live tracking. Daily stock checks.",
+          howToThink: "",
+          tasks: [
+            { when: "Day 0", text: "Live inventory tracking dashboard", owner: "Ops" },
+            { when: "Days 0-14", text: "Daily stock check (alert if <14-day cover)", owner: "Ops" }
+          ],
+          kpis: [
+            { metric: "Stockout days (launch + 30d)", floor: ">0", good: "0", great: "0" }
+          ],
+          examples: []
+        },
+        post: {
+          summary: "Re-order trigger. Reconciliation.",
+          howToThink: "",
+          tasks: [
+            { when: "T+2w", text: "Re-order trigger if velocity >forecast", owner: "Ops" },
+            { when: "T+4w", text: "Inventory reconciliation; excess inventory check", owner: "Ops" }
+          ],
+          kpis: [
+            { metric: "Excess inventory at T+30d (% over forecast)", floor: ">40%", good: "10-25%", great: "<10%" }
+          ],
+          examples: []
+        }
+      }
+    },
+
+    {
+      id: "cs", name: "Customer Service", tier: 5, icon: "💬",
+      summary: "FAQ. Macros. Training. Daily digest to founder.",
+      phases: {
+        pre: {
+          summary: "Train. Load macros. Document escalation.",
+          howToThink: "CS team is the front line for sentiment signal. Daily digest to founder during launch week tells you what's broken before it shows up in reviews.",
+          tasks: [
+            { when: "T-3w", text: "FAQ for new SKU drafted", owner: "CS" },
+            { when: "T-2w", text: "Macros loaded into Gorgias / Zendesk", owner: "CS" },
+            { when: "T-1w", text: "CS team training session", owner: "CS" },
+            { when: "T-1w", text: "Escalation path documented", owner: "CS" }
+          ],
+          kpis: [],
+          examples: []
+        },
+        launch: {
+          summary: "Extended hours. Daily digest to founder.",
+          howToThink: "",
+          tasks: [
+            { when: "Day 0", text: "Extended CS hours (cover 9am-9pm ET)", owner: "CS" },
+            { when: "Days 0-7", text: "Daily CS digest to founder (top 5 issues + sentiment)", owner: "CS" }
+          ],
+          kpis: [
+            { metric: "First-response time", floor: ">4hr", good: "<2hr", great: "<30min" },
+            { metric: "Negative sentiment rate (% of tickets)", floor: ">15%", good: "5-10%", great: "<5%" }
+          ],
+          examples: []
+        },
+        post: { summary: "Retro. Macro updates.", howToThink: "", tasks: [{ when: "T+2w", text: "CS retro; macro updates for next launch", owner: "CS" }], kpis: [{ metric: "CS resolution rate (first contact)", floor: "<60%", good: "75-85%", great: "90%+" }], examples: [] }
+      }
+    },
+
+    {
+      id: "raci", name: "Internal RACI", tier: 5, icon: "👥",
+      summary: "One owner per channel. Daily standup during launch week.",
+      phases: {
+        pre: {
+          summary: "Sign off RACI. Calendar standups.",
+          howToThink: "Without owner per row, the playbook is a wishlist. RACI = Responsible / Accountable / Consulted / Informed. One name per channel. Backup name. Decision rights documented.",
+          tasks: [
+            { when: "T-12w", text: "RACI signed off (owner + backup per channel)", owner: "Founder" },
+            { when: "T-2w", text: "Daily standup calendared (Day -1 to Day +4, 9am, 15min)", owner: "Founder" }
+          ],
+          kpis: [],
+          examples: [
+            { type: "raci_template", title: "RACI fields per channel", text: "Channel | Owner (R+A) | Backup | Decision rights (what requires founder approval). Example: Meta Ads | [name] | [name] | Spend changes >$1K/day = founder approval." }
+          ]
+        },
+        launch: {
+          summary: "Daily standup at 9am, 15min. Issues surface here.",
+          howToThink: "",
+          tasks: [
+            { when: "Day -1 to +4 9am", text: "Daily standup (15 min) — status across all channels", owner: "Founder + leads" }
+          ],
+          kpis: [],
+          examples: []
+        },
+        post: {
+          summary: "T+6w retro. 90 minutes. Score 3.5★ gate.",
+          howToThink: "",
+          tasks: [
+            { when: "T+6w", text: "Retro (90 min) — score 3.5★ gate, cuts/keeps for next launch", owner: "Founder + leads" }
+          ],
+          kpis: [],
+          examples: []
+        }
+      }
+    }
+  ]
+};
+
+// ============================================================
+//  APP LOGIC
+// ============================================================
+
+const STATE_KEY = 'hn-app-state-v1';
+const TRACKERS_KEY = 'hn-trackers-v1';
+let state = JSON.parse(localStorage.getItem(STATE_KEY) || '{}');
+let trackers = JSON.parse(localStorage.getItem(TRACKERS_KEY) || '{}');
+let activeTab = 'matrix';
+let activeChannel = PLAYBOOK.channels[0].id;
+let filterChannels = new Set(); // empty = all
+
+// Phase order
+const PHASES = [
+  { id: 'pre', label: 'Pre-launch', cls: 'pre' },
+  { id: 'launch', label: 'Launch', cls: 'launch' },
+  { id: 'post', label: 'Post-launch', cls: 'post' }
+];
+
+const TIER_NAMES = {
+  1: "TIER 1 — DEMAND GENERATION",
+  2: "TIER 2 — CAPTURE & CONVERT",
+  3: "TIER 3 — TRUST & SEEDING",
+  4: "TIER 4 — AMPLIFICATION",
+  5: "TIER 5 — FOUNDATION"
+};
+
+// ============================================================
+// Render Tab 1: Matrix
+function renderMatrix() {
+  const t = document.getElementById('matrix-table');
+  let html = `<thead><tr>
+    <th class="channel-col">Channel</th>
+    <th class="phase-pre">Pre-launch</th>
+    <th class="phase-launch">Launch</th>
+    <th class="phase-post">Post-launch</th>
+  </tr></thead><tbody>`;
+
+  let lastTier = null;
+  for (const ch of PLAYBOOK.channels) {
+    if (ch.tier !== lastTier) {
+      html += `<tr class="tier-row"><td colspan="4">${TIER_NAMES[ch.tier]}</td></tr>`;
+      lastTier = ch.tier;
+    }
+    html += `<tr><td class="channel-name"><span class="icon">${ch.icon}</span>${ch.name}<span class="ch-summary">${ch.summary}</span></td>`;
+    for (const ph of PHASES) {
+      const phase = ch.phases[ph.id];
+      if (!phase || !phase.tasks || phase.tasks.length === 0) {
+        html += `<td class="cell empty">—</td>`;
+        continue;
+      }
+      const tasks = phase.tasks.length;
+      const firstKpi = phase.kpis && phase.kpis[0] ? phase.kpis[0].metric : '';
+      const taskKey = `${ch.id}.${ph.id}`;
+      const done = countDone(ch.id, ph.id);
+      const progressPill = done > 0 ? `<span class="cell-progress">${done}/${tasks}</span>` : '';
+      html += `<td class="cell" data-channel="${ch.id}" data-phase="${ph.id}">
+        <div class="cell-tasks">${phase.summary}</div>
+        ${firstKpi ? `<span class="cell-kpi">📊 ${firstKpi}</span>` : ''}
+        <div>${progressPill} <span style="font-size:11px;color:var(--text-faint)">${tasks} task${tasks!==1?'s':''}</span></div>
+      </td>`;
+    }
+    html += `</tr>`;
+  }
+  html += `</tbody>`;
+  t.innerHTML = html;
+  t.querySelectorAll('td.cell:not(.empty)').forEach(cell => {
+    cell.addEventListener('click', () => openDrawer(cell.dataset.channel, cell.dataset.phase));
+  });
+}
+
+function countDone(channelId, phaseId) {
+  const phase = PLAYBOOK.channels.find(c => c.id === channelId)?.phases[phaseId];
+  if (!phase) return 0;
+  let done = 0;
+  phase.tasks.forEach((_, i) => {
+    const k = `${channelId}.${phaseId}.${i}`;
+    if (state[k] === 'done') done++;
+  });
+  return done;
+}
+
+function totalAllTasks() {
+  let total = 0;
+  PLAYBOOK.channels.forEach(c => {
+    PHASES.forEach(p => { total += (c.phases[p.id]?.tasks?.length || 0); });
+  });
+  return total;
+}
+
+function totalDone() {
+  let done = 0;
+  PLAYBOOK.channels.forEach(c => {
+    PHASES.forEach(p => {
+      (c.phases[p.id]?.tasks || []).forEach((_, i) => {
+        if (state[`${c.id}.${p.id}.${i}`] === 'done') done++;
+      });
+    });
+  });
+  return done;
+}
+
+function updateProgressPill() {
+  document.getElementById('progress-pill').textContent = `${totalDone()} / ${totalAllTasks()} done`;
+}
+
+// ============================================================
+// Drawer
+function openDrawer(channelId, phaseId) {
+  const ch = PLAYBOOK.channels.find(c => c.id === channelId);
+  const phase = ch.phases[phaseId];
+  const phaseLabel = PHASES.find(p => p.id === phaseId).label;
+  const phaseCls = PHASES.find(p => p.id === phaseId).cls;
+
+  document.getElementById('d-phase').textContent = phaseLabel.toUpperCase();
+  document.getElementById('d-phase').className = 'dh-tag ' + phaseCls;
+  document.getElementById('d-title').textContent = ch.icon + ' ' + ch.name;
+  document.getElementById('d-channel').textContent = ch.summary;
+
+  const body = document.getElementById('d-body');
+  let html = '';
+
+  if (phase.howToThink) {
+    html += `<h4>How to think about it</h4><div class="think-box">${phase.howToThink}</div>`;
+  }
+
+  html += `<h4>What to do (${phase.tasks.length} task${phase.tasks.length!==1?'s':''})</h4><ul class="tasks">`;
+  phase.tasks.forEach((task, i) => {
+    const k = `${channelId}.${phaseId}.${i}`;
+    const stateVal = state[k] || '';
+    html += `<li>
+      <span class="multi-cb ${stateVal}" data-key="${k}">${cbGlyph(stateVal)}</span>
+      <span class="when">${task.when}</span>
+      <span class="text"><strong>${task.text}</strong>${task.owner ? `<br><span class="owner">Owner: ${task.owner}</span>` : ''}</span>
+    </li>`;
+  });
+  html += `</ul>`;
+
+  if (phase.kpis && phase.kpis.length) {
+    html += `<h4>KPIs (Floor / Good / Great)</h4><table class="kpi"><tr><th>Metric</th><th>Floor (kill)</th><th>Good</th><th>Great</th></tr>`;
+    phase.kpis.forEach(k => {
+      html += `<tr><td><strong>${k.metric}</strong></td><td class="floor">${k.floor}</td><td class="good">${k.good}</td><td class="great">${k.great}</td></tr>`;
+    });
+    html += `</table>`;
+  }
+
+  if (phase.examples && phase.examples.length) {
+    html += `<h4>Examples</h4>`;
+    phase.examples.forEach(ex => {
+      html += `<div class="example">
+        <div class="ex-type">${ex.type.replace(/_/g, ' ')}</div>
+        <div class="ex-title">${ex.title}</div>
+        ${ex.text ? `<div class="ex-text">${ex.text}</div>` : ''}
+        ${ex.type === 'screenshot' ? `<div class="placeholder">📷 Drop screenshot here<br><span style="font-size:11px">(replace this placeholder when you have a real example)</span></div>` : ''}
+      </div>`;
+    });
+  }
+
+  body.innerHTML = html;
+
+  // Wire checkbox toggles
+  body.querySelectorAll('.multi-cb').forEach(cb => {
+    cb.addEventListener('click', () => cycleCb(cb.dataset.key, cb));
+  });
+
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+  renderMatrix(); // refresh progress pills
+  renderChecklists();
+  updateProgressPill();
+}
+
+function cbGlyph(s) {
+  if (s === 'done') return '✓';
+  if (s === 'partial') return '◐';
+  if (s === 'skipped') return '✗';
+  return '';
+}
+
+function cycleCb(key, cbEl) {
+  const cur = state[key] || '';
+  const next = { '': 'done', 'done': 'partial', 'partial': 'skipped', 'skipped': '' }[cur];
+  if (next) state[key] = next; else delete state[key];
+  localStorage.setItem(STATE_KEY, JSON.stringify(state));
+  cbEl.className = 'multi-cb ' + next;
+  cbEl.textContent = cbGlyph(next);
+  // Also update parent li class for strikethrough
+  const li = cbEl.closest('li');
+  if (li) {
+    li.classList.remove('done', 'partial', 'skipped');
+    if (next) li.classList.add(next);
+  }
+  updateProgressPill();
+}
+
+// ============================================================
+// Tab 2: Checklists
+function renderChecklists() {
+  // Filter chips
+  const fb = document.getElementById('filter-bar');
+  if (fb.querySelectorAll('.chip').length === 0) {
+    PLAYBOOK.channels.forEach(ch => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.textContent = ch.icon + ' ' + ch.name;
+      chip.dataset.id = ch.id;
+      chip.addEventListener('click', () => {
+        if (filterChannels.has(ch.id)) { filterChannels.delete(ch.id); chip.classList.remove('active'); }
+        else { filterChannels.add(ch.id); chip.classList.add('active'); }
+        renderChecklists();
+      });
+      fb.appendChild(chip);
+    });
+    const allBtn = document.createElement('span');
+    allBtn.className = 'chip';
+    allBtn.textContent = 'Clear';
+    allBtn.style.background = '#fee2e2';
+    allBtn.addEventListener('click', () => {
+      filterChannels.clear();
+      fb.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      renderChecklists();
+    });
+    fb.appendChild(allBtn);
+  }
+
+  PHASES.forEach(ph => {
+    const list = document.getElementById(ph.id + '-list');
+    let count = 0;
+    let html = '';
+    PLAYBOOK.channels.forEach(ch => {
+      if (filterChannels.size > 0 && !filterChannels.has(ch.id)) return;
+      const phase = ch.phases[ph.id];
+      if (!phase || !phase.tasks || phase.tasks.length === 0) return;
+      html += `<div class="ch-group"><div class="ch-name">${ch.icon} ${ch.name}</div><ul>`;
+      phase.tasks.forEach((task, i) => {
+        const k = `${ch.id}.${ph.id}.${i}`;
+        const sv = state[k] || '';
+        count++;
+        html += `<li class="${sv}">
+          <span class="multi-cb ${sv}" data-key="${k}">${cbGlyph(sv)}</span>
+          <span class="when">${task.when}</span>
+          <span class="text">${task.text}</span>
+        </li>`;
+      });
+      html += `</ul></div>`;
+    });
+    list.innerHTML = html;
+    document.getElementById(ph.id + '-count').textContent = `(${count})`;
+    list.querySelectorAll('.multi-cb').forEach(cb => {
+      cb.addEventListener('click', () => cycleCb(cb.dataset.key, cb));
+    });
+  });
+}
+
+// ============================================================
+// Tab 3: Channel Playbooks
+function renderPlaybookNav() {
+  const nav = document.getElementById('playbook-nav');
+  let lastTier = null;
+  let html = '';
+  PLAYBOOK.channels.forEach(ch => {
+    if (ch.tier !== lastTier) {
+      html += `<div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-faint);padding:8px 14px 4px 14px;font-weight:600">${TIER_NAMES[ch.tier]}</div>`;
+      lastTier = ch.tier;
+    }
+    html += `<button data-id="${ch.id}" ${ch.id === activeChannel ? 'class="active"' : ''}>${ch.icon} ${ch.name}</button>`;
+  });
+  nav.innerHTML = html;
+  nav.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeChannel = btn.dataset.id;
+      renderPlaybookNav();
+      renderPlaybookContent();
+    });
+  });
+}
+
+function renderPlaybookContent() {
+  const c = document.getElementById('playbook-content');
+  const ch = PLAYBOOK.channels.find(x => x.id === activeChannel);
+  let html = `<h2>${ch.icon} ${ch.name}</h2><div class="ch-summary">${ch.summary}</div>`;
+  PHASES.forEach(ph => {
+    const phase = ch.phases[ph.id];
+    if (!phase) return;
+    const isOpen = ph.id === 'pre' ? 'open' : '';
+    html += `<details class="phase-block ${ph.cls}" ${isOpen}>
+      <summary>${ph.label.toUpperCase()} — ${phase.summary || ''}</summary>
+      <div class="phase-body">`;
+    if (phase.howToThink) html += `<div class="think-box" style="margin-bottom:16px">${phase.howToThink}</div>`;
+    html += `<h4 style="font-size:13px;text-transform:uppercase;color:var(--text-soft);margin-top:16px">Tasks</h4><ul class="tasks">`;
+    phase.tasks.forEach((task, i) => {
+      const k = `${ch.id}.${ph.id}.${i}`;
+      const sv = state[k] || '';
+      html += `<li><span class="multi-cb ${sv}" data-key="${k}">${cbGlyph(sv)}</span><span class="when">${task.when}</span><span class="text">${task.text}${task.owner ? `<br><span class="owner">Owner: ${task.owner}</span>` : ''}</span></li>`;
+    });
+    html += `</ul>`;
+    if (phase.kpis && phase.kpis.length) {
+      html += `<h4 style="font-size:13px;text-transform:uppercase;color:var(--text-soft);margin-top:16px">KPIs</h4><table class="kpi"><tr><th>Metric</th><th>Floor</th><th>Good</th><th>Great</th></tr>`;
+      phase.kpis.forEach(k => {
+        html += `<tr><td><strong>${k.metric}</strong></td><td class="floor">${k.floor}</td><td class="good">${k.good}</td><td class="great">${k.great}</td></tr>`;
+      });
+      html += `</table>`;
+    }
+    if (phase.examples && phase.examples.length) {
+      html += `<h4 style="font-size:13px;text-transform:uppercase;color:var(--text-soft);margin-top:16px">Examples</h4>`;
+      phase.examples.forEach(ex => {
+        html += `<div class="example"><div class="ex-type">${ex.type.replace(/_/g,' ')}</div><div class="ex-title">${ex.title}</div>${ex.text?`<div class="ex-text">${ex.text}</div>`:''}${ex.type==='screenshot'?`<div class="placeholder">📷 Drop screenshot here</div>`:''}</div>`;
+      });
+    }
+    html += `</div></details>`;
+  });
+  c.innerHTML = html;
+  c.querySelectorAll('.multi-cb').forEach(cb => {
+    cb.addEventListener('click', () => cycleCb(cb.dataset.key, cb));
+  });
+}
+
+// ============================================================
+// Tab 4: Launch Tracker
+function renderTrackerForm() {
+  const fb = document.getElementById('t-channels');
+  if (fb.children.length === 0) {
+    PLAYBOOK.channels.forEach(ch => {
+      const chip = document.createElement('span');
+      chip.className = 'chip active';
+      chip.textContent = ch.icon + ' ' + ch.name;
+      chip.dataset.id = ch.id;
+      chip.addEventListener('click', () => chip.classList.toggle('active'));
+      fb.appendChild(chip);
+    });
+  }
+  document.getElementById('t-build').addEventListener('click', buildTracker);
+  document.getElementById('t-clear').addEventListener('click', () => {
+    document.getElementById('t-output').innerHTML = '';
+    document.getElementById('t-name').value = '';
+    document.getElementById('t-date').value = '';
+  });
+}
+
+function buildTracker() {
+  const name = document.getElementById('t-name').value.trim() || 'Untitled launch';
+  const dateStr = document.getElementById('t-date').value;
+  if (!dateStr) { alert('Pick a launch date first.'); return; }
+  const launchDate = new Date(dateStr);
+  const runwayWeeks = parseInt(document.getElementById('t-runway').value);
+
+  const enabledChannels = new Set();
+  document.querySelectorAll('#t-channels .chip').forEach(chip => {
+    if (chip.classList.contains('active')) enabledChannels.add(chip.dataset.id);
+  });
+
+  // Build week buckets: T-runwayWeeks .. T+6w
+  const out = document.getElementById('t-output');
+  let html = `<div style="margin-bottom:16px;color:var(--text-soft);font-size:14px;">
+    <strong>${name}</strong> — Launch <strong>${launchDate.toDateString()}</strong>
+    — ${runwayWeeks}w runway, ${enabledChannels.size} channels enabled
+  </div>`;
+
+  // Map all tasks to weeks based on their "when" string
+  // Pre-launch: T-Xw (X = positive number of weeks before)
+  // Launch: Day -1, Day 0, Days +N
+  // Post: T+Xw
+  const weekBuckets = {}; // weekOffset → { date, tasks: [{channel, phase, task, key, idx}] }
+
+  for (let w = -runwayWeeks; w <= 6; w++) weekBuckets[w] = { offset: w, date: addWeeks(launchDate, w), tasks: [] };
+
+  PLAYBOOK.channels.forEach(ch => {
+    if (!enabledChannels.has(ch.id)) return;
+    PHASES.forEach(ph => {
+      const phase = ch.phases[ph.id];
+      if (!phase || !phase.tasks) return;
+      phase.tasks.forEach((task, i) => {
+        const wk = parseWeek(task.when, ph.id);
+        if (wk === null) return;
+        if (wk < -runwayWeeks) return;
+        if (wk > 6) return;
+        if (!weekBuckets[wk]) weekBuckets[wk] = { offset: wk, date: addWeeks(launchDate, wk), tasks: [] };
+        weekBuckets[wk].tasks.push({ channel: ch, phase: ph, task: task, idx: i });
+      });
+    });
+  });
+
+  // Render
+  Object.values(weekBuckets).sort((a, b) => a.offset - b.offset).forEach(wk => {
+    if (wk.tasks.length === 0) return;
+    let phaseTag = wk.offset < 0 ? 'pre' : (wk.offset === 0 ? 'launch' : 'post');
+    let phaseTagLabel = wk.offset < 0 ? 'PRE' : (wk.offset === 0 ? 'LAUNCH' : 'POST');
+    let weekLabel = wk.offset < 0 ? `T${wk.offset}w` : (wk.offset === 0 ? 'Launch Week' : `T+${wk.offset}w`);
+    let trackerKey = `tracker.${name}`;
+    if (!trackers[trackerKey]) trackers[trackerKey] = {};
+    let dateLabel = wk.date.toDateString().substring(4);
+
+    let html2 = `<details class="tracker-week ${phaseTag}" ${Math.abs(wk.offset) <= 1 ? 'open' : ''}><summary>
+      <div class="week-title"><strong>${weekLabel}</strong> <span style="color:var(--text-faint);font-weight:normal">${dateLabel}</span> <span class="week-tag">${phaseTagLabel}</span></div>
+      <span class="progress" id="tw-${name.replace(/\\s+/g,'_')}-${wk.offset}">${wk.tasks.length} task${wk.tasks.length!==1?'s':''}</span>
+    </summary><div class="week-body"><ul class="tasks">`;
+
+    wk.tasks.forEach(t => {
+      const stKey = `tracker.${name}.${t.channel.id}.${t.phase.id}.${t.idx}`;
+      const sv = trackers[trackerKey][stKey] || '';
+      html2 += `<li class="${sv}"><span class="multi-cb ${sv}" data-tkey="${stKey}" data-tname="${trackerKey}">${cbGlyph(sv)}</span><span class="when">${t.task.when}</span><span class="text">${t.channel.icon} <strong>${t.channel.name}:</strong> ${t.task.text}${t.task.owner?` <span class="owner">(${t.task.owner})</span>`:''}</span></li>`;
+    });
+    html2 += `</ul></div></details>`;
+    html += html2;
+  });
+
+  out.innerHTML = html;
+  out.querySelectorAll('.multi-cb').forEach(cb => {
+    cb.addEventListener('click', () => {
+      const tk = cb.dataset.tkey;
+      const tn = cb.dataset.tname;
+      if (!trackers[tn]) trackers[tn] = {};
+      const cur = trackers[tn][tk] || '';
+      const next = { '': 'done', 'done': 'partial', 'partial': 'skipped', 'skipped': '' }[cur];
+      if (next) trackers[tn][tk] = next; else delete trackers[tn][tk];
+      localStorage.setItem(TRACKERS_KEY, JSON.stringify(trackers));
+      cb.className = 'multi-cb ' + next;
+      cb.textContent = cbGlyph(next);
+      const li = cb.closest('li');
+      if (li) { li.classList.remove('done','partial','skipped'); if (next) li.classList.add(next); }
+    });
+  });
+}
+
+function addWeeks(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n * 7);
+  return d;
+}
+
+function parseWeek(when, phase) {
+  // Returns week offset (negative = pre, 0 = launch week, positive = post)
+  if (!when) return null;
+  const w = when.toLowerCase();
+  // T-Nw
+  let m = w.match(/t-(\d+)w/);
+  if (m) return -parseInt(m[1]);
+  // T+Nw
+  m = w.match(/t\+(\d+)w/);
+  if (m) return parseInt(m[1]);
+  // Day -1, Day 0, Day +N, Days +N to +M
+  if (/day -1|day -1/.test(w)) return 0;
+  if (/day 0|day 0/.test(w)) return 0;
+  m = w.match(/day \+(\d+)/);
+  if (m) {
+    const d = parseInt(m[1]);
+    return d <= 7 ? 0 : Math.floor(d / 7);
+  }
+  m = w.match(/days? \+\d+ to \+(\d+)/);
+  if (m) {
+    const d = parseInt(m[1]);
+    return d <= 7 ? 0 : Math.floor(d / 7);
+  }
+  // Fallback by phase
+  if (phase === 'pre') return -2;
+  if (phase === 'launch') return 0;
+  if (phase === 'post') return 1;
+  return null;
+}
+
+// ============================================================
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    activeTab = tab.dataset.tab;
+  });
+});
+
+// Drawer close handlers
+document.getElementById('d-close').addEventListener('click', closeDrawer);
+document.getElementById('drawer-overlay').addEventListener('click', closeDrawer);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+// Reset button
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if (confirm('Clear all checks across Matrix, Checklists, Playbooks? (Tracker data NOT affected.)')) {
+    state = {};
+    localStorage.removeItem(STATE_KEY);
+    renderMatrix();
+    renderChecklists();
+    renderPlaybookContent();
+    updateProgressPill();
+  }
+});
+
+// ============================================================
+// THIS MONTH TAB — May 2026 focused execution view
+// ============================================================
+function renderThisMonth() {
+  const today = new Date();
+  const monthIdx = today.getMonth(); // 0-indexed, May = 4
+  const monthName = today.toLocaleString('en-US', { month: 'long' });
+  const year = today.getFullYear();
+  const todayStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  // Filter events active in current month
+  const activeEvents = (typeof EVENTS !== 'undefined' ? EVENTS.events : []).filter(e => {
+    const start = new Date(e.startDate);
+    const end = new Date(e.endDate);
+    return (start.getFullYear() === year && start.getMonth() === monthIdx)
+        || (end.getFullYear() === year && end.getMonth() === monthIdx)
+        || (start <= today && end >= today);
+  });
+
+  // Sort by start date
+  activeEvents.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+  // Get type meta for color-coding
+  const types = (typeof EVENTS !== 'undefined' ? EVENTS.types : {});
+
+  // Compute T-X for each event vs today
+  function timeUntil(dateStr) {
+    const d = new Date(dateStr);
+    const diff = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
+    if (diff < 0) return `${Math.abs(diff)} days ago`;
+    if (diff === 0) return `TODAY`;
+    if (diff === 1) return `tomorrow`;
+    if (diff < 7) return `in ${diff} days`;
+    if (diff < 14) return `T-1w (${diff} days)`;
+    if (diff < 21) return `T-2w (${diff} days)`;
+    if (diff < 28) return `T-3w (${diff} days)`;
+    return `in ${Math.ceil(diff / 7)} weeks`;
+  }
+
+  let html = `
+    <div style="background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 100%); padding: 24px 28px; border-radius: 12px; margin-bottom: 24px;">
+      <h2 class="section-title" style="margin: 0 0 6px 0;">🚨 This Month — ${monthName} ${year}</h2>
+      <p style="margin: 0; color: var(--text-soft); font-size: 14px;">Today is <strong>${todayStr}</strong>. Below: every event active this month + week-by-week tasks. Edit tasks in <code>events-data.js</code>.</p>
+    </div>
+
+    <h3 style="margin: 24px 0 12px 0; font-size: 18px;">Active events this month (${activeEvents.length})</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 32px;">
+      ${activeEvents.map(e => {
+        const t = types[e.type] || { color: '#eee', border: '#999', label: 'Event', icon: '📌' };
+        const isLaunch = e.type === 'launch';
+        const dateLabel = e.startDate === e.endDate
+          ? new Date(e.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+          : `${new Date(e.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${new Date(e.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        const tUntil = timeUntil(e.startDate);
+        return `
+          <div style="background: ${t.color}; border-left: 4px solid ${t.border}; padding: 14px 16px; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
+              <div style="font-weight: 700; font-size: 14px;">${t.icon} ${e.name}</div>
+              <span style="font-size: 11px; color: var(--text-soft); white-space: nowrap;">${tUntil}</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-soft); margin-top: 4px;">${dateLabel}</div>
+            ${e.theme ? `<div style="font-size: 12px; color: var(--text-soft); margin-top: 6px; font-style: italic;">${e.theme.substring(0, 120)}${e.theme.length > 120 ? '...' : ''}</div>` : ''}
+          </div>
+        `;
+      }).join('')}
+    </div>
+
+    <h3 style="margin: 32px 0 16px 0; font-size: 18px;">📋 May 2026 — Sale prep checklist (Splashy May)</h3>
+    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">Sale-side prep across all channels. Click each task to mark done.</p>
+
+    <div class="checklist-grid" style="grid-template-columns: 1fr; gap: 12px;">
+      <div class="checklist-col" style="background: white; border: 1px solid var(--border); border-radius: 12px;">
+        <div class="ch-group">
+          <div class="ch-name">🌐 Website</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.website.banner"></span><span class="when">May 11</span><span class="text">Announcement banner update — switch from Mother's Day to Splashy May Sale messaging</span></li>
+            <li><span class="multi-cb" data-key="may.website.hero"></span><span class="when">May 11</span><span class="text">Homepage banner / hero swap to Splashy May creative (designed + staged)</span></li>
+            <li><span class="multi-cb" data-key="may.website.popup"></span><span class="when">May 11</span><span class="text">Pop-up updated with Splashy May offer / VIP early access CTA</span></li>
+            <li><span class="multi-cb" data-key="may.website.bundle"></span><span class="when">May 11</span><span class="text">"Splash Pack" / "Snack & Splash" bundle SKUs configured + tested</span></li>
+          </ul>
+        </div>
+        <div class="ch-group">
+          <div class="ch-name">📱 Meta Ads</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.meta.creative"></span><span class="when">May 4 (TODAY)</span><span class="text">Submit launch creative library: ALL winning concepts duplicated + 5 new concepts (10-20 total)</span></li>
+            <li><span class="multi-cb" data-key="may.meta.audience"></span><span class="when">May 5</span><span class="text">Confirm retargeting audiences seeded (page visitors + cart abandoners + waitlist)</span></li>
+            <li><span class="multi-cb" data-key="may.meta.approval"></span><span class="when">May 7 Thu</span><span class="text">Verify Meta approval (target 90%+); backups queued for any rejected</span></li>
+            <li><span class="multi-cb" data-key="may.meta.test"></span><span class="when">May 8 Fri</span><span class="text">Test purchase: pixel + CAPI fires with NEW SKU product_ids (Blanket, Snack Pack, Lube)</span></li>
+          </ul>
+        </div>
+        <div class="ch-group">
+          <div class="ch-name">🔍 Google Ads</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.google.brand"></span><span class="when">May 5</span><span class="text">Brand search: confirm 95%+ impression share defense (always-on, no big work needed)</span></li>
+            <li><span class="multi-cb" data-key="may.google.youtube"></span><span class="when">May 8 (optional)</span><span class="text">YouTube ad ready (how-to / Splashy May creative) — optional</span></li>
+            <li><span class="multi-cb" data-key="may.google.pmax"></span><span class="when">May 11 (optional)</span><span class="text">PMax product listings updated with new SKUs — optional</span></li>
+          </ul>
+        </div>
+        <div class="ch-group">
+          <div class="ch-name">✉️ Email (3-4 sends through Splashy May)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.email.t1"></span><span class="when">May 4</span><span class="text">Email teaser #1 (warm-up): "Something splashy is coming"</span></li>
+            <li><span class="multi-cb" data-key="may.email.t2"></span><span class="when">May 6</span><span class="text">Email teaser #2: VIP early-access offer</span></li>
+            <li><span class="multi-cb" data-key="may.email.t3"></span><span class="when">May 8</span><span class="text">Final teaser email — "Tomorrow: VIP early access"</span></li>
+            <li><span class="multi-cb" data-key="may.email.vip"></span><span class="when">May 11 9am</span><span class="text">VIP early-access email + SMS fires (24-48hr window)</span></li>
+            <li><span class="multi-cb" data-key="may.email.launch1"></span><span class="when">May 12 9am</span><span class="text">Launch wave 1 (VIP + recent openers)</span></li>
+            <li><span class="multi-cb" data-key="may.email.launch2"></span><span class="when">May 12 12pm</span><span class="text">Launch wave 2 (full list)</span></li>
+            <li><span class="multi-cb" data-key="may.email.nonopen"></span><span class="when">May 12 6pm</span><span class="text">Non-openers resend</span></li>
+            <li><span class="multi-cb" data-key="may.email.snack"></span><span class="when">May 25-26</span><span class="text">Snack Pack ("Dirty Jack") launch wave (same multi-wave pattern)</span></li>
+            <li><span class="multi-cb" data-key="may.email.miami"></span><span class="when">May 28</span><span class="text">Miami Swim Week themed email — sale finale push</span></li>
+          </ul>
+        </div>
+        <div class="ch-group">
+          <div class="ch-name">📲 Social (rest of month: SPLASHY + WET theme)</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.social.calendar"></span><span class="when">May 4</span><span class="text">Content calendar locked: IG (3-5 feed + 5-10 stories) + TikTok (5+ teasers). Theme = Splashy / Wet across rest of month.</span></li>
+            <li><span class="multi-cb" data-key="may.social.daily"></span><span class="when">May 4-31</span><span class="text">Daily 2x cadence (incl. stories) sustained through end of month</span></li>
+            <li><span class="multi-cb" data-key="may.social.mast"></span><span class="when">May 7</span><span class="text">Int'l Masturbation Day post (founder POV / educational)</span></li>
+            <li><span class="multi-cb" data-key="may.social.launch"></span><span class="when">May 12</span><span class="text">Splashy May big launch post + Founder personal post (Waterproof Blanket)</span></li>
+            <li><span class="multi-cb" data-key="may.social.snackcontent"></span><span class="when">May 26</span><span class="text">Snack Pack / Dirty Jack launch content (cheeky humor — leans into the funny)</span></li>
+            <li><span class="multi-cb" data-key="may.social.miami"></span><span class="when">May 28-31</span><span class="text">Miami Swim Week content — pool / beach / swim aesthetic</span></li>
+          </ul>
+        </div>
+        <div class="ch-group">
+          <div class="ch-name">📰 PR / Press</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.pr.kit"></span><span class="when">May 4</span><span class="text">Splashy May press kit ready (one-pager + assets + Lube + Blanket + Snack Pack details)</span></li>
+            <li><span class="multi-cb" data-key="may.pr.samples"></span><span class="when">May 4</span><span class="text">Confirm samples landed at journalists' hands (Blanket especially)</span></li>
+            <li><span class="multi-cb" data-key="may.pr.embargo"></span><span class="when">May 6</span><span class="text">Embargo agreements signed for May 12 launches</span></li>
+            <li><span class="multi-cb" data-key="may.pr.wire"></span><span class="when">May 8</span><span class="text">Press release wired (PR Newswire, scheduled May 12 6am ET)</span></li>
+            <li><span class="multi-cb" data-key="may.pr.lube"></span><span class="when">TBD</span><span class="text">Lube launch PR pitch — DATE PENDING (need to confirm Lube launch date)</span></li>
+            <li><span class="multi-cb" data-key="may.pr.miami"></span><span class="when">May 25</span><span class="text">Miami Swim Week PR angle pitched (HN at Miami Swim, body-positive swim feature)</span></li>
+          </ul>
+        </div>
+        <div class="ch-group">
+          <div class="ch-name">🎥 Creator / UGC + Influencer</div>
+          <ul>
+            <li><span class="multi-cb" data-key="may.creator.approve"></span><span class="when">May 4</span><span class="text">Final approval on creator content for May 12 launch (Blanket)</span></li>
+            <li><span class="multi-cb" data-key="may.creator.whitelist"></span><span class="when">May 7</span><span class="text">Whitelisting / Spark Ads access granted by creators</span></li>
+            <li><span class="multi-cb" data-key="may.creator.snackbrief"></span><span class="when">May 4-10</span><span class="text">Brief Sideshift creators for Snack Pack / Dirty Jack content (cheeky angle)</span></li>
+            <li><span class="multi-cb" data-key="may.creator.miami"></span><span class="when">May 18-25</span><span class="text">Miami Swim Week creator outreach — partner with creators attending swim week</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin: 32px 0 16px 0; font-size: 18px;">🚀 Per-launch checklists</h3>
+    <div style="background: #fff7ed; border: 1px solid #fcd34d; padding: 14px 18px; border-radius: 8px; margin-bottom: 16px; font-size: 13px;">
+      <strong>⚠️ Lube launch date: TBD.</strong> First time you've mentioned Lube as a real May launch — earlier roadmap had Lem Play (Bluetooth) for Jun 4. Placeholder set to <strong>May 19 (Tue)</strong> inside Splashy May. Confirm date or adjust.
+    </div>
+    <div style="display: grid; gap: 12px;">
+      <details class="phase-block pre" open>
+        <summary>🚀 Waterproof Blanket ("Juicy Blanket") — May 12 (T-1w)</summary>
+        <div class="phase-body">
+          <p style="margin: 0 0 12px 0; font-size: 13px; color: var(--text-soft);">All standard launch playbook tasks (Tier 1-5) apply. Most prep should already be done — this is finalize + verify week.</p>
+          <ul class="tasks">
+            <li><span class="multi-cb" data-key="may.blanket.creative"></span><span class="when">May 4</span><span class="text">Submit Meta creative (72hr buffer)</span></li>
+            <li><span class="multi-cb" data-key="may.blanket.pdp"></span><span class="when">May 6</span><span class="text">PDP final + cross-browser test + reviews seeded (50+)</span></li>
+            <li><span class="multi-cb" data-key="may.blanket.test"></span><span class="when">May 8</span><span class="text">Test purchase: pixel + CAPI for Blanket product_id</span></li>
+            <li><span class="multi-cb" data-key="may.blanket.cs"></span><span class="when">May 8</span><span class="text">CS team trained on Blanket FAQ + macros loaded</span></li>
+            <li><span class="multi-cb" data-key="may.blanket.launch"></span><span class="when">May 12</span><span class="text">🚀 LAUNCH DAY — see week 2 below</span></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase-block pre">
+        <summary>🚀 Lube Launch — May 19 (placeholder, confirm date)</summary>
+        <div class="phase-body">
+          <p style="margin: 0 0 12px 0; font-size: 13px; color: var(--text-soft);">Date TBD. Once locked, apply standard launch playbook (T-4w to Day 0+4d). Lube + water = perfect Splashy May fit.</p>
+          <ul class="tasks">
+            <li><span class="multi-cb" data-key="may.lube.confirm"></span><span class="when">May 4</span><span class="text">⚠️ Confirm launch date (currently placeholder May 19)</span></li>
+            <li><span class="multi-cb" data-key="may.lube.creative"></span><span class="when">TBD</span><span class="text">Brief Meta creative + advertorial article</span></li>
+            <li><span class="multi-cb" data-key="may.lube.pdp"></span><span class="when">TBD</span><span class="text">Lube PDP build + reviews seeded</span></li>
+            <li><span class="multi-cb" data-key="may.lube.bundle"></span><span class="when">TBD</span><span class="text">"Wet Set" / "Splash Pack" bundle: Lube + Waterproof Blanket cross-sell</span></li>
+            <li><span class="multi-cb" data-key="may.lube.pr"></span><span class="when">TBD</span><span class="text">PR pitches sent (lube category angle)</span></li>
+            <li><span class="multi-cb" data-key="may.lube.creator"></span><span class="when">TBD</span><span class="text">Sideshift creator content briefed (lube + water cheeky angle)</span></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase-block pre">
+        <summary>🚀 Snack Pack ("Dirty Jack") — May 26 (T-3w)</summary>
+        <div class="phase-body">
+          <p style="margin: 0 0 12px 0; font-size: 13px; color: var(--text-soft);">In active production phase. Cheeky funny content angle = "Dirty Jack" naming.</p>
+          <ul class="tasks">
+            <li><span class="multi-cb" data-key="may.snack.creative"></span><span class="when">May 4-10</span><span class="text">Brief creative team for Snack Pack ads (5-10 winners + 5 new concepts) — funny / cheeky angle</span></li>
+            <li><span class="multi-cb" data-key="may.snack.creator"></span><span class="when">May 5-10</span><span class="text">Brief Sideshift creators (Dirty Jack content angle — humor-forward)</span></li>
+            <li><span class="multi-cb" data-key="may.snack.pdp"></span><span class="when">May 11-15</span><span class="text">Snack Pack PDP build + gallery assets + reviews seeded</span></li>
+            <li><span class="multi-cb" data-key="may.snack.pr"></span><span class="when">May 11-15</span><span class="text">Snack Pack PR pitches sent</span></li>
+            <li><span class="multi-cb" data-key="may.snack.email"></span><span class="when">May 18-25</span><span class="text">Email teaser sequence (3-4 sends pre-launch)</span></li>
+            <li><span class="multi-cb" data-key="may.snack.meta"></span><span class="when">May 22</span><span class="text">Submit Snack Pack Meta creative (72hr buffer)</span></li>
+            <li><span class="multi-cb" data-key="may.snack.launch"></span><span class="when">May 26</span><span class="text">🚀 LAUNCH DAY</span></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase-block launch">
+        <summary>✨ Int'l Masturbation Day — May 7 (3 days out)</summary>
+        <div class="phase-body">
+          <ul class="tasks">
+            <li><span class="multi-cb" data-key="may.mastday.draft"></span><span class="when">May 4 (TODAY)</span><span class="text">Founder drafts 1 email + 1 social post</span></li>
+            <li><span class="multi-cb" data-key="may.mastday.approve"></span><span class="when">May 5</span><span class="text">Email + social approved</span></li>
+            <li><span class="multi-cb" data-key="may.mastday.schedule"></span><span class="when">May 6</span><span class="text">Schedule for May 7 9am ET</span></li>
+            <li><span class="multi-cb" data-key="may.mastday.fire"></span><span class="when">May 7</span><span class="text">Email fires + social posts. Founder DM check.</span></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase-block post">
+        <summary>🎉 Miami Swim Week — May 28-31 (sub-event)</summary>
+        <div class="phase-body">
+          <p style="margin: 0 0 12px 0; font-size: 13px; color: var(--text-soft);">Last 4 days of Splashy May ride the Miami Swim Week cultural moment. Pool + beach + neon aesthetic.</p>
+          <ul class="tasks">
+            <li><span class="multi-cb" data-key="may.miami.pitch"></span><span class="when">May 18-25</span><span class="text">Press / influencer outreach for swim-week-attending partners</span></li>
+            <li><span class="multi-cb" data-key="may.miami.content"></span><span class="when">May 25-27</span><span class="text">Miami Swim aesthetic content shot + queued (pool, beach, neon)</span></li>
+            <li><span class="multi-cb" data-key="may.miami.bundle"></span><span class="when">May 28</span><span class="text">"Pool Pack" or swim-themed bundle goes live</span></li>
+            <li><span class="multi-cb" data-key="may.miami.daily"></span><span class="when">May 28-31</span><span class="text">Daily Miami swim content across IG + TikTok</span></li>
+            <li><span class="multi-cb" data-key="may.miami.finale"></span><span class="when">May 31</span><span class="text">End-of-month "last chance" email + SMS — Splashy May closes</span></li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  `;
+
+  document.getElementById('thismonth-content').innerHTML = html;
+
+  // Wire up checkboxes (reuse existing cycleCb logic)
+  document.querySelectorAll('#thismonth-content .multi-cb').forEach(cb => {
+    const key = cb.dataset.key;
+    if (state[key]) cb.classList.add(state[key]);
+    cb.textContent = cbGlyph(state[key] || '');
+    cb.addEventListener('click', () => cycleCb(cb.dataset.key, cb));
+  });
+}
+
+// ============================================================
+// MERCH CALENDAR TAB — year view of all events
+// ============================================================
+function renderMerchCalendar() {
+  const events = (typeof EVENTS !== 'undefined' ? EVENTS.events : []);
+  const types = (typeof EVENTS !== 'undefined' ? EVENTS.types : {});
+
+  // Group by month
+  const byMonth = {};
+  events.forEach(e => {
+    const start = new Date(e.startDate);
+    const monthKey = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}`;
+    if (!byMonth[monthKey]) byMonth[monthKey] = [];
+    byMonth[monthKey].push(e);
+  });
+
+  // Sort months chronologically
+  const sortedMonths = Object.keys(byMonth).sort();
+
+  let html = `
+    <h2 class="section-title">📅 Merch + Sales Calendar 2026</h2>
+    <p class="section-sub">All sales + launches + sub-events in one view. Edit in <code>events-data.js</code>. Click a card to see details (drawer integration coming next iteration).</p>
+
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 24px; font-size: 13px;">
+      <div style="font-weight: 600; color: var(--text-soft);">Legend:</div>
+      ${Object.entries(types).map(([k, t]) => `
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span style="display: inline-block; width: 14px; height: 14px; background: ${t.color}; border-left: 3px solid ${t.border}; border-radius: 3px;"></span>
+          <span>${t.icon} ${t.label}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  // Render month sections
+  sortedMonths.forEach(monthKey => {
+    const [yr, mn] = monthKey.split('-');
+    const monthDate = new Date(parseInt(yr), parseInt(mn) - 1, 1);
+    const monthLabel = monthDate.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+    const monthEvents = byMonth[monthKey].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+    html += `
+      <div style="margin-bottom: 32px;">
+        <h3 style="margin: 0 0 12px 0; font-size: 18px; padding-bottom: 6px; border-bottom: 2px solid var(--border);">${monthLabel} <span style="font-size: 13px; color: var(--text-faint); font-weight: 500;">(${monthEvents.length} events)</span></h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px;">
+          ${monthEvents.map(e => {
+            const t = types[e.type] || { color: '#eee', border: '#999', label: 'Event', icon: '📌' };
+            const dateLabel = e.startDate === e.endDate
+              ? new Date(e.startDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+              : `${new Date(e.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${new Date(e.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+            const channelCount = e.channels ? e.channels.length : 0;
+            return `
+              <div style="background: ${t.color}; border-left: 4px solid ${t.border}; padding: 14px 16px; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
+                  <div style="font-weight: 700; font-size: 14px; line-height: 1.3;">${t.icon} ${e.name}</div>
+                </div>
+                <div style="font-size: 12px; color: var(--text-soft); margin-top: 4px; font-weight: 500;">${dateLabel}</div>
+                ${e.summary ? `<div style="font-size: 12px; color: var(--text-soft); margin-top: 8px; line-height: 1.5;">${e.summary}</div>` : ''}
+                ${e.theme ? `<div style="font-size: 11px; color: var(--text-faint); margin-top: 6px; font-style: italic; line-height: 1.4;">Theme: ${e.theme.substring(0, 100)}${e.theme.length > 100 ? '...' : ''}</div>` : ''}
+                ${channelCount > 0 ? `<div style="font-size: 11px; color: var(--text-faint); margin-top: 6px;">${channelCount} channel${channelCount !== 1 ? 's' : ''} active</div>` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  });
+
+  html += `
+    <div style="margin-top: 40px; padding: 20px 24px; background: var(--bg-elev); border: 1px dashed var(--border); border-radius: 8px;">
+      <h4 style="margin: 0 0 8px 0; font-size: 14px;">Coming next iterations:</h4>
+      <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: var(--text-soft); line-height: 1.7;">
+        <li>Click event → drawer with full task list + KPIs (same pattern as launch playbook Matrix)</li>
+        <li>Week-view: pick a week, see all active events + tasks due that week</li>
+        <li>Collision detection — warn when launch + sale overlap (split-attention risk)</li>
+        <li>Edit tasks/KPIs per event directly from the calendar</li>
+      </ul>
+    </div>
+  `;
+
+  document.getElementById('merchcal-content').innerHTML = html;
+}
+
+// ============================================================
+// Initial render
+renderThisMonth();
+renderMerchCalendar();
+renderMatrix();
+renderChecklists();
+renderPlaybookNav();
+renderPlaybookContent();
+renderTrackerForm();
+updateProgressPill();
+</script>
+</body>
+</html>
