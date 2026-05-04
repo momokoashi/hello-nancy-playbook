@@ -2196,305 +2196,316 @@ document.getElementById('reset-btn').addEventListener('click', () => {
 // ============================================================
 function renderThisMonth() {
   const today = new Date();
-  const monthIdx = today.getMonth(); // 0-indexed, May = 4
   const monthName = today.toLocaleString('en-US', { month: 'long' });
   const year = today.getFullYear();
   const todayStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
-  // Filter events active in current month
-  const activeEvents = (typeof EVENTS !== 'undefined' ? EVENTS.events : []).filter(e => {
+  // === Date helpers ===
+  const addDays = (date, days) => { const d = new Date(date); d.setDate(d.getDate() + days); return d; };
+  const isoDate = (date) => date.toISOString().slice(0, 10);
+  const fmt = (iso) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const fmtRange = (s, e) => s === e ? fmt(s) : `${fmt(s)}–${fmt(e)}`;
+
+  // Parse "T-Xw", "T+Xw", "Day -1", "Day 0", "Day +N", "Days +X to +Y", "T-Xw to T-Yw"
+  function parseWhen(when, anchorDate) {
+    if (!when) return null;
+    const w = when.toLowerCase().trim();
+    let m;
+    // Range patterns first
+    if (m = w.match(/^days? \+(\d+) to \+(\d+)/)) return { start: isoDate(addDays(anchorDate, +m[1])), end: isoDate(addDays(anchorDate, +m[2])) };
+    if (m = w.match(/^t-(\d+)w to t-(\d+)w/)) return { start: isoDate(addDays(anchorDate, -(+m[1]) * 7)), end: isoDate(addDays(anchorDate, -(+m[2]) * 7)) };
+    if (m = w.match(/^t-(\d+)w to t-?\+?(\d+)w/)) return { start: isoDate(addDays(anchorDate, -(+m[1]) * 7)), end: isoDate(addDays(anchorDate, -(+m[2]) * 7)) };
+    // Single
+    if (m = w.match(/^t-(\d+)w/)) { const d = addDays(anchorDate, -(+m[1]) * 7); return { start: isoDate(d), end: isoDate(d) }; }
+    if (m = w.match(/^t\+(\d+)w/)) { const d = addDays(anchorDate, (+m[1]) * 7); return { start: isoDate(d), end: isoDate(d) }; }
+    if (m = w.match(/^day -(\d+)/)) { const d = addDays(anchorDate, -(+m[1])); return { start: isoDate(d), end: isoDate(d) }; }
+    if (m = w.match(/^day \+(\d+)/)) { const d = addDays(anchorDate, +m[1]); return { start: isoDate(d), end: isoDate(d) }; }
+    if (/^day 0/.test(w)) return { start: isoDate(anchorDate), end: isoDate(anchorDate) };
+    return null; // ongoing/every/unknown — skip
+  }
+
+  // === Weekly buckets ===
+  const weekStarts = [
+    { label: 'May 4-10',   start: '2026-05-04', end: '2026-05-10' },
+    { label: 'May 11-17',  start: '2026-05-11', end: '2026-05-17' },
+    { label: 'May 18-24',  start: '2026-05-18', end: '2026-05-24' },
+    { label: 'May 25-31',  start: '2026-05-25', end: '2026-05-31' },
+    { label: 'Jun 1-7',    start: '2026-06-01', end: '2026-06-07' }
+  ];
+  function getWeekBucket(iso) {
+    const w = weekStarts.find(b => iso >= b.start && iso <= b.end);
+    return w ? w.label : null;
+  }
+
+  // === Build master task list ===
+  const allTasks = [];
+  function addTasks(eventName, eventIcon, eventColor, tasks) {
+    tasks.forEach((t, i) => allTasks.push({
+      ...t,
+      event: eventName,
+      eventIcon,
+      eventColor,
+      key: t.key || `may.${eventName.replace(/[^a-z0-9]/gi, '_')}.${i}`
+    }));
+  }
+
+  // ----- Int'l Mast Day -----
+  addTasks("Int'l Masturbation Day Prep", '✨', '#dbeafe', [
+    { dateStart: '2026-05-04', dateEnd: '2026-05-05', text: "Founder drafts + approves email + social post", channel: 'Email + Social', key: 'may.mastday.draft' },
+    { dateStart: '2026-05-06', dateEnd: '2026-05-06', text: 'Schedule email for May 7 9am ET + social scheduled', channel: 'Email + Social', key: 'may.mastday.schedule' },
+    { dateStart: '2026-05-07', dateEnd: '2026-05-07', text: 'Email + social fire. Founder DM check.', channel: 'Email + Social', key: 'may.mastday.fire' }
+  ]);
+
+  // ----- Splashy Sale -----
+  addTasks('Splashy Sale Prep', '🎯', '#fef3c7', [
+    // Website
+    { dateStart: '2026-05-04', dateEnd: '2026-05-10', text: 'Homepage banner prep (design + stage)', channel: 'Website', key: 'may.website.banner.prep' },
+    { dateStart: '2026-05-12', dateEnd: '2026-05-12', text: 'Homepage banner update — go live', channel: 'Website', key: 'may.website.banner.update' },
+    { dateStart: '2026-05-12', dateEnd: '2026-05-12', text: "Announcement banner update — switch from Mother's Day to Splashy Sale", channel: 'Website', key: 'may.website.announce' },
+    // Meta
+    { dateStart: '2026-05-04', dateEnd: '2026-05-08', text: 'Prepare ads (sale winners duplicate + new concepts)', channel: 'Meta Ads', key: 'may.meta.prep' },
+    { dateStart: '2026-05-09', dateEnd: '2026-05-11', text: 'Setup campaign (audiences, budgets, naming)', channel: 'Meta Ads', key: 'may.meta.setup' },
+    { dateStart: '2026-05-12', dateEnd: '2026-05-12', text: 'Launch ads', channel: 'Meta Ads', key: 'may.meta.launch' },
+    // Google
+    { dateStart: '2026-05-04', dateEnd: '2026-05-08', text: 'Prepare copy for Splashy Sale', channel: 'Google Ads', key: 'may.google.prep' },
+    { dateStart: '2026-05-09', dateEnd: '2026-05-11', text: 'Setup campaign', channel: 'Google Ads', key: 'may.google.setup' },
+    { dateStart: '2026-05-12', dateEnd: '2026-05-12', text: 'Launch ads', channel: 'Google Ads', key: 'may.google.launch' },
+    // Email
+    { dateStart: '2026-05-04', dateEnd: '2026-05-04', text: 'Splashy Sale teaser #1 (warm-up)', channel: 'Email', key: 'may.email.t1' },
+    { dateStart: '2026-05-06', dateEnd: '2026-05-06', text: 'Splashy Sale teaser #2: VIP early-access offer', channel: 'Email', key: 'may.email.t2' },
+    { dateStart: '2026-05-08', dateEnd: '2026-05-08', text: 'Final teaser email', channel: 'Email', key: 'may.email.t3' },
+    { dateStart: '2026-05-11', dateEnd: '2026-05-11', text: 'VIP early-access email + SMS fires (24-48hr window)', channel: 'Email', key: 'may.email.vip' },
+    { dateStart: '2026-05-12', dateEnd: '2026-05-12', text: 'Sale announcement email (start day)', channel: 'Email', key: 'may.email.announce' },
+    { dateStart: '2026-05-19', dateEnd: '2026-05-19', text: 'Mid-sale email #1 (social proof / customer reactions)', channel: 'Email', key: 'may.email.mid1' },
+    { dateStart: '2026-05-27', dateEnd: '2026-05-27', text: 'Mid-sale email #2 (reviews / feature)', channel: 'Email', key: 'may.email.mid2' },
+    { dateStart: '2026-06-02', dateEnd: '2026-06-02', text: 'Sale finale "last chance" email', channel: 'Email', key: 'may.email.finale' },
+    // Social
+    { dateStart: '2026-05-04', dateEnd: '2026-05-04', text: 'Content calendar locked: IG (3-5 feed + 5-10 stories) + TikTok (5+ teasers). Theme = Splashy / Wet.', channel: 'Social', key: 'may.social.calendar' },
+    { dateStart: '2026-05-04', dateEnd: '2026-05-31', text: 'Daily 2x cadence (incl. stories) sustained through end of month', channel: 'Social', key: 'may.social.daily' },
+    { dateStart: '2026-05-12', dateEnd: '2026-05-12', text: 'Sale announcement post', channel: 'Social', key: 'may.social.announce' },
+    { dateStart: '2026-05-12', dateEnd: '2026-06-04', text: 'Sale running theme content (Splashy / Wet aesthetic)', channel: 'Social', key: 'may.social.theme' },
+    // PR
+    { dateStart: '2026-05-04', dateEnd: '2026-05-04', text: 'Splashy Sale press kit ready (one-pager + assets)', channel: 'PR / Press', key: 'may.pr.kit' },
+    { dateStart: '2026-05-08', dateEnd: '2026-05-08', text: 'Press release wired (PR Newswire, fires May 12 6am ET)', channel: 'PR / Press', key: 'may.pr.wire' }
+  ]);
+
+  // ----- Dirty Jack Content Drop -----
+  addTasks('Dirty Jack Content Drop', '🎬', '#fce7f3', [
+    { dateStart: '2026-05-04', dateEnd: '2026-05-10', text: 'Finalize Dirty Jack creative (video / social / email asset)', channel: 'Creative', key: 'may.dj.finalize' },
+    { dateStart: '2026-05-11', dateEnd: '2026-05-13', text: 'Schedule across IG, TikTok, email — coordinated drop May 14', channel: 'Email + Social', key: 'may.dj.schedule' },
+    { dateStart: '2026-05-14', dateEnd: '2026-05-14', text: 'Drops on IG + TikTok + email same morning', channel: 'Email + Social', key: 'may.dj.fire' },
+    { dateStart: '2026-05-14', dateEnd: '2026-05-17', text: 'Watch performance — if winning, amplify as paid ad creative', channel: 'Meta Ads', key: 'may.dj.amplify' }
+  ]);
+
+  // ----- Waterproof Blanket Launch (FULL playbook from Master Matrix) -----
+  if (typeof PLAYBOOK !== 'undefined') {
+    const blanketDate = new Date('2026-05-18');
+    PLAYBOOK.channels.forEach(channel => {
+      ['pre', 'launch', 'post'].forEach(phase => {
+        const ph = channel.phases[phase];
+        if (!ph || !ph.tasks) return;
+        ph.tasks.forEach((t, ti) => {
+          const parsed = parseWhen(t.when, blanketDate);
+          if (!parsed) return;
+          allTasks.push({
+            event: 'Waterproof Blanket Launch',
+            eventIcon: '🚀',
+            eventColor: '#fce7f3',
+            dateStart: parsed.start,
+            dateEnd: parsed.end,
+            text: t.text,
+            channel: `${channel.icon} ${channel.name}`,
+            owner: t.owner,
+            phase,
+            key: `may.blanket.${channel.id}.${phase}.${ti}`
+          });
+        });
+      });
+    });
+  }
+
+  // ----- Snack Pack Launch (FULL playbook from Master Matrix) -----
+  if (typeof PLAYBOOK !== 'undefined') {
+    const snackDate = new Date('2026-05-26');
+    PLAYBOOK.channels.forEach(channel => {
+      ['pre', 'launch', 'post'].forEach(phase => {
+        const ph = channel.phases[phase];
+        if (!ph || !ph.tasks) return;
+        ph.tasks.forEach((t, ti) => {
+          const parsed = parseWhen(t.when, snackDate);
+          if (!parsed) return;
+          allTasks.push({
+            event: 'Snack Pack Launch',
+            eventIcon: '🚀',
+            eventColor: '#fce7f3',
+            dateStart: parsed.start,
+            dateEnd: parsed.end,
+            text: t.text,
+            channel: `${channel.icon} ${channel.name}`,
+            owner: t.owner,
+            phase,
+            key: `may.snack.${channel.id}.${phase}.${ti}`
+          });
+        });
+      });
+    });
+  }
+
+  // ----- Miami Swim Week Event Prep -----
+  addTasks('Miami Swim Week Event Prep', '🎉', '#d1fae5', [
+    { dateStart: '2026-05-14', dateEnd: '2026-05-14', text: '⭐ Confirm venue (location + date + capacity)', channel: 'Events', key: 'may.event.venue' },
+    { dateStart: '2026-05-14', dateEnd: '2026-05-14', text: '⭐ Confirm event theme (creative direction, mood, color palette)', channel: 'Events', key: 'may.event.theme' },
+    { dateStart: '2026-05-14', dateEnd: '2026-05-14', text: 'Guest list finalized (press + influencers + key contacts)', channel: 'Events', key: 'may.event.guestlist' },
+    { dateStart: '2026-05-14', dateEnd: '2026-05-14', text: 'Invitations sent + RSVP tracking active', channel: 'Events', key: 'may.event.invites' },
+    { dateStart: '2026-05-14', dateEnd: '2026-05-14', text: 'Photo + video crew booked', channel: 'Events', key: 'may.event.crew' },
+    { dateStart: '2026-05-18', dateEnd: '2026-05-25', text: 'Press / influencer outreach for swim-week-attending partners', channel: 'PR + Influencer', key: 'may.event.partners' },
+    { dateStart: '2026-05-21', dateEnd: '2026-05-21', text: '⭐ Confirm gift bags + props (contents, quantities, packaging)', channel: 'Events', key: 'may.event.bags' },
+    { dateStart: '2026-05-21', dateEnd: '2026-05-21', text: 'Catering / food + drink confirmed', channel: 'Events', key: 'may.event.catering' },
+    { dateStart: '2026-05-21', dateEnd: '2026-05-21', text: 'AV / sound / lighting / music playlist locked', channel: 'Events', key: 'may.event.av' },
+    { dateStart: '2026-05-21', dateEnd: '2026-05-21', text: 'Run-of-show locked (founder talk, photo moment, timing)', channel: 'Events', key: 'may.event.runofshow' },
+    { dateStart: '2026-05-25', dateEnd: '2026-05-25', text: 'Final RSVPs + headcount confirmed', channel: 'Events', key: 'may.event.rsvps' },
+    { dateStart: '2026-05-25', dateEnd: '2026-05-25', text: 'Press kits + take-aways prepped', channel: 'Events', key: 'may.event.presskit' },
+    { dateStart: '2026-05-28', dateEnd: '2026-05-28', text: '"Pool Pack" or swim-themed bundle goes live', channel: 'Web', key: 'may.event.bundle' },
+    { dateStart: '2026-05-28', dateEnd: '2026-05-31', text: 'Event days: execute + capture content', channel: 'Events', key: 'may.event.execute' },
+    { dateStart: '2026-06-01', dateEnd: '2026-06-01', text: 'Founder thank-you to attendees + team thank-you with tag-asks', channel: 'Founder + Team', key: 'may.event.thanks' },
+    { dateStart: '2026-06-07', dateEnd: '2026-06-07', text: 'Calculate organic CPM (cost / earned impressions × 1000)', channel: 'Events', key: 'may.event.cpm' }
+  ]);
+
+  // === Sort all tasks by start date ===
+  allTasks.sort((a, b) => a.dateStart.localeCompare(b.dateStart));
+
+  // === Active events cards (kept) ===
+  const activeEventsList = (typeof EVENTS !== 'undefined' ? EVENTS.events : []).filter(e => {
     const start = new Date(e.startDate);
     const end = new Date(e.endDate);
-    return (start.getFullYear() === year && start.getMonth() === monthIdx)
-        || (end.getFullYear() === year && end.getMonth() === monthIdx)
+    return (start.getMonth() === today.getMonth() && start.getFullYear() === today.getFullYear())
+        || (end.getMonth() === today.getMonth() && end.getFullYear() === today.getFullYear())
         || (start <= today && end >= today);
-  });
-
-  // Sort by start date
-  activeEvents.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
-
-  // Get type meta for color-coding
+  }).sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
   const types = (typeof EVENTS !== 'undefined' ? EVENTS.types : {});
-
-  // Compute T-X for each event vs today
   function timeUntil(dateStr) {
     const d = new Date(dateStr);
     const diff = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
-    if (diff < 0) return `${Math.abs(diff)} days ago`;
-    if (diff === 0) return `TODAY`;
-    if (diff === 1) return `tomorrow`;
-    if (diff < 7) return `in ${diff} days`;
-    if (diff < 14) return `T-1w (${diff} days)`;
-    if (diff < 21) return `T-2w (${diff} days)`;
-    if (diff < 28) return `T-3w (${diff} days)`;
-    return `in ${Math.ceil(diff / 7)} weeks`;
+    if (diff < 0) return `${Math.abs(diff)}d ago`;
+    if (diff === 0) return 'TODAY';
+    if (diff === 1) return 'tomorrow';
+    if (diff < 7) return `in ${diff}d`;
+    return `T-${Math.ceil(diff / 7)}w`;
   }
 
-  let html = `
+  let activeCardsHtml = '';
+  if (activeEventsList.length > 0) {
+    activeCardsHtml = `<h3 style="margin: 24px 0 12px; font-size: 16px; color: var(--text-soft);">Active events this month (${activeEventsList.length})</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-bottom: 32px;">
+      ${activeEventsList.map(e => {
+        const t = types[e.type] || { color: '#eee', border: '#999', icon: '📌' };
+        const dateLabel = e.startDate === e.endDate ? fmt(e.startDate) : `${fmt(e.startDate)} – ${fmt(e.endDate)}`;
+        return `<div style="background: ${t.color}; border-left: 3px solid ${t.border}; padding: 10px 12px; border-radius: 6px;">
+          <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;">
+            <div style="font-weight:600;font-size:13px;">${t.icon} ${e.name}</div>
+            <span style="font-size:10px;color:var(--text-soft);white-space:nowrap;">${timeUntil(e.startDate)}</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-soft);margin-top:2px;">${dateLabel}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  // === Render Weekly View ===
+  const tasksByWeek = {};
+  weekStarts.forEach(w => tasksByWeek[w.label] = []);
+  allTasks.forEach(t => {
+    const bucket = getWeekBucket(t.dateStart);
+    if (bucket) tasksByWeek[bucket].push(t);
+  });
+
+  // Determine current week
+  const todayIso = isoDate(today);
+  const currentWeek = weekStarts.find(w => todayIso >= w.start && todayIso <= w.end)?.label || weekStarts[0].label;
+
+  let weeklyHtml = `<h3 style="margin: 24px 0 12px; font-size: 18px;">📅 Weekly View — sorted by date</h3>
+    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">All ${allTasks.length} tasks across all events, grouped by week. Current week opens by default.</p>
+    <div style="display: grid; gap: 10px; margin-bottom: 32px;">`;
+  weekStarts.forEach(w => {
+    const tasks = tasksByWeek[w.label].sort((a, b) => a.dateStart.localeCompare(b.dateStart));
+    const isCurrent = w.label === currentWeek;
+    const phase = w.label === 'May 4-10' || w.label === 'May 11-17' ? 'pre' : (w.label === 'May 18-24' ? 'launch' : 'post');
+    weeklyHtml += `<details class="phase-block ${phase}" ${isCurrent ? 'open' : ''}>
+      <summary style="font-weight: 600;">📅 ${w.label} — <span style="color:var(--text-soft);font-weight:500;">${tasks.length} tasks</span>${isCurrent ? ' <span style="color:var(--accent);font-weight:700;">· THIS WEEK</span>' : ''}</summary>
+      <div class="phase-body">`;
+    if (tasks.length === 0) {
+      weeklyHtml += '<p style="color:var(--text-faint);font-style:italic;font-size:13px;">No tasks this week.</p>';
+    } else {
+      weeklyHtml += '<ul class="tasks">';
+      tasks.forEach(t => {
+        weeklyHtml += `<li>
+          <span class="multi-cb" data-key="${t.key}"></span>
+          <span class="when">${fmtRange(t.dateStart, t.dateEnd)}</span>
+          <span class="text"><strong style="color:var(--accent-dark);">${t.eventIcon} ${t.event}</strong> — ${t.text}<br><span class="owner">${t.channel || ''}${t.owner ? ' · ' + t.owner : ''}</span></span>
+        </li>`;
+      });
+      weeklyHtml += '</ul>';
+    }
+    weeklyHtml += '</div></details>';
+  });
+  weeklyHtml += '</div>';
+
+  // === Render Per-Event View ===
+  const eventGroups = {};
+  allTasks.forEach(t => {
+    if (!eventGroups[t.event]) eventGroups[t.event] = { name: t.event, icon: t.eventIcon, color: t.eventColor, tasks: [] };
+    eventGroups[t.event].tasks.push(t);
+  });
+  const sortedEventGroups = Object.values(eventGroups).sort((a, b) => a.tasks[0].dateStart.localeCompare(b.tasks[0].dateStart));
+
+  let eventHtml = `<h3 style="margin: 32px 0 12px; font-size: 18px;">🗂️ Per-Event Full Checklists</h3>
+    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">Each event has its complete task list (no Master Matrix redirects — full launch playbook duplicated inline for product launches). Sorted by event start date.</p>
+    <div style="display: grid; gap: 12px;">`;
+  sortedEventGroups.forEach((group, gi) => {
+    const tasks = group.tasks.sort((a, b) => a.dateStart.localeCompare(b.dateStart));
+    const earliestDate = tasks[0].dateStart;
+    const latestDate = tasks.reduce((max, t) => t.dateEnd > max ? t.dateEnd : max, tasks[0].dateEnd);
+    const dateRange = earliestDate === latestDate ? fmt(earliestDate) : `${fmt(earliestDate)} – ${fmt(latestDate)}`;
+
+    eventHtml += `<details style="background: ${group.color}; border-left: 4px solid var(--accent); border-radius: 8px;" ${gi === 0 ? 'open' : ''}>
+      <summary style="padding: 14px 18px; font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+        <span>${group.icon} ${group.name} <span style="color:var(--text-soft);font-weight:500;font-size:13px;">— ${tasks.length} tasks · ${dateRange}</span></span>
+      </summary>
+      <div style="padding: 0 18px 16px; background: white; border-radius: 0 0 4px 4px;">`;
+    // Group by channel within event
+    const byChannel = {};
+    tasks.forEach(t => {
+      const ch = t.channel || 'General';
+      if (!byChannel[ch]) byChannel[ch] = [];
+      byChannel[ch].push(t);
+    });
+    Object.entries(byChannel).forEach(([ch, chTasks]) => {
+      eventHtml += `<div class="sub-name" style="margin-top: 12px;">${ch}</div><ul style="list-style: none; padding: 0; margin: 0;">`;
+      chTasks.forEach(t => {
+        eventHtml += `<li style="padding: 4px 0; display: flex; gap: 8px; align-items: flex-start; font-size: 13px;">
+          <span class="multi-cb" data-key="${t.key}"></span>
+          <span class="when">${fmtRange(t.dateStart, t.dateEnd)}</span>
+          <span class="text">${t.text}${t.owner ? `<br><span class="owner">Owner: ${t.owner}</span>` : ''}</span>
+        </li>`;
+      });
+      eventHtml += '</ul>';
+    });
+    eventHtml += '</div></details>';
+  });
+  eventHtml += '</div>';
+
+  // === Final HTML ===
+  document.getElementById('thismonth-content').innerHTML = `
     <div style="background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 100%); padding: 24px 28px; border-radius: 12px; margin-bottom: 24px;">
       <h2 class="section-title" style="margin: 0 0 6px 0;">🚨 This Month — ${monthName} ${year}</h2>
-      <p style="margin: 0; color: var(--text-soft); font-size: 14px;">Today is <strong>${todayStr}</strong>. Below: every event active this month + week-by-week tasks. Edit tasks in <code>events-data.js</code>.</p>
+      <p style="margin: 0; color: var(--text-soft); font-size: 14px;">Today: <strong>${todayStr}</strong>. ${allTasks.length} tasks across ${sortedEventGroups.length} events. <strong>Sort by date</strong> in the Weekly View, or browse <strong>per-event full checklists</strong> below.</p>
     </div>
-
-    <h3 style="margin: 24px 0 12px 0; font-size: 18px;">Active events this month (${activeEvents.length})</h3>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 32px;">
-      ${activeEvents.map(e => {
-        const t = types[e.type] || { color: '#eee', border: '#999', label: 'Event', icon: '📌' };
-        const isLaunch = e.type === 'launch';
-        const dateLabel = e.startDate === e.endDate
-          ? new Date(e.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-          : `${new Date(e.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${new Date(e.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-        const tUntil = timeUntil(e.startDate);
-        return `
-          <div style="background: ${t.color}; border-left: 4px solid ${t.border}; padding: 14px 16px; border-radius: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
-              <div style="font-weight: 700; font-size: 14px;">${t.icon} ${e.name}</div>
-              <span style="font-size: 11px; color: var(--text-soft); white-space: nowrap;">${tUntil}</span>
-            </div>
-            <div style="font-size: 12px; color: var(--text-soft); margin-top: 4px;">${dateLabel}</div>
-            ${e.theme ? `<div style="font-size: 12px; color: var(--text-soft); margin-top: 6px; font-style: italic;">${e.theme.substring(0, 120)}${e.theme.length > 120 ? '...' : ''}</div>` : ''}
-          </div>
-        `;
-      }).join('')}
-    </div>
-
-    <h3 style="margin: 32px 0 16px 0; font-size: 18px;">📋 Sale Prep — Splashy Sale (May 12 – Jun 4)</h3>
-    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">Master checklist by channel, broken down by sub-event. <strong>For product launches</strong>, full task lists live in <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click(); window.scrollTo(0,0);" style="color: var(--accent); font-weight: 600;">📊 Master Matrix</a> tab — this view shows only sale-side coordination tasks.</p>
-
-    <style>
-      .sub-name { font-weight: 600; font-size: 11px; color: var(--accent-dark); text-transform: uppercase; letter-spacing: 0.06em; margin: 12px 0 4px 0; padding: 0; }
-      .sub-name:first-child { margin-top: 0; }
-      .sub-block ul { padding: 0 0 0 4px; margin: 0; list-style: none; }
-      .sub-block ul li { padding: 4px 0; display: flex; align-items: flex-start; gap: 8px; font-size: 13px; }
-    </style>
-
-    <div class="checklist-col" style="background: white; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px;">
-
-      <div class="ch-group">
-        <div class="ch-name">🌐 Website</div>
-        <div class="sub-block" style="padding: 0 20px 16px 20px;">
-          <div class="sub-name">Splashy Sale</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.website.banner.prep"></span><span class="when">May 4-10</span><span class="text">Homepage banner prep (design + stage)</span></li>
-            <li><span class="multi-cb" data-key="may.website.banner.update"></span><span class="when">May 12</span><span class="text">Homepage banner update — go live</span></li>
-            <li><span class="multi-cb" data-key="may.website.announce"></span><span class="when">May 12</span><span class="text">Announcement banner update — switch from Mother's Day to Splashy Sale</span></li>
-          </ul>
-        </div>
-      </div>
-      <div class="ch-group">
-        <div class="ch-name">📱 Meta Ads</div>
-        <div class="sub-block" style="padding: 0 20px 16px 20px;">
-          <div class="sub-name">Splashy Sale (sale-wide)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.meta.prep"></span><span class="when">May 4-8</span><span class="text">Prepare ads (sale winners duplicate + new concepts)</span></li>
-            <li><span class="multi-cb" data-key="may.meta.setup"></span><span class="when">May 9-11</span><span class="text">Setup campaign (audiences, budgets, naming)</span></li>
-            <li><span class="multi-cb" data-key="may.meta.launch"></span><span class="when">May 12</span><span class="text">Launch ads</span></li>
-          </ul>
-          <div class="sub-name">Waterproof Blanket launch (May 18)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.meta.blanket"></span><span class="when">T-1w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → Meta Ads</a></span></li>
-          </ul>
-          <div class="sub-name">Snack Pack launch (May 26)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.meta.snack"></span><span class="when">T-3w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → Meta Ads</a></span></li>
-          </ul>
-          <div class="sub-name">Dirty Jack content (May 14)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.meta.dj"></span><span class="when">May 14-17</span><span class="text">Amplify Dirty Jack as paid ad if winning organically</span></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="ch-group">
-        <div class="ch-name">🔍 Google Ads</div>
-        <div class="sub-block" style="padding: 0 20px 16px 20px;">
-          <div class="sub-name">Splashy Sale</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.google.prep"></span><span class="when">May 4-8</span><span class="text">Prepare copy for Splashy Sale</span></li>
-            <li><span class="multi-cb" data-key="may.google.setup"></span><span class="when">May 9-11</span><span class="text">Setup campaign</span></li>
-            <li><span class="multi-cb" data-key="may.google.launch"></span><span class="when">May 12</span><span class="text">Launch ads</span></li>
-          </ul>
-        </div>
-      </div>
-      <div class="ch-group">
-        <div class="ch-name">✉️ Email</div>
-        <div class="sub-block" style="padding: 0 20px 16px 20px;">
-          <div class="sub-name">Splashy Sale (sale-wide — 4 sends)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.email.announce"></span><span class="when">May 12</span><span class="text">Sale announcement on start day</span></li>
-            <li><span class="multi-cb" data-key="may.email.mid1"></span><span class="when">~May 19</span><span class="text">Mid-sale email #1 (social proof / customer reactions)</span></li>
-            <li><span class="multi-cb" data-key="may.email.mid2"></span><span class="when">~May 27</span><span class="text">Mid-sale email #2 (reviews / feature)</span></li>
-            <li><span class="multi-cb" data-key="may.email.finale"></span><span class="when">~Jun 2</span><span class="text">Sale finale "last chance"</span></li>
-          </ul>
-          <div class="sub-name">Int'l Mast Day (May 7)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.email.mastday.draft"></span><span class="when">May 4-5</span><span class="text">Founder drafts + approves email</span></li>
-            <li><span class="multi-cb" data-key="may.email.mastday.fire"></span><span class="when">May 7 9am</span><span class="text">Email fires (founder POV / educational)</span></li>
-          </ul>
-          <div class="sub-name">VIP early access (May 11)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.email.vip"></span><span class="when">May 11 9am</span><span class="text">VIP early-access email + SMS fires (24-48hr window)</span></li>
-          </ul>
-          <div class="sub-name">Dirty Jack content drop (May 14)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.email.dj"></span><span class="when">May 14</span><span class="text">Dirty Jack content email — fires May 14 (Thu), 2 days after sale start</span></li>
-          </ul>
-          <div class="sub-name">Waterproof Blanket launch (May 18)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.email.blanket"></span><span class="when">T-1w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → Email</a></span></li>
-          </ul>
-          <div class="sub-name">Snack Pack launch (May 26)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.email.snack"></span><span class="when">T-3w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → Email</a></span></li>
-          </ul>
-          <div class="sub-name">Miami Swim Week (May 28-31)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.email.miami"></span><span class="when">May 28</span><span class="text">Miami Swim themed email — sale finale push</span></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="ch-group">
-        <div class="ch-name">📲 Social</div>
-        <div class="sub-block" style="padding: 0 20px 16px 20px;">
-          <div class="sub-name">Overall (whole month)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.social.calendar"></span><span class="when">May 4</span><span class="text">Content calendar locked: IG (3-5 feed + 5-10 stories) + TikTok (5+ teasers). Theme = Splashy / Wet.</span></li>
-            <li><span class="multi-cb" data-key="may.social.daily"></span><span class="when">May 4-31</span><span class="text">Daily 2x cadence (incl. stories) sustained through end of month</span></li>
-          </ul>
-          <div class="sub-name">Splashy Sale</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.social.announce"></span><span class="when">May 12</span><span class="text">Sale announcement post</span></li>
-            <li><span class="multi-cb" data-key="may.social.theme"></span><span class="when">May 12-Jun 4</span><span class="text">Sale running theme content (Splashy / Wet aesthetic)</span></li>
-          </ul>
-          <div class="sub-name">Int'l Mast Day (May 7)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.social.mast"></span><span class="when">May 7</span><span class="text">Founder POV / educational post</span></li>
-          </ul>
-          <div class="sub-name">Dirty Jack content drop (May 14)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.social.dj"></span><span class="when">May 14</span><span class="text">Dirty Jack content on IG + TikTok</span></li>
-          </ul>
-          <div class="sub-name">Waterproof Blanket launch (May 18)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.social.blanket.post"></span><span class="when">May 18</span><span class="text">Founder personal launch post + launch day cadence</span></li>
-          </ul>
-          <div class="sub-name">Snack Pack launch (May 26)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.social.snack"></span><span class="when">May 26</span><span class="text">Snack Pack launch content</span></li>
-          </ul>
-          <div class="sub-name">Miami Swim Week (May 28-31)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.social.miami"></span><span class="when">May 28-31</span><span class="text">Daily Miami swim content across IG + TikTok</span></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="ch-group">
-        <div class="ch-name">📰 PR / Press</div>
-        <div class="sub-block" style="padding: 0 20px 16px 20px;">
-          <div class="sub-name">Splashy Sale</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.pr.kit"></span><span class="when">May 4</span><span class="text">Splashy Sale press kit ready (one-pager + assets)</span></li>
-            <li><span class="multi-cb" data-key="may.pr.wire"></span><span class="when">May 8</span><span class="text">Press release wired (PR Newswire, fires May 12 6am ET)</span></li>
-          </ul>
-          <div class="sub-name">Waterproof Blanket launch (May 18)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.pr.blanket"></span><span class="when">T-1w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → PR/Press</a></span></li>
-          </ul>
-          <div class="sub-name">Snack Pack launch (May 26)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.pr.snack"></span><span class="when">T-3w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → PR/Press</a></span></li>
-          </ul>
-          <div class="sub-name">Miami Swim Week (May 28-31)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.pr.miami"></span><span class="when">May 25</span><span class="text">Miami Swim PR angle pitched (HN at swim week, body-positive feature)</span></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="ch-group">
-        <div class="ch-name">🎥 Creator / UGC + Influencer</div>
-        <div class="sub-block" style="padding: 0 20px 16px 20px;">
-          <div class="sub-name">Dirty Jack content drop (May 14)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.creator.dj"></span><span class="when">May 4-10</span><span class="text">Finalize Dirty Jack creative (extra buffer since drop is May 14)</span></li>
-          </ul>
-          <div class="sub-name">Waterproof Blanket launch (May 18)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.creator.blanket"></span><span class="when">T-1w</span><span class="text">See <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → Creator/UGC + Influencer</a></span></li>
-          </ul>
-          <div class="sub-name">Snack Pack launch (May 26)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.creator.snack.brief"></span><span class="when">May 4-10</span><span class="text">Brief Sideshift creators for Snack Pack content</span></li>
-            <li><span class="multi-cb" data-key="may.creator.snack.full"></span><span class="when">T-3w</span><span class="text">Full per-launch tasks: <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click()" style="color:var(--accent)">Master Matrix → Creator/UGC</a></span></li>
-          </ul>
-          <div class="sub-name">Miami Swim Week (May 28-31)</div>
-          <ul>
-            <li><span class="multi-cb" data-key="may.creator.miami"></span><span class="when">May 18-25</span><span class="text">Miami Swim creator outreach — partner with creators attending</span></li>
-          </ul>
-        </div>
-      </div>
-
-    </div>
-
-    <h3 style="margin: 32px 0 16px 0; font-size: 18px;">🚀 Launch Prep — see Master Matrix</h3>
-    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">2 product launches in May. Each follows the full launch playbook (Tier 1-5 channels × pre/launch/post phases). Click below to jump into Master Matrix and walk the full checklist per launch.</p>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; margin-bottom: 24px;">
-      <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click(); window.scrollTo(0,0); return false;" style="background: var(--launch); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; text-decoration: none; color: var(--text); cursor: pointer;">
-        <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px;">🚀 Waterproof Blanket Launch</div>
-        <div style="font-size: 12px; color: var(--text-soft);">May 18 (Mon) — T-2w</div>
-        <div style="font-size: 11px; color: var(--accent-dark); margin-top: 6px; font-weight: 600;">Open Master Matrix →</div>
-      </a>
-      <a href="javascript:void(0)" onclick="document.querySelector('[data-tab=matrix]').click(); window.scrollTo(0,0); return false;" style="background: var(--launch); border-left: 4px solid var(--accent); padding: 14px 18px; border-radius: 8px; text-decoration: none; color: var(--text); cursor: pointer;">
-        <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px;">🚀 Snack Pack Launch</div>
-        <div style="font-size: 12px; color: var(--text-soft);">May 26 (Tue) — T-3w</div>
-        <div style="font-size: 11px; color: var(--accent-dark); margin-top: 6px; font-weight: 600;">Open Master Matrix →</div>
-      </a>
-    </div>
-
-    <h3 style="margin: 32px 0 16px 0; font-size: 18px;">🎬 Content Drop — Dirty Jack (May 14)</h3>
-    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">Fun cheeky content piece, NOT a product. Drops May 14 (Thu) — 2 days after Splashy Sale starts so it gets its own moment without competing for Day-0 attention.</p>
-    <div class="checklist-col" style="background: white; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px;">
-      <div class="ch-group" style="padding-bottom: 12px;">
-        <ul style="padding: 12px 20px;">
-          <li><span class="multi-cb" data-key="may.dj.finalize"></span><span class="when">May 4-10</span><span class="text">Finalize Dirty Jack creative (video / social / email asset)</span></li>
-          <li><span class="multi-cb" data-key="may.dj.schedule"></span><span class="when">May 11-13</span><span class="text">Schedule across IG, TikTok, email — coordinated drop May 14</span></li>
-          <li><span class="multi-cb" data-key="may.dj.fire"></span><span class="when">May 14</span><span class="text">Drops on IG + TikTok + email same morning — separate moment from Splashy Sale launch</span></li>
-          <li><span class="multi-cb" data-key="may.dj.amplify"></span><span class="when">May 14-17</span><span class="text">Watch performance — if winning, amplify as paid ad creative</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <h3 style="margin: 32px 0 16px 0; font-size: 18px;">🎉 Event Prep — Miami Swim Week (May 28-31)</h3>
-    <p style="color: var(--text-soft); font-size: 13px; margin-bottom: 16px;">Last 4 days of Splashy Sale ride Miami Swim Week cultural moment. Pool + beach + neon aesthetic. Standard event prep checklist:</p>
-    <div class="checklist-col" style="background: white; border: 1px solid var(--border); border-radius: 12px;">
-      <div class="ch-group" style="padding-bottom: 12px;">
-        <ul style="padding: 12px 20px;">
-          <li><span class="multi-cb" data-key="may.event.venue"></span><span class="when">T-2w (May 14)</span><span class="text"><strong>Confirm venue</strong> (location + date + capacity locked)</span></li>
-          <li><span class="multi-cb" data-key="may.event.theme"></span><span class="when">T-2w (May 14)</span><span class="text"><strong>Confirm event theme</strong> (creative direction, mood, color palette)</span></li>
-          <li><span class="multi-cb" data-key="may.event.bags"></span><span class="when">T-1w (May 21)</span><span class="text"><strong>Confirm gift bags + props</strong> (contents, quantities, packaging)</span></li>
-          <li><span class="multi-cb" data-key="may.event.guestlist"></span><span class="when">T-2w (May 14)</span><span class="text">Guest list finalized (press + influencers + key contacts)</span></li>
-          <li><span class="multi-cb" data-key="may.event.invites"></span><span class="when">T-2w (May 14)</span><span class="text">Invitations sent + RSVP tracking active</span></li>
-          <li><span class="multi-cb" data-key="may.event.crew"></span><span class="when">T-2w (May 14)</span><span class="text">Photo + video crew booked</span></li>
-          <li><span class="multi-cb" data-key="may.event.catering"></span><span class="when">T-1w (May 21)</span><span class="text">Catering / food + drink confirmed</span></li>
-          <li><span class="multi-cb" data-key="may.event.av"></span><span class="when">T-1w (May 21)</span><span class="text">AV / sound / lighting / music playlist locked</span></li>
-          <li><span class="multi-cb" data-key="may.event.runofshow"></span><span class="when">T-1w (May 21)</span><span class="text">Run-of-show locked (founder talk, optional speaker, photo moment, timing)</span></li>
-          <li><span class="multi-cb" data-key="may.event.rsvps"></span><span class="when">T-3d (May 25)</span><span class="text">Final RSVPs + headcount confirmed</span></li>
-          <li><span class="multi-cb" data-key="may.event.presskit"></span><span class="when">T-3d (May 25)</span><span class="text">Press kits + take-aways prepped</span></li>
-          <li><span class="multi-cb" data-key="may.event.partners"></span><span class="when">May 18-25</span><span class="text">Press / influencer outreach for swim-week-attending partners</span></li>
-          <li><span class="multi-cb" data-key="may.event.bundle"></span><span class="when">May 28</span><span class="text">"Pool Pack" or swim-themed bundle goes live</span></li>
-          <li><span class="multi-cb" data-key="may.event.execute"></span><span class="when">May 28-31</span><span class="text">Event days: execute + capture content</span></li>
-          <li><span class="multi-cb" data-key="may.event.thanks"></span><span class="when">Day +1 (Jun 1)</span><span class="text">Founder thank-you to attendees + team thank-you with tag-asks</span></li>
-          <li><span class="multi-cb" data-key="may.event.cpm"></span><span class="when">Jun 7</span><span class="text">Calculate organic CPM (cost / earned impressions × 1000)</span></li>
-        </ul>
-      </div>
-    </div>
+    ${activeCardsHtml}
+    ${weeklyHtml}
+    ${eventHtml}
   `;
 
-  document.getElementById('thismonth-content').innerHTML = html;
-
-  // Wire up checkboxes (reuse existing cycleCb logic)
+  // Wire checkboxes
   document.querySelectorAll('#thismonth-content .multi-cb').forEach(cb => {
     const key = cb.dataset.key;
     if (state[key]) cb.classList.add(state[key]);
