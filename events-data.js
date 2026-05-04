@@ -83,7 +83,7 @@ const EVENTS = {
       startDate: "2026-05-12",
       endDate: "2026-06-04",
       summary: "Renamed from Splashy May Sale, extended through Jun 4. Masturbation Month + Waterproof Blanket + Snack Pack + Miami Swim Week + Dirty Jack content drop embedded.",
-      theme: "Get Wet. Splash season. Water + summer + freedom. Creative threads: Juicy Blanket (Waterproof Blanket creative angle) + Dirty Jack (fun content drop on May 12) + Miami Swim energy.",
+      theme: "Get Wet. Splash season. Water + summer + freedom. Creative threads: Juicy Blanket (Waterproof Blanket creative angle) + Dirty Jack (fun content drop on May 14) + Miami Swim energy.",
       relatedEvents: ["waterproof-blanket-launch", "snack-pack-launch", "dirty-jack-content", "miami-swim-week"],
       channels: ["meta", "email", "social", "press", "homepage", "creator", "influencer"],
       tasks: { pre: [], active: [], post: [] },
@@ -120,15 +120,15 @@ const EVENTS = {
       kpis: []
     },
 
-    // Dirty Jack content drop — May 12 (NOT a product launch, fun content piece)
+    // Dirty Jack content drop — May 14 (NOT a product launch, fun content piece, separated from sale start)
     {
       id: "dirty-jack-content",
       name: "🎬 Dirty Jack Content Drop",
       type: "moment",
-      startDate: "2026-05-12",
-      endDate: "2026-05-12",
-      summary: "Fun creative content (NOT a product) — launches alongside Splashy Sale start on May 12. Pure content / brand moment.",
-      theme: "Dirty Jack. Cheeky humor-forward content piece. Drops same day Splashy Sale opens.",
+      startDate: "2026-05-14",
+      endDate: "2026-05-14",
+      summary: "Fun creative content (NOT a product) — drops May 14 (Thu), 2 days after Splashy Sale start. Spaced out from sale launch noise to get its own moment.",
+      theme: "Dirty Jack. Cheeky humor-forward content piece. Drops May 14, mid-week post-sale-launch to ride the sale momentum without competing for attention on Day 0.",
       relatedEvents: ["splashy-sale-2026"],
       channels: ["social", "email", "creator"],
       tasks: { pre: [], active: [], post: [] },
