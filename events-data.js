@@ -82,9 +82,9 @@ const EVENTS = {
       type: "sale",
       startDate: "2026-05-12",
       endDate: "2026-06-04",
-      summary: "Renamed from Splashy May Sale, extended through Jun 4. Masturbation Month + Waterproof Blanket + Snack Pack + Miami Swim Week embedded.",
-      theme: "Get Wet. Splash season. Water + summer + freedom. Creative threads: Juicy Blanket (Waterproof Blanket) / Dirty Jack (Snack Pack) / Miami Swim energy.",
-      relatedEvents: ["waterproof-blanket-launch", "snack-pack-launch", "miami-swim-week"],
+      summary: "Renamed from Splashy May Sale, extended through Jun 4. Masturbation Month + Waterproof Blanket + Snack Pack + Miami Swim Week + Dirty Jack content drop embedded.",
+      theme: "Get Wet. Splash season. Water + summer + freedom. Creative threads: Juicy Blanket (Waterproof Blanket creative angle) + Dirty Jack (fun content drop on May 12) + Miami Swim energy.",
+      relatedEvents: ["waterproof-blanket-launch", "snack-pack-launch", "dirty-jack-content", "miami-swim-week"],
       channels: ["meta", "email", "social", "press", "homepage", "creator", "influencer"],
       tasks: { pre: [], active: [], post: [] },
       kpis: []
@@ -105,17 +105,32 @@ const EVENTS = {
       kpis: []
     },
 
-    // Snack Pack launch — May 26 (Dirty Jack)
+    // Snack Pack launch — May 26
     {
       id: "snack-pack-launch",
-      name: "🚀 Snack Pack Launch (Dirty Jack)",
+      name: "🚀 Snack Pack Launch",
       type: "launch",
       startDate: "2026-05-26",
       endDate: "2026-05-26",
-      summary: "Mid-Splashy launch. Concept: 'Dirty Jack' — cheeky bundle pack. Cross-bundle with Waterproof Blanket as 'Snack & Splash.'",
-      theme: "Dirty Jack. Bundle pack. Cheeky food-meets-pleasure energy.",
+      summary: "Mid-Splashy launch. Bundle pack. Cross-bundle with Waterproof Blanket as 'Snack & Splash.'",
+      theme: "Bundle pack. Food-meets-pleasure energy. Snack-coded packaging.",
       relatedEvents: ["splashy-sale-2026"],
       channels: ["meta", "email", "social", "creator", "homepage"],
+      tasks: { pre: [], active: [], post: [] },
+      kpis: []
+    },
+
+    // Dirty Jack content drop — May 12 (NOT a product launch, fun content piece)
+    {
+      id: "dirty-jack-content",
+      name: "🎬 Dirty Jack Content Drop",
+      type: "moment",
+      startDate: "2026-05-12",
+      endDate: "2026-05-12",
+      summary: "Fun creative content (NOT a product) — launches alongside Splashy Sale start on May 12. Pure content / brand moment.",
+      theme: "Dirty Jack. Cheeky humor-forward content piece. Drops same day Splashy Sale opens.",
+      relatedEvents: ["splashy-sale-2026"],
+      channels: ["social", "email", "creator"],
       tasks: { pre: [], active: [], post: [] },
       kpis: []
     },
