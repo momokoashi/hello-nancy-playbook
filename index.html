@@ -2427,13 +2427,65 @@ function renderThisMonth() {
 }
 
 // ============================================================
-// MERCH CALENDAR TAB — year view of all events
+// MERCH CALENDAR TAB — Cards view + Calendar grid view (toggle)
 // ============================================================
+let merchcalView = 'cards'; // 'cards' or 'calendar'
+
 function renderMerchCalendar() {
   const events = (typeof EVENTS !== 'undefined' ? EVENTS.events : []);
   const types = (typeof EVENTS !== 'undefined' ? EVENTS.types : {});
 
-  // Group by month
+  let html = `
+    <h2 class="section-title">📅 Merch + Sales Calendar 2026</h2>
+    <p class="section-sub">All sales + launches + sub-events in one view. Edit in <code>events-data.js</code>.</p>
+
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 16px;">
+      <div style="display: inline-flex; gap: 4px; padding: 4px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 8px;">
+        <button class="view-toggle-btn ${merchcalView === 'cards' ? 'active' : ''}" data-view="cards" style="padding: 6px 14px; border: none; background: ${merchcalView === 'cards' ? 'var(--accent)' : 'transparent'}; color: ${merchcalView === 'cards' ? 'white' : 'var(--text-soft)'}; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; font-family: inherit;">📋 Cards</button>
+        <button class="view-toggle-btn ${merchcalView === 'calendar' ? 'active' : ''}" data-view="calendar" style="padding: 6px 14px; border: none; background: ${merchcalView === 'calendar' ? 'var(--accent)' : 'transparent'}; color: ${merchcalView === 'calendar' ? 'white' : 'var(--text-soft)'}; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; font-family: inherit;">🗓️ Calendar</button>
+      </div>
+      <div style="font-size: 13px; color: var(--text-soft);">
+        <strong style="color: var(--text);">Legend:</strong>
+        ${Object.entries(types).map(([k, t]) => `
+          <span style="display: inline-flex; align-items: center; gap: 4px; margin-left: 12px;">
+            <span style="display: inline-block; width: 12px; height: 12px; background: ${t.color}; border-left: 3px solid ${t.border}; border-radius: 3px;"></span>
+            ${t.icon} ${t.label}
+          </span>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  if (merchcalView === 'cards') {
+    html += renderMerchCardsView(events, types);
+  } else {
+    html += renderMerchCalendarGridView(events, types);
+  }
+
+  html += `
+    <div style="margin-top: 40px; padding: 20px 24px; background: var(--bg-elev); border: 1px dashed var(--border); border-radius: 8px;">
+      <h4 style="margin: 0 0 8px 0; font-size: 14px;">Coming next iterations:</h4>
+      <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: var(--text-soft); line-height: 1.7;">
+        <li>Click event → drawer with full task list + KPIs</li>
+        <li>Week-view: pick a week, see all active events + tasks due</li>
+        <li>Collision detection — warn when launch + sale overlap</li>
+      </ul>
+    </div>
+  `;
+
+  document.getElementById('merchcal-content').innerHTML = html;
+
+  // Wire up view toggle
+  document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      merchcalView = btn.dataset.view;
+      renderMerchCalendar();
+    });
+  });
+}
+
+// ----- Cards view (month-grouped event cards) -----
+function renderMerchCardsView(events, types) {
   const byMonth = {};
   events.forEach(e => {
     const start = new Date(e.startDate);
@@ -2441,33 +2493,16 @@ function renderMerchCalendar() {
     if (!byMonth[monthKey]) byMonth[monthKey] = [];
     byMonth[monthKey].push(e);
   });
-
-  // Sort months chronologically
   const sortedMonths = Object.keys(byMonth).sort();
 
-  let html = `
-    <h2 class="section-title">📅 Merch + Sales Calendar 2026</h2>
-    <p class="section-sub">All sales + launches + sub-events in one view. Edit in <code>events-data.js</code>. Click a card to see details (drawer integration coming next iteration).</p>
-
-    <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 24px; font-size: 13px;">
-      <div style="font-weight: 600; color: var(--text-soft);">Legend:</div>
-      ${Object.entries(types).map(([k, t]) => `
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <span style="display: inline-block; width: 14px; height: 14px; background: ${t.color}; border-left: 3px solid ${t.border}; border-radius: 3px;"></span>
-          <span>${t.icon} ${t.label}</span>
-        </div>
-      `).join('')}
-    </div>
-  `;
-
-  // Render month sections
+  let out = '';
   sortedMonths.forEach(monthKey => {
     const [yr, mn] = monthKey.split('-');
     const monthDate = new Date(parseInt(yr), parseInt(mn) - 1, 1);
     const monthLabel = monthDate.toLocaleString('en-US', { month: 'long', year: 'numeric' });
     const monthEvents = byMonth[monthKey].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
 
-    html += `
+    out += `
       <div style="margin-bottom: 32px;">
         <h3 style="margin: 0 0 12px 0; font-size: 18px; padding-bottom: 6px; border-bottom: 2px solid var(--border);">${monthLabel} <span style="font-size: 13px; color: var(--text-faint); font-weight: 500;">(${monthEvents.length} events)</span></h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px;">
@@ -2479,9 +2514,7 @@ function renderMerchCalendar() {
             const channelCount = e.channels ? e.channels.length : 0;
             return `
               <div style="background: ${t.color}; border-left: 4px solid ${t.border}; padding: 14px 16px; border-radius: 8px;">
-                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
-                  <div style="font-weight: 700; font-size: 14px; line-height: 1.3;">${t.icon} ${e.name}</div>
-                </div>
+                <div style="font-weight: 700; font-size: 14px; line-height: 1.3;">${t.icon} ${e.name}</div>
                 <div style="font-size: 12px; color: var(--text-soft); margin-top: 4px; font-weight: 500;">${dateLabel}</div>
                 ${e.summary ? `<div style="font-size: 12px; color: var(--text-soft); margin-top: 8px; line-height: 1.5;">${e.summary}</div>` : ''}
                 ${e.theme ? `<div style="font-size: 11px; color: var(--text-faint); margin-top: 6px; font-style: italic; line-height: 1.4;">Theme: ${e.theme.substring(0, 100)}${e.theme.length > 100 ? '...' : ''}</div>` : ''}
@@ -2493,20 +2526,98 @@ function renderMerchCalendar() {
       </div>
     `;
   });
+  return out;
+}
 
-  html += `
-    <div style="margin-top: 40px; padding: 20px 24px; background: var(--bg-elev); border: 1px dashed var(--border); border-radius: 8px;">
-      <h4 style="margin: 0 0 8px 0; font-size: 14px;">Coming next iterations:</h4>
-      <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: var(--text-soft); line-height: 1.7;">
-        <li>Click event → drawer with full task list + KPIs (same pattern as launch playbook Matrix)</li>
-        <li>Week-view: pick a week, see all active events + tasks due that week</li>
-        <li>Collision detection — warn when launch + sale overlap (split-attention risk)</li>
-        <li>Edit tasks/KPIs per event directly from the calendar</li>
-      </ul>
-    </div>
-  `;
+// ----- Calendar grid view (month grids with events as chips on each day) -----
+function renderMerchCalendarGridView(events, types) {
+  // Find date range across all events
+  const allDates = events.flatMap(e => [new Date(e.startDate), new Date(e.endDate)]);
+  if (allDates.length === 0) return '<p>No events.</p>';
+  const minDate = new Date(Math.min(...allDates));
+  const maxDate = new Date(Math.max(...allDates));
 
-  document.getElementById('merchcal-content').innerHTML = html;
+  // Build list of months between min and max
+  const months = [];
+  let cur = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+  const end = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
+  while (cur <= end) {
+    months.push(new Date(cur));
+    cur.setMonth(cur.getMonth() + 1);
+  }
+
+  // Helper: which events touch a given day?
+  function eventsOnDay(dayDate) {
+    return events.filter(e => {
+      const s = new Date(e.startDate);
+      const eDate = new Date(e.endDate);
+      // Strip time to date-only comparison
+      const d = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate());
+      const ds = new Date(s.getFullYear(), s.getMonth(), s.getDate());
+      const de = new Date(eDate.getFullYear(), eDate.getMonth(), eDate.getDate());
+      return d >= ds && d <= de;
+    });
+  }
+
+  const today = new Date();
+  const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+
+  let out = `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px;">`;
+
+  months.forEach(monthDate => {
+    const yr = monthDate.getFullYear();
+    const mo = monthDate.getMonth();
+    const monthLabel = monthDate.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+
+    // First day of month + day of week (0 = Sun)
+    const firstDay = new Date(yr, mo, 1);
+    const startDow = firstDay.getDay();
+    // Last day of month
+    const lastDay = new Date(yr, mo + 1, 0).getDate();
+
+    out += `
+      <div style="background: var(--bg-elev); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow-sm);">
+        <h3 style="margin: 0 0 12px 0; font-size: 15px; font-weight: 700;">${monthLabel}</h3>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 10px; color: var(--text-faint); text-align: center; margin-bottom: 4px; font-weight: 600;">
+          <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;">`;
+
+    // Empty cells before first day
+    for (let i = 0; i < startDow; i++) {
+      out += `<div style="min-height: 60px;"></div>`;
+    }
+
+    // Days of month
+    for (let day = 1; day <= lastDay; day++) {
+      const dayDate = new Date(yr, mo, day);
+      const isToday = dayDate.getFullYear() === today.getFullYear() && dayDate.getMonth() === today.getMonth() && dayDate.getDate() === today.getDate();
+      const dayEvents = eventsOnDay(dayDate);
+
+      // Stack events as colored bars
+      const eventChips = dayEvents.slice(0, 3).map(e => {
+        const t = types[e.type] || { color: '#eee', border: '#999' };
+        const isStart = new Date(e.startDate).toDateString() === dayDate.toDateString();
+        const isEnd = new Date(e.endDate).toDateString() === dayDate.toDateString();
+        const radius = isStart && isEnd ? '4px' : isStart ? '4px 0 0 4px' : isEnd ? '0 4px 4px 0' : '0';
+        const isLaunch = e.type === 'launch' || e.type === 'moment';
+        const label = isLaunch ? e.name.replace('🚀 ', '').replace(' Launch', '').substring(0, 12) : (isStart ? e.name.substring(0, 14) : '');
+        return `<div title="${e.name}" style="background: ${t.color}; border-left: ${isStart ? '3px solid ' + t.border : 'none'}; border-radius: ${radius}; font-size: 9px; padding: 1px 3px; line-height: 1.3; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${label}</div>`;
+      }).join('');
+      const moreCount = dayEvents.length > 3 ? `<div style="font-size: 9px; color: var(--text-faint); padding: 0 3px;">+${dayEvents.length - 3} more</div>` : '';
+
+      out += `
+        <div style="min-height: 60px; padding: 2px; border: 1px solid ${isToday ? 'var(--accent)' : 'transparent'}; border-radius: 4px; background: ${isToday ? 'var(--accent-soft)' : 'transparent'};">
+          <div style="font-size: 10px; font-weight: ${isToday ? '700' : '500'}; color: ${isToday ? 'var(--accent-dark)' : 'var(--text-soft)'}; padding: 1px 3px;">${day}</div>
+          ${eventChips}${moreCount}
+        </div>`;
+    }
+
+    out += `</div></div>`;
+  });
+
+  out += `</div>`;
+  return out;
 }
 
 // ============================================================
