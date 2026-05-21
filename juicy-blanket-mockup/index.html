@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Juicy Waterproof Blanket — PDP Mockup | Nancy</title>
+<!-- Juicy Waterproof Blanket — product page mockup -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* Nancy site chrome */
+    --pink-nav: #f7d9e6;
+    --pink-hot: #ff2da1;
+    --lime: #d4f526;
+    --cream: #fbf6ec;
+    --ink: #2b2b2b;
+    /* Juicy product palette (from packaging) */
+    --mauve: #d9a5b0;
+    --mauve-soft: #f3e1e6;
+    --mauve-deep: #b87f8c;
+    --orange: #f39a1f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; color: var(--ink); background: var(--cream); line-height: 1.5; }
+  h1, h2, h3, .serif { font-family: 'Fraunces', serif; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- NAV ---------- */
+  nav { background: var(--pink-nav); position: sticky; top: 0; z-index: 50; }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; max-width: 1280px; margin: 0 auto; }
+  .logo { font-family: 'Fraunces', serif; font-weight: 700; font-size: 30px; color: var(--pink-hot); letter-spacing: -.5px; }
+  .nav-links { display: flex; gap: 28px; font-weight: 500; color: var(--pink-hot); }
+  .nav-links a { text-decoration: none; }
+  .nav-right { display: flex; gap: 20px; align-items: center; color: var(--pink-hot); font-weight: 500; font-size: 14px; }
+  @media (max-width: 820px) { .nav-links { display: none; } }
+
+  /* ---------- PRODUCT SECTION ---------- */
+  .product { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; padding: 48px 0; align-items: start; }
+  .gallery-col { position: sticky; top: 88px; align-self: start; }
+  @media (max-width: 900px) { .product { grid-template-columns: 1fr; gap: 32px; } .gallery-col { position: static; } }
+  /* tabs now live inside the right column, under the CTAs */
+  .info-col .tab-block { margin-top: 36px; }
+
+  /* gallery */
+  .gallery-main {
+    background: var(--mauve-soft); border-radius: 24px; overflow: hidden;
+    aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .gallery-main img { width: 100%; height: 100%; object-fit: cover; }
+  .gallery-thumbs { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .gallery-thumbs button {
+    width: 78px; height: 78px; border-radius: 14px; overflow: hidden; border: 2px solid transparent;
+    cursor: pointer; padding: 0; background: var(--mauve-soft);
+  }
+  .gallery-thumbs button.active { border-color: var(--mauve-deep); }
+  .gallery-thumbs img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* product info */
+  .stars { color: var(--orange); font-size: 16px; letter-spacing: 2px; }
+  .rating-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #6b6b6b; }
+  .title { font-size: 32px; font-weight: 600; line-height: 1.05; margin: 8px 0 8px; }
+  .save-badge { display: inline-block; background: var(--mauve-soft); color: var(--mauve-deep); font-weight: 600; font-size: 13px; padding: 3px 11px; border-radius: 999px; margin-bottom: 6px; }
+  .price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 3px; }
+  .price-now { font-size: 23px; font-weight: 700; }
+  .price-was { font-size: 16px; color: #9a9a9a; text-decoration: line-through; }
+  .tax-note { font-size: 12px; color: #888; margin-bottom: 18px; }
+
+  /* benefit pills */
+  .pills { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
+  @media (max-width: 560px) { .pills { grid-template-columns: repeat(2, 1fr); } }
+  .pill { background: #fff; border-radius: 13px; padding: 10px 6px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,.04); font-size: 11.5px; font-weight: 600; line-height: 1.25; }
+  .pill .ic { font-size: 18px; display: block; margin-bottom: 4px; }
+
+  /* description */
+  .desc { font-size: 13.5px; line-height: 1.55; margin-bottom: 16px; }
+  .desc .lead { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; margin-bottom: 8px; display: block; }
+  .desc ul { list-style: none; margin: 10px 0; }
+  .desc li { padding: 4px 0 4px 22px; position: relative; }
+  .desc li::before { content: "✓"; position: absolute; left: 0; color: var(--mauve-deep); font-weight: 700; }
+
+  /* CTA */
+  .cta-code { display: block; width: 100%; background: var(--lime); border: 2px dashed #2b2b2b; border-radius: 999px; padding: 15px; text-align: center; font-weight: 700; font-size: 16px; margin-bottom: 12px; font-family: 'Fraunces', serif; cursor: pointer; }
+  .cta-cart { display: block; width: 100%; background: var(--pink-hot); color: #fff; border: none; border-radius: 999px; padding: 18px; text-align: center; font-weight: 700; font-size: 16px; letter-spacing: .5px; margin-bottom: 12px; cursor: pointer; }
+  .cta-cart .was { text-decoration: line-through; opacity: .7; font-weight: 500; margin-right: 6px; }
+  .cta-shop { display: block; width: 100%; background: #5a31f4; color: #fff; border: none; border-radius: 999px; padding: 16px; text-align: center; font-weight: 600; font-size: 15px; cursor: pointer; }
+
+  /* ---------- TABS SECTION (image beside tabs, like Avo) ---------- */
+  .tabs-section { background: var(--cream); padding: 48px 0; }
+  .tabs-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  @media (max-width: 800px){ .tabs-layout { grid-template-columns: 1fr; gap: 24px; } }
+  .tabs-img { border-radius: 20px; overflow: hidden; aspect-ratio: 4/5; }
+  .tabs-img img { width: 100%; height: 100%; object-fit: cover; }
+  .tab-nav { display: flex; gap: 0; background: var(--mauve-soft); border-radius: 14px 14px 0 0; padding: 0; overflow: hidden; }
+  .tab-nav button { flex: 1; border: none; background: transparent; padding: 14px 8px; font-weight: 600; font-size: 14px; cursor: pointer; color: var(--mauve-deep); }
+  .tab-nav button.active { background: #fff; color: var(--ink); }
+  .tab-panel { display: none; background: #fff; border: 1px solid var(--mauve-soft); border-radius: 0 0 14px 14px; padding: 24px 26px; }
+  .tab-panel.active { display: block; }
+  .tab-panel h4 { font-family: 'Fraunces', serif; font-size: 15px; margin: 14px 0 6px; }
+  .tab-panel h4:first-child { margin-top: 0; }
+  .tab-panel ul { margin-left: 18px; margin-bottom: 8px; }
+  .tab-panel li { padding: 3px 0; font-size: 14px; }
+  .tab-panel .num { display:inline-flex; width:22px; height:22px; border-radius:999px; background:var(--mauve-soft); color:var(--mauve-deep); align-items:center; justify-content:center; font-size:12px; font-weight:700; margin-right:10px; }
+  .yg-list { list-style:none; margin:0; }
+  .yg-list li { display:flex; align-items:center; padding:8px 0; font-size:15px; }
+  .spec-table { width: 100%; border-collapse: collapse; }
+  .spec-table td { padding: 9px 0; border-bottom: 1px solid #f0e8ea; font-size: 14px; }
+  .spec-table td:first-child { font-weight: 600; width: 42%; }
+
+  /* ---------- VIDEO PLACEHOLDER ---------- */
+  .video-ph { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 16/10; background: #d9c9cf; display:flex; align-items:center; justify-content:center; }
+  .video-ph .ph-label { position:absolute; bottom:14px; left:0; right:0; text-align:center; color:#fff; font-size:13px; text-shadow:0 1px 4px rgba(0,0,0,.4); }
+  .video-ph .play { width:74px; height:74px; border-radius:999px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; font-size:30px; color:var(--mauve-deep); padding-left:6px; }
+
+  /* ---------- TOWEL VS BULLETS ---------- */
+  .vs-bullets { list-style:none; margin:0; }
+  .vs-bullets li { display:flex; gap:12px; padding:12px 0; border-bottom:1px solid #ece2e5; font-size:16px; align-items:flex-start; }
+  .vs-bullets li .tick { color:var(--mauve-deep); font-weight:700; flex-shrink:0; }
+  .vs-two { display:grid; grid-template-columns:1.1fr 1fr; gap:40px; align-items:center; }
+  @media (max-width:800px){ .vs-two { grid-template-columns:1fr; gap:24px; } }
+  .vs-video { max-width: 760px; margin: 0 auto 28px; aspect-ratio: 16/9; }
+  .vs-bullets-row { display:grid; grid-template-columns:1fr 1fr; gap:0 40px; max-width: 880px; margin: 0 auto; }
+  @media (max-width:700px){ .vs-bullets-row { grid-template-columns:1fr; } }
+
+  /* ---------- REVIEW SLIDER ---------- */
+  .reviews { background: var(--lime); padding: 70px 0; text-align: center; }
+  .reviews .stars { color: var(--mauve-deep); font-size: 24px; margin-bottom: 22px; display: block; }
+  .review-quote { font-family: 'Fraunces', serif; font-size: 34px; font-weight: 600; line-height: 1.25; max-width: 800px; margin: 0 auto 22px; }
+  @media (max-width: 600px) { .review-quote { font-size: 24px; } }
+  .review-author { font-size: 15px; color: #3a3a1a; margin-bottom: 30px; }
+  .review-nav { display: flex; gap: 16px; justify-content: center; align-items: center; }
+  .review-nav button { width: 52px; height: 52px; border-radius: 999px; border: 1.5px solid #2b2b2b; background: transparent; cursor: pointer; font-size: 18px; }
+  .review-dots { display: flex; gap: 8px; }
+  .review-dots span { width: 9px; height: 9px; border-radius: 999px; background: rgba(0,0,0,.25); }
+  .review-dots span.active { background: #2b2b2b; }
+
+  /* ---------- TOWEL VS JUICY SPLIT ---------- */
+  .vs-split { padding: 56px 0; }
+  .vs-split h2 { text-align: center; font-size: 38px; margin-bottom: 8px; }
+  .vs-split .sub { text-align: center; color: #777; margin-bottom: 32px; font-size: 16px; }
+  .vs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 700px){ .vs-grid { grid-template-columns: 1fr; } }
+  .vs-card { border-radius: 20px; overflow: hidden; position: relative; }
+  .vs-card .vs-img { aspect-ratio: 4/3; background: #e9e2da; display:flex; align-items:center; justify-content:center; color:#9a9a9a; font-size:14px; text-align:center; padding:20px; }
+  .vs-card .vs-img img { width:100%; height:100%; object-fit: cover; }
+  .vs-badge { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:64px; height:64px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-size:30px; color:#fff; }
+  .vs-badge.x { background:#9a9a9a; }
+  .vs-badge.ok { background: var(--mauve-deep); }
+  /* two-video towel-vs comparison (Love Blanket style) */
+  .vs-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:start; }
+  @media (max-width:760px){ .vs-grid2 { grid-template-columns:1fr; gap:36px; } }
+  .vs-vid { aspect-ratio:4/5; }
+  .vs-name { text-align:center; font-family:'Fraunces',serif; font-weight:600; font-size:24px; margin:18px 0 16px; color:#2a2a2a; }
+  .vs-pills { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; }
+  .vs-pills li { display:flex; gap:12px; align-items:flex-start; padding:16px 18px; border-radius:14px; font-size:15px; line-height:1.45; font-weight:600; }
+  .vs-pills.bad li { background:#f1eef0; color:#555; }
+  .vs-pills.good li { background:var(--mauve-soft); color:#3a2a2f; }
+  .vs-pills li .pic { flex-shrink:0; font-size:18px; line-height:1.3; }
+  .vs-label { text-align:center; font-family:'Fraunces',serif; font-weight:600; font-size:20px; padding:14px; }
+  .vs-label.bad { color:#9a9a9a; }
+  .vs-label.good { color: var(--mauve-deep); }
+
+  /* ---------- NO-MESS / EASY CLEANING ---------- */
+  .nomess { background: var(--mauve-soft); padding: 64px 0; }
+  .nomess-grid { display:grid; grid-template-columns: 1fr 1fr; gap:48px; align-items:center; }
+  @media (max-width: 800px){ .nomess-grid { grid-template-columns:1fr; } }
+  .nomess h2 { font-size: 40px; line-height:1.1; margin-bottom:20px; }
+  .nomess h2 .hl { color: var(--mauve-deep); }
+  .nomess p { font-size:17px; line-height:1.7; margin-bottom:16px; }
+  .nomess .cta { display:inline-block; margin-top:10px; background: var(--mauve-deep); color:#fff; text-decoration:none; padding:16px 40px; border-radius:999px; font-weight:700; font-size:16px; font-family:'Fraunces',serif; }
+  .nomess-img { border-radius:24px; overflow:hidden; aspect-ratio:1/1; }
+  .nomess-img img { width:100%; height:100%; object-fit:cover; }
+
+  /* ---------- COMPARISON TABLE (US vs Them) ---------- */
+  .cmp { padding: 64px 0; }
+  .cmp h2 { text-align:center; font-size:42px; color: var(--mauve-deep); margin-bottom:8px; }
+  .cmp .sub { text-align:center; color:#777; margin-bottom:28px; }
+  .cmp-wrap { border-radius:20px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,.06); }
+  .cmp-head { background: var(--lime); text-align:center; padding:18px; font-weight:600; font-size:15px; }
+  .cmp-table { width:100%; border-collapse:collapse; background:#fff; }
+  .cmp-table th, .cmp-table td { padding:16px 10px; text-align:center; font-size:14px; border-bottom:1px solid #f0e8ea; }
+  .cmp-table th { font-weight:700; font-size:13px; letter-spacing:.5px; }
+  .cmp-table td:first-child, .cmp-table th:first-child { text-align:left; font-weight:600; padding-left:20px; }
+  .cmp-col-juicy { background: var(--mauve-soft); border-left:2px solid var(--mauve); border-right:2px solid var(--mauve); }
+  th.cmp-col-juicy { background: var(--mauve); color:#fff; border-top:2px solid var(--mauve); }
+  .cmp-x { color:#c9c2c4; font-size:18px; }
+  .cmp-ok { color: var(--mauve-deep); font-weight:700; }
+  .cmp-badge { display:inline-flex; width:34px; height:34px; border-radius:999px; background:var(--mauve); color:#fff; align-items:center; justify-content:center; font-weight:700; }
+  .cmp-cart { display:block; margin:28px auto 0; background:var(--pink-hot); color:#fff; border:none; border-radius:999px; padding:18px 56px; font-weight:700; font-size:16px; cursor:pointer; }
+  @media (max-width:700px){ .cmp-table { font-size:12px; } .cmp-table th,.cmp-table td{ padding:10px 4px; } }
+
+  /* ---------- UGC GRID ---------- */
+  .ugc { background: var(--cream); padding:64px 0; }
+  .ugc h2 { text-align:center; font-size:40px; margin-bottom:32px; }
+  .ugc-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
+  @media (max-width:800px){ .ugc-grid { grid-template-columns:repeat(2,1fr); } }
+  .ugc-card { background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.05); }
+  .ugc-vid { position:relative; aspect-ratio:9/16; background:var(--mauve-soft); overflow:hidden; }
+  .ugc-vid img { width:100%; height:100%; object-fit:cover; }
+  .ugc-play { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:54px; height:54px; border-radius:999px; background:var(--pink-hot); color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .ugc-cap { padding:16px 14px; font-family:'Fraunces',serif; font-style:italic; text-align:center; font-size:15px; }
+  .ugc-tt { display:inline-block; margin-left:6px; }
+
+  /* ---------- FAQ ---------- */
+  .faq { background: var(--mauve-soft); padding:64px 0; }
+  .faq h2 { text-align:center; font-size:48px; margin-bottom:36px; }
+  .faq-item { border-bottom:1px solid #e6d4da; }
+  .faq-q { width:100%; background:none; border:none; text-align:left; padding:22px 8px; font-size:18px; font-weight:600; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:14px; font-family:'Fraunces',serif; }
+  .faq-q .ic { font-size:20px; }
+  .faq-q .arrow { transition:transform .2s; color:var(--mauve-deep); }
+  .faq-q.open .arrow { transform:rotate(180deg); }
+  .faq-a { display:none; padding:0 8px 22px 42px; font-size:15px; line-height:1.7; color:#444; }
+  .faq-a.open { display:block; }
+
+  /* ---------- DEV NOTES ---------- */
+  .devnotes { background: #fff; border-top: 3px dashed var(--pink-hot); padding: 40px 0; }
+  .devnote { border: 2px dashed var(--pink-hot); border-radius: 14px; padding: 16px 20px; margin-bottom: 14px; font-size: 14px; }
+  .devnote b { color: var(--pink-hot); }
+</style>
+</head>
+<body>
+
+<!-- ===================== NAV ===================== -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">Nancy</div>
+    <div class="nav-links">
+      <a href="#">About us</a>
+      <a href="#">Shop ▾</a>
+      <a href="#">Sex Ed</a>
+      <a href="#">Blog</a>
+    </div>
+    <div class="nav-right">
+      <span>USD $</span>
+      <span>English ▾</span>
+      <span>🛒</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ===================== PRODUCT SECTION ===================== -->
+<!-- NOTE: "As seen in" press-logo row intentionally REMOVED per founder (product not public yet) -->
+<section class="wrap product">
+  <!-- GALLERY (sticky — stays in view while the right column scrolls into the tabs) -->
+  <div class="gallery-col">
+    <div class="gallery-main">
+      <img id="mainImg" src="assets/01-hero-folded.png" alt="Juicy Waterproof Blanket folded" />
+    </div>
+    <div class="gallery-thumbs" id="thumbs">
+      <button class="active" data-src="assets/01-hero-folded.png"><img src="assets/01-hero-folded.png" alt="" /></button>
+      <button data-src="assets/02-water-beading.png"><img src="assets/02-water-beading.png" alt="" /></button>
+      <button data-src="assets/03-flat-reversible.png"><img src="assets/03-flat-reversible.png" alt="" /></button>
+      <button data-src="assets/04-macro-texture.png"><img src="assets/04-macro-texture.png" alt="" /></button>
+      <button data-src="assets/05-packaged-front.png"><img src="assets/05-packaged-front.png" alt="" /></button>
+      <button data-src="assets/06-packaged-care.png"><img src="assets/06-packaged-care.png" alt="" /></button>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="info-col">
+    <div class="rating-row">
+      <span class="stars">★★★★★</span>
+      <span>4.9 (launch reviews)</span>
+    </div>
+    <h1 class="title">Juicy Waterproof Blanket</h1>
+
+    <span class="save-badge">Save $32</span>
+    <div class="price-row">
+      <span class="price-now">$67 USD</span>
+      <span class="price-was">$99 USD</span>
+    </div>
+    <div class="tax-note">Tax included. Free, discreet shipping.</div>
+
+    <!-- BENEFIT PILLS -->
+    <div class="pills">
+      <div class="pill"><span class="ic">💧</span>100% Waterproof</div>
+      <div class="pill"><span class="ic">✨</span>Quick Absorption</div>
+      <div class="pill"><span class="ic">❤️</span>Built for Play</div>
+      <div class="pill"><span class="ic">✈️</span>Easy to Travel</div>
+    </div>
+
+    <!-- DESCRIPTION (locked copy) -->
+    <div class="desc">
+      <span class="lead">Stay in the moment. No more mess.</span>
+      The Juicy Waterproof Blanket lets you have fun without thinking about the cleanup. Get wet. Get splashy. Use whatever you want — lube, period flow, any spill — the 100% waterproof core catches every drop, so the bed stays completely dry underneath.
+      <ul>
+        <li><b>No leaks.</b> 100% waterproof TPU core, every time.</li>
+        <li><b>No plastic crinkle.</b> Whisper-quiet by design.</li>
+        <li><b>No sweat.</b> Cotton-rich waffle weave keeps you cool.</li>
+        <li><b>No hiding it on a trip.</b> Folds flat into a bag. No one would guess.</li>
+      </ul>
+      One blanket that handles all of it. So you can focus on what actually matters.
+    </div>
+
+    <!-- CTA -->
+    <button class="cta-code">Save 25% w/ code "JUICY25"</button>
+    <button class="cta-cart"><span class="was">$99</span> ADD TO CART — $67</button>
+    <button class="cta-shop">Buy with Shop Pay</button>
+
+    <!-- TABS (in right column; gallery on the left stays sticky as this scrolls) -->
+    <div class="tab-block">
+      <div class="tab-nav">
+        <button class="active" data-tab="whatyouget">What you get</button>
+        <button data-tab="specs">Specifications</button>
+        <button data-tab="howto">How to use</button>
+      </div>
+
+      <!-- WHAT YOU GET -->
+      <div class="tab-panel active" id="whatyouget">
+        <ul class="yg-list">
+          <li><span class="num">1</span> Juicy Waterproof Blanket</li>
+          <li><span class="num">2</span> Matching waffle travel pouch</li>
+        </ul>
+      </div>
+
+      <!-- SPECIFICATIONS -->
+      <div class="tab-panel" id="specs">
+        <table class="spec-table">
+          <tr><td>Material</td><td>57% Polyester, 41% Cotton, 2% TPU waterproof membrane</td></tr>
+          <tr><td>Top fabric</td><td>Cotton-rich waffle weave (cool, breathable)</td></tr>
+          <tr><td>Waterproof core</td><td>100% waterproof TPU, whisper-quiet, no crinkle</td></tr>
+          <tr><td>Reversible</td><td>Blush mauve / orange</td></tr>
+          <tr><td>Dimensions</td><td>Blanket: 80 cm x 80 cm &nbsp;·&nbsp; Pouch: 24 cm x 33 cm</td></tr>
+          <tr><td>Care</td><td>Machine wash cold, tumble low, no softener, no bleach, no iron</td></tr>
+        </table>
+      </div>
+
+      <!-- HOW TO USE -->
+      <div class="tab-panel" id="howto">
+        <h4>Before first use</h4>
+        <ul>
+          <li>Wash once before using to activate absorption.</li>
+        </ul>
+        <h4>Using it</h4>
+        <ul>
+          <li>Lay it out wherever the fun happens.</li>
+          <li>The cotton face absorbs the surface so the waterproof core keeps everything off your sheets.</li>
+        </ul>
+        <h4>Washing</h4>
+        <ul>
+          <li>Machine wash cold or at 30°C max, gentle cycle, mild liquid detergent.</li>
+          <li>Rinse period blood with cold water first.</li>
+          <li>No fabric softener, no bleach, no dry clean.</li>
+        </ul>
+        <h4>Drying</h4>
+        <ul>
+          <li>Tumble dry low only, or air dry.</li>
+          <li>Do not iron. Heat damages the waterproof layer.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== REVIEW SLIDER (replaces expert quote) — HIDDEN per founder until real reviews ===================== -->
+<section class="reviews" style="display:none;">
+  <div class="wrap">
+    <span class="stars">★★★★★</span>
+    <div class="review-quote" id="reviewQuote">"Finally had period sex without the towel-on-towel gymnastics. Sheets stayed perfectly dry. Game changer."</div>
+    <div class="review-author" id="reviewAuthor">Mia (beta tester)</div>
+    <div class="review-nav">
+      <button id="revPrev">‹</button>
+      <div class="review-dots" id="revDots"></div>
+      <button id="revNext">›</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TOWEL VS JUICY (split visual) ===================== -->
+<section class="wrap vs-split">
+  <h2>A Towel vs. The Juicy Blanket</h2>
+  <p class="sub">One soaks through to your sheets. One keeps everything dry.</p>
+  <!-- TWO-VIDEO COMPARISON — founder drops the towel-test video (left) and Juicy-test video (right) -->
+  <div class="vs-grid2">
+    <!-- LEFT: A Normal Towel -->
+    <div class="vs-side">
+      <div class="video-ph vs-vid">
+        <div class="vs-badge x">✕</div>
+        <div class="ph-label">▶ Towel test video</div>
+      </div>
+      <div class="vs-name">A Normal Towel</div>
+      <ul class="vs-pills bad">
+        <li><span class="pic">💧</span> Leaves your sheets soaked and stained.</li>
+        <li><span class="pic">👎</span> Slides around and spoils the moment.</li>
+        <li><span class="pic">😣</span> Annoying cleanup after ruins the mood.</li>
+      </ul>
+    </div>
+    <!-- RIGHT: The Juicy Blanket -->
+    <div class="vs-side">
+      <div class="video-ph vs-vid">
+        <div class="vs-badge ok">✓</div>
+        <div class="ph-label">▶ Juicy test video</div>
+      </div>
+      <div class="vs-name">The Juicy Blanket 🩷</div>
+      <ul class="vs-pills good">
+        <li><span class="pic">🛡️</span> 100% waterproof. Nothing gets through.</li>
+        <li><span class="pic">🌿</span> Soft cotton waffle. No crinkle, no plastic sound.</li>
+        <li><span class="pic">🧺</span> No bed cleanup. Just toss it in the wash.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== NO-MESS / EASY CLEANING ===================== -->
+<section class="nomess">
+  <div class="wrap nomess-grid">
+    <div>
+      <h2>Wave goodbye to the mess. <span class="hl">Hello to easy cleaning.</span></h2>
+      <p>No more towel gymnastics. No more stripping the bed at 2am. No more sleeping in the wet spot.</p>
+      <p>The Juicy Waterproof Blanket catches every drop, then goes straight in the wash. Get as wet and wild as you want — cleanup is one cold cycle away.</p>
+      <p><b>Get close. Make a mess. We'll handle the rest.</b></p>
+      <a href="#" class="cta">Get Juicy Blanket</a>
+    </div>
+    <!-- VIDEO PLACEHOLDER — founder to drop the easy-cleaning / wipe-clean clip here -->
+    <div class="video-ph" style="aspect-ratio:1/1;">
+      <div class="play">▶</div>
+      <div class="ph-label">Easy-cleaning video</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== COMPARISON TABLE (US vs Them) ===================== -->
+<section class="wrap cmp">
+  <h2>Juicy vs. The Rest</h2>
+  <p class="sub">Not overhyped or overpriced. Just the blanket that actually keeps your bed dry.</p>
+  <div class="cmp-wrap">
+    <div class="cmp-head">Verified comparison based on real product specs and customer reviews.</div>
+    <table class="cmp-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="cmp-col-juicy">Juicy Blanket</th>
+          <th>A Towel</th>
+          <th>Regular Sheets</th>
+          <th>Other Waterproof Blankets</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>100% Waterproof</td>
+          <td class="cmp-col-juicy"><span class="cmp-badge">✓</span></td>
+          <td><span class="cmp-x">✕</span></td>
+          <td><span class="cmp-x">✕</span></td>
+          <td class="cmp-ok">✓</td>
+        </tr>
+        <tr>
+          <td>Quick Absorption (no pooling)</td>
+          <td class="cmp-col-juicy"><span class="cmp-badge">✓</span></td>
+          <td>Slow</td>
+          <td><span class="cmp-x">✕</span></td>
+          <td><span class="cmp-x">✕</span> repels only</td>
+        </tr>
+        <tr>
+          <td>Soft Cotton on Skin</td>
+          <td class="cmp-col-juicy"><span class="cmp-badge">✓</span></td>
+          <td>Scratchy</td>
+          <td class="cmp-ok">✓</td>
+          <td><span class="cmp-x">✕</span> plasticky</td>
+        </tr>
+        <tr>
+          <td>Whisper-Quiet (no crinkle)</td>
+          <td class="cmp-col-juicy"><span class="cmp-badge">✓</span></td>
+          <td class="cmp-ok">✓</td>
+          <td class="cmp-ok">✓</td>
+          <td class="cmp-x">✕ crinkles</td>
+        </tr>
+        <tr>
+          <td>Stays Cool</td>
+          <td class="cmp-col-juicy"><span class="cmp-badge">✓</span></td>
+          <td>—</td>
+          <td class="cmp-ok">✓</td>
+          <td class="cmp-x">✕ sleeps hot</td>
+        </tr>
+        <tr>
+          <td>Beautiful Enough to Leave Out</td>
+          <td class="cmp-col-juicy"><span class="cmp-badge">✓</span></td>
+          <td><span class="cmp-x">✕</span></td>
+          <td>—</td>
+          <td class="cmp-x">✕</td>
+        </tr>
+        <tr>
+          <td>Folds Flat for Travel</td>
+          <td class="cmp-col-juicy"><span class="cmp-badge">✓</span></td>
+          <td>Bulky</td>
+          <td><span class="cmp-x">✕</span></td>
+          <td class="cmp-x">✕</td>
+        </tr>
+        <tr>
+          <td>Built for Play</td>
+          <td class="cmp-col-juicy"><span class="cmp-badge">✓</span></td>
+          <td>Improvised</td>
+          <td><span class="cmp-x">✕</span></td>
+          <td class="cmp-ok">✓</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <button class="cmp-cart">ADD TO CART — $67</button>
+</section>
+
+<!-- ===================== UGC GRID ===================== -->
+<section class="ugc">
+  <div class="wrap">
+    <h2>See the Juicy Blanket in action</h2>
+    <div class="ugc-grid">
+      <div class="ugc-card">
+        <div class="ugc-vid"><img src="assets/02-water-beading.png" alt="" /><div class="ugc-play">▶</div></div>
+        <div class="ugc-cap">"I poured a whole glass on it. Still dry." <span class="ugc-tt">🎵</span></div>
+      </div>
+      <div class="ugc-card">
+        <div class="ugc-vid"><img src="assets/01-hero-folded.png" alt="" /><div class="ugc-play">▶</div></div>
+        <div class="ugc-cap">"Finally, no more wet spot." <span class="ugc-tt">🎵</span></div>
+      </div>
+      <div class="ugc-card">
+        <div class="ugc-vid"><img src="assets/04-macro-texture.png" alt="" /><div class="ugc-play">▶</div></div>
+        <div class="ugc-cap">"It's actually quiet. No crinkle." <span class="ugc-tt">🎵</span></div>
+      </div>
+      <div class="ugc-card">
+        <div class="ugc-vid"><img src="assets/03-flat-reversible.png" alt="" /><div class="ugc-play">▶</div></div>
+        <div class="ugc-cap">"Looks like a normal blanket. Genius." <span class="ugc-tt">🎵</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section class="faq">
+  <div class="wrap" style="max-width:860px;">
+    <h2>FAQ's</h2>
+
+    <div class="faq-item">
+      <button class="faq-q"><span><span class="ic">🧺</span> How do I wash the Juicy Waterproof Blanket?</span><span class="arrow">⌄</span></button>
+      <div class="faq-a">Machine wash cold or at 30°C max, gentle cycle, with a mild liquid detergent. Skip fabric softener (it coats the cotton and reduces absorption). No bleach, no dry cleaning. Tumble dry low or air dry — never iron.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span><span class="ic">🧵</span> What is it made of?</span><span class="arrow">⌄</span></button>
+      <div class="faq-a">57% polyester, 41% cotton, and a 2% TPU waterproof membrane. The skin side is a cotton-rich waffle weave (cool and breathable); the core is medical-grade TPU — the same waterproof tech used in premium period underwear.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span><span class="ic">🥛</span> How much liquid can it handle?</span><span class="arrow">⌄</span></button>
+      <div class="faq-a">More than you'll need. The cotton face absorbs the surface so there's no pooling, and the waterproof core stops everything from reaching your sheets or mattress. Lube, oil, period flow, any spill — it's got you.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span><span class="ic">💧</span> Does it absorb or just repel spills?</span><span class="arrow">⌄</span></button>
+      <div class="faq-a">Both — and that's the difference. Cheaper blankets only repel, so liquid pools on top and slides around. The Juicy Blanket's cotton face absorbs the surface (no puddles) while the TPU core keeps everything off your bed. Dry on the bottom, no mess on top.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span><span class="ic">🔇</span> Does it make crinkly sounds like a plastic sheet?</span><span class="arrow">⌄</span></button>
+      <div class="faq-a">No. The TPU core is whisper-quiet by design — none of the plastic crinkle you get from PVC or PEVA sheets. Most people forget it's even waterproof.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span><span class="ic">🌡️</span> Will it sleep hot or feel sweaty?</span><span class="arrow">⌄</span></button>
+      <div class="faq-a">No. The cotton-rich waffle weave is light and breathable — it stays cool against bare skin, unlike the heavy fleece-and-sherpa blankets that trap heat.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span><span class="ic">🛏️</span> What size is it / will it fit my bed?</span><span class="arrow">⌄</span></button>
+      <div class="faq-a">[DEV: confirm final dimensions] — sized to cover the play zone of a queen/king bed and still fold flat for travel.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span><span class="ic">⏱️</span> How long does it take to dry after washing?</span><span class="arrow">⌄</span></button>
+      <div class="faq-a">Faster than pure-cotton blankets. Tumble dry on low, or hang to air dry. Avoid high heat — it can weaken the waterproof layer over time.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span><span class="ic">🧴</span> Can I use it with massage oils and lube?</span><span class="arrow">⌄</span></button>
+      <div class="faq-a">Yes — water-based and oil-based both. Oil-stain removal can vary by formula, so wash within 24 hours of heavy oil use to keep it performing like new.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span><span class="ic">🩸</span> Can I use it for period nights?</span><span class="arrow">⌄</span></button>
+      <div class="faq-a">Absolutely. Rinse period blood with cold water first, then machine wash as usual. The waterproof core handles it the same way it handles everything else — completely.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q"><span><span class="ic">🎭</span> Is the shipping discreet?</span><span class="arrow">⌄</span></button>
+      <div class="faq-a">Always. Plain, unmarked packaging — no Nancy branding, no product name, no hint of what's inside. No one would guess.</div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  // Gallery thumbnail swap
+  const thumbs = document.querySelectorAll('#thumbs button');
+  const mainImg = document.getElementById('mainImg');
+  thumbs.forEach(btn => btn.addEventListener('click', () => {
+    mainImg.src = btn.dataset.src;
+    thumbs.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }));
+
+  // Tabs
+  const tabBtns = document.querySelectorAll('.tab-nav button');
+  const panels = document.querySelectorAll('.tab-panel');
+  tabBtns.forEach(btn => btn.addEventListener('click', () => {
+    tabBtns.forEach(b => b.classList.remove('active'));
+    panels.forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  }));
+
+  // Reviews slider (placeholder seeded quotes)
+  const reviews = [
+    { q: '"Period sex used to mean two towels and still ruining the sheets. With this I don\'t even think about it. Everything stays dry underneath. Wish I\'d had it years ago."', a: 'Mia, 29' },
+    { q: '"It\'s so light I forget it\'s even on the bed. So much easier than wrestling a towel that bunches up in the worst moment."', a: 'Priya, 34' },
+    { q: '"I was scared it would feel like a plastic sheet. It\'s soft cotton. No crinkle, no weird noise, no sweating. My old waterproof one sounded like a chip bag."', a: 'Sam, 31' },
+    { q: '"A towel soaks through. A regular sheet just gets ruined. This actually catches everything and doesn\'t slide around. Finally something that works."', a: 'Dani, 27' }
+  ];
+  let ri = 0;
+  const rq = document.getElementById('reviewQuote');
+  const ra = document.getElementById('reviewAuthor');
+  const dots = document.getElementById('revDots');
+  reviews.forEach((_, i) => { const s = document.createElement('span'); if (i===0) s.className='active'; dots.appendChild(s); });
+  function render() {
+    rq.textContent = reviews[ri].q;
+    ra.textContent = reviews[ri].a;
+    [...dots.children].forEach((d, i) => d.className = i === ri ? 'active' : '');
+  }
+  document.getElementById('revNext').onclick = () => { ri = (ri+1) % reviews.length; render(); };
+  document.getElementById('revPrev').onclick = () => { ri = (ri-1+reviews.length) % reviews.length; render(); };
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(q => q.addEventListener('click', () => {
+    const a = q.nextElementSibling;
+    const open = q.classList.contains('open');
+    q.classList.toggle('open', !open);
+    a.classList.toggle('open', !open);
+  }));
+</script>
+</body>
+</html>
