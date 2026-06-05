@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<!--
+  Hello Nancy — Jun → July Merchandising × Launch × Event Board  (v1.002)
+  Style reference: Shade.inc asset-manager UI (clean white, card grid, soft blue
+  folder tiles, thin light-gray borders, minimal pill toolbar, generous whitespace).
+
+  v1.002 changes (founder revision round):
+    - Added "At a glance" 3-up (Product Launch / Promotion / Events) at top so
+      product launch is immediately visible.
+    - Promotion dates: Pride Jun 12-30, Summer Sale Jul 1-31 (switch Jul 1).
+    - Event = London x Nick only, window Jun 20-27 (merch drop Jun 20, event Jun 27).
+    - Merch into 4 tiers: Critical (Cap, Tee) / Roll out after launch (Pouch,
+      Plushy x Butt) / Nick-Tennis tie-in (Tennis ball, Water bottle, Headband) /
+      Optional test (Umbrella, Hand fan, Sweater, Tote bag, Crop top).
+      Removed "Every Mood x Nick"; removed duplicate Sweater/Tote.
+    - Timeline cleaned per week-by-week notes.
+
+  Self-contained: no external assets. Fixed 1600px board width for clean export.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>2026.06_HelloNancy_Merch×Launch×Event</title>
+<style>
+  /* ---------- Design tokens (Shade-clean + Hello Nancy soft accents) ---------- */
+  :root{
+    --bg:#ffffff;
+    --ink:#1a1a1f;
+    --ink-soft:#6b6b75;
+    --ink-faint:#9a9aa3;
+    --line:#ececef;
+    --line-2:#f3f3f5;
+    --card:#ffffff;
+    --panel:#fafafb;
+
+    --blue:#4a8cf0;
+    --blue-2:#5b9df9;
+
+    /* Track colors */
+    --launch:#3f7fe0;  --launch-bg:#eef4fe;  --launch-line:#dbe8fc;
+    --promo:#e07ba0;   --promo-bg:#fdeef4;   --promo-line:#f8dce8;
+    --event:#8b6fd6;   --event-bg:#f1edfb;   --event-line:#e4dcf6;
+    --merch:#5aa17a;   --merch-bg:#ecf6f0;   --merch-line:#d8ece1;
+    --neutral:#8a8a93; --neutral-bg:#f6f6f8; --neutral-line:#ececef;
+
+    --radius:12px;
+    --radius-sm:9px;
+    --shadow:0 1px 2px rgba(16,16,24,.04), 0 1px 1px rgba(16,16,24,.03);
+    --shadow-lift:0 6px 20px rgba(16,16,24,.07);
+    --font:'Inter','SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:#f2f3f5;font-family:var(--font);-webkit-font-smoothing:antialiased;color:var(--ink);}
+
+  .board{width:1600px;margin:0 auto;background:var(--bg);min-height:1000px;}
+
+  /* ---------- Top chrome ---------- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--line);}
+  .crumb{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--ink);}
+  .crumb .ficon{width:20px;height:16px;}
+  .crumb .sep{color:var(--ink-faint);font-weight:400;}
+  .crumb .muted{color:var(--ink-soft);font-weight:500;}
+  .toolset{display:flex;align-items:center;gap:8px;}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-soft);font-weight:500;border:1px solid var(--line);border-radius:8px;padding:6px 11px;background:#fff;}
+  .pill svg{opacity:.7;}
+  .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#b89cff,#8b6fd6);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-left:6px;}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:26px 28px 8px;}
+  .hero h1{font-size:26px;font-weight:700;letter-spacing:-.5px;}
+  .hero h1 .arrow{color:var(--blue);font-weight:600;}
+  .hero p{margin-top:6px;font-size:13.5px;color:var(--ink-soft);max-width:1080px;line-height:1.5;}
+  .legend{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+  .lchip{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:20px;border:1px solid var(--line);}
+  .dot{width:9px;height:9px;border-radius:50%;}
+  .lchip.launch{background:var(--launch-bg);border-color:var(--launch-line);color:var(--launch);}
+  .lchip.promo {background:var(--promo-bg); border-color:var(--promo-line); color:var(--promo);}
+  .lchip.event {background:var(--event-bg); border-color:var(--event-line); color:var(--event);}
+  .lchip.merch {background:var(--merch-bg); border-color:var(--merch-line); color:var(--merch);}
+
+  /* ---------- Section titles ---------- */
+  .sec{padding:22px 28px 0;}
+  .sec-title{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px;}
+  .sec-title .bar{width:3px;height:13px;border-radius:2px;background:var(--blue);}
+
+  /* ---------- At a glance: 3-up summary ---------- */
+  .glance{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:0 28px;}
+  .gcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+  .gcard .ghead{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line-2);}
+  .gcard .ghead .gi{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .gcard .ghead h3{font-size:14px;font-weight:700;color:var(--ink);}
+  .gcard .ghead .cnt{margin-left:auto;font-size:11px;font-weight:600;color:var(--ink-faint);background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:2px 9px;}
+  .gcard.launch .ghead .gi{background:var(--launch-bg);}  .gcard.launch{border-top:3px solid var(--launch);}
+  .gcard.promo  .ghead .gi{background:var(--promo-bg);}   .gcard.promo{border-top:3px solid var(--promo);}
+  .gcard.event  .ghead .gi{background:var(--event-bg);}   .gcard.event{border-top:3px solid var(--event);}
+  .glist{padding:8px 8px 10px;}
+  .grow{display:flex;align-items:baseline;gap:10px;padding:7px 8px;border-radius:7px;}
+  .grow:hover{background:var(--panel);}
+  .grow .gd{font-size:11px;font-weight:700;min-width:78px;color:var(--ink-faint);}
+  .grow .gt{font-size:12.5px;font-weight:600;color:var(--ink);}
+  .grow .gn{font-size:11px;color:var(--ink-soft);font-weight:500;}
+  .gcard.launch .grow .gd{color:var(--launch);}
+  .gcard.promo  .grow .gd{color:var(--promo);}
+  .gcard.event  .grow .gd{color:var(--event);}
+  .gbig{padding:14px 16px 4px;}
+  .gbig .ev{font-size:18px;font-weight:700;color:var(--ink);}
+  .gbig .ev-win{font-size:12px;font-weight:700;color:var(--event);margin-top:3px;}
+  .gbig .ev-note{font-size:11.5px;color:var(--ink-soft);margin-top:8px;line-height:1.45;}
+
+  /* ---------- Weekly timeline ---------- */
+  .weeks{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;padding:0 28px;}
+  .week{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;}
+  .week.anchor{border-color:var(--event-line);box-shadow:var(--shadow-lift);}
+  .week-head{padding:11px 12px 9px;border-bottom:1px solid var(--line-2);display:flex;flex-direction:column;gap:2px;}
+  .week.anchor .week-head{background:var(--event-bg);border-bottom-color:var(--event-line);}
+  .week-range{font-size:12.5px;font-weight:700;color:var(--ink);}
+  .week-tag{font-size:10.5px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.4px;}
+  .week.anchor .week-tag{color:var(--event);}
+  .week-body{padding:9px;display:flex;flex-direction:column;gap:7px;flex:1;}
+  .item{border-radius:var(--radius-sm);padding:8px 9px;border:1px solid transparent;font-size:11.5px;line-height:1.35;}
+  .item .when{display:block;font-size:9.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;opacity:.85;margin-bottom:2px;}
+  .item .what{font-weight:600;color:var(--ink);}
+  .item .note{display:block;font-size:10.5px;color:var(--ink-soft);font-weight:500;margin-top:1px;}
+  .item.launch{background:var(--launch-bg);border-color:var(--launch-line);} .item.launch .when{color:var(--launch);}
+  .item.promo {background:var(--promo-bg); border-color:var(--promo-line);}  .item.promo .when{color:var(--promo);}
+  .item.event {background:var(--event-bg); border-color:var(--event-line);}  .item.event .when{color:var(--event);}
+  .item.merch {background:var(--merch-bg); border-color:var(--merch-line);}  .item.merch .when{color:var(--merch);}
+  .item.neutral{background:var(--neutral-bg);border-color:var(--neutral-line);} .item.neutral .when{color:var(--neutral);}
+  .item.star .what::after{content:' ★';color:var(--event);}
+
+  /* ---------- Lower zone ---------- */
+  .grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;padding:0 28px;}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 18px 20px;}
+  .panel h3{font-size:13.5px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px;}
+  .panel h3 .ficon{width:18px;height:14px;}
+  .panel .sub{font-size:11.5px;color:var(--ink-soft);margin-top:3px;margin-bottom:14px;line-height:1.45;}
+
+  .phase{margin-bottom:13px;}
+  .phase:last-child{margin-bottom:0;}
+  .phase-label{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+  .phase-label .badge{font-size:9.5px;padding:2px 7px;border-radius:11px;font-weight:700;}
+  .ph-crit .badge{background:#fdebef;color:#d4456e;}
+  .ph-exp  .badge{background:var(--merch-bg);color:var(--merch);}
+  .ph-nick .badge{background:var(--event-bg);color:var(--event);}
+  .ph-opt  .badge{background:#f4f4f6;color:var(--ink-faint);}
+  .phase-label .ttl{color:var(--ink);}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 11px;background:#fff;box-shadow:var(--shadow);}
+  .chip .gico{font-size:14px;line-height:1;}
+  .chip.crit{border-color:#f6cdd9;background:#fff7f9;}
+  .chip.nick{border-color:var(--event-line);background:#faf8fe;}
+  .chip.opt{color:var(--ink-soft);border-style:dashed;background:#fcfcfd;}
+
+  .stack{display:flex;flex-direction:column;gap:18px;}
+  .milestone{border-left:3px solid var(--event);background:var(--event-bg);border-radius:0 9px 9px 0;padding:11px 13px;margin-bottom:10px;}
+  .milestone:last-child{margin-bottom:0;}
+  .milestone .m-when{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--event);}
+  .milestone .m-what{font-size:12.5px;font-weight:600;color:var(--ink);margin-top:2px;}
+  .milestone .m-note{font-size:11px;color:var(--ink-soft);margin-top:2px;line-height:1.4;}
+  .milestone.web{border-left-color:var(--launch);background:var(--launch-bg);}
+  .milestone.web .m-when{color:var(--launch);}
+
+  .promo-row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line-2);}
+  .promo-row:last-child{border-bottom:none;}
+  .promo-row .pdate{font-size:11px;font-weight:700;color:var(--promo);min-width:88px;}
+  .promo-row .pname{font-size:12.5px;font-weight:600;color:var(--ink);}
+  .promo-row .pdesc{font-size:11px;color:var(--ink-soft);}
+
+  .lineup{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;padding:0 28px;}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);box-shadow:var(--shadow);padding:11px 10px;display:flex;flex-direction:column;gap:8px;}
+  .pcard .ficon{width:30px;height:24px;}
+  .pcard .pn{font-size:9.5px;font-weight:700;color:var(--blue);}
+  .pcard .pt{font-size:12px;font-weight:600;color:var(--ink);line-height:1.25;}
+  .pcard .pd{font-size:10.5px;color:var(--ink-faint);font-weight:600;}
+
+  .foot{padding:20px 28px 26px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);margin-top:24px;}
+  .foot .v{font-size:11px;color:var(--ink-faint);}
+  .foot .note{font-size:11px;color:var(--ink-soft);}
+</style>
+</head>
+<body>
+<div class="board">
+
+  <!-- ============ TOP CHROME ============ -->
+  <div class="topbar">
+    <div class="crumb">
+      <svg class="ficon" viewBox="0 0 20 16" fill="none"><path d="M1 3.2C1 2.0 2 1 3.2 1h3.6c.5 0 1 .2 1.4.6L9.4 3H16.8C18 3 19 4 19 5.2v8.6c0 1.2-1 2.2-2.2 2.2H3.2C2 16 1 15 1 13.8V3.2Z" fill="url(#fg)"/><defs><linearGradient id="fg" x1="1" y1="1" x2="19" y2="16"><stop stop-color="#5b9df9"/><stop offset="1" stop-color="#4a8cf0"/></linearGradient></defs></svg>
+      <span>2026.06_HelloNancy</span><span class="sep">/</span><span class="muted">Merch × Launch × Event</span>
+    </div>
+    <div class="toolset">
+      <span class="pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg>Sort</span>
+      <span class="pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>Filters</span>
+      <span class="pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Display</span>
+      <div class="avatar">M</div>
+    </div>
+  </div>
+
+  <!-- ============ HERO ============ -->
+  <div class="hero">
+    <h1>June <span class="arrow">→</span> July &nbsp;Merchandising, Launch &amp; Event Plan</h1>
+    <p>One connected runway. Product drops, promotion themes, and the London × Nick event are sequenced on a single weekly timeline — all building toward the event window (<strong>Jun 20–27</strong>), where <strong>Cap + Tee drop on Jun 20</strong> and the activation lands <strong>Jun 27</strong>.</p>
+    <div class="legend">
+      <span class="lchip launch"><span class="dot" style="background:var(--launch)"></span>Product Launch</span>
+      <span class="lchip promo"><span class="dot" style="background:var(--promo)"></span>Promotion</span>
+      <span class="lchip event"><span class="dot" style="background:var(--event)"></span>Event</span>
+      <span class="lchip merch"><span class="dot" style="background:var(--merch)"></span>Merch</span>
+    </div>
+  </div>
+
+  <!-- ============ AT A GLANCE: 3-UP ============ -->
+  <div class="sec"><div class="sec-title"><span class="bar"></span>At a glance — the three tracks</div></div>
+  <div class="glance">
+
+    <!-- Product Launch -->
+    <div class="gcard launch">
+      <div class="ghead"><span class="gi">📦</span><h3>Product Launch</h3><span class="cnt">7 drops</span></div>
+      <div class="glist">
+        <div class="grow"><span class="gd">Jun 9–15</span><span><span class="gt">Snack Pack / Lube</span> &nbsp;<span class="gn">pre-launch → ship</span></span></div>
+        <div class="grow"><span class="gd">Jun 18</span><span class="gt">Perfume Stick</span></div>
+        <div class="grow"><span class="gd">Jun 20</span><span><span class="gt">Merch — Cap + Tee</span> &nbsp;<span class="gn">drop at event</span></span></div>
+        <div class="grow"><span class="gd">Jul 2</span><span class="gt">BT Lem</span></div>
+        <div class="grow"><span class="gd">Jul 9</span><span class="gt">Plushy × Butt</span></div>
+        <div class="grow"><span class="gd">Jul 14</span><span class="gt">Pouch</span></div>
+        <div class="grow"><span class="gd">Jul 20</span><span class="gt">Foam Wipe</span></div>
+      </div>
+    </div>
+
+    <!-- Promotion -->
+    <div class="gcard promo">
+      <div class="ghead"><span class="gi">🎉</span><h3>Promotion</h3><span class="cnt">3 themes</span></div>
+      <div class="glist">
+        <div class="grow"><span class="gd">Jun 1–11</span><span><span class="gt">Wet Masturbation</span> &nbsp;<span class="gn">early-June theme</span></span></div>
+        <div class="grow"><span class="gd">Jun 12–30</span><span><span class="gt">Pride Sale</span></span></div>
+        <div class="grow"><span class="gd">Jul 1–31</span><span><span class="gt">Summer Sale</span> &nbsp;<span class="gn">BT Lem × travel runs under this</span></span></div>
+      </div>
+    </div>
+
+    <!-- Events -->
+    <div class="gcard event">
+      <div class="ghead"><span class="gi">📍</span><h3>Events</h3><span class="cnt">1 event</span></div>
+      <div class="gbig">
+        <div class="ev">London × Nick</div>
+        <div class="ev-win">Jun 20 → Jun 27</div>
+        <div class="ev-note">The anchor of the whole plan. <strong>Jun 20</strong> — Cap + Tee merch drop. <strong>Jun 27</strong> — live activation in London. Tennis tie-in merch supports it.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ UNIFIED WEEKLY TIMELINE ============ -->
+  <div class="sec"><div class="sec-title"><span class="bar"></span>Unified Weekly Runway</div></div>
+  <div class="weeks">
+
+    <div class="week">
+      <div class="week-head"><span class="week-range">Jun 1–7</span><span class="week-tag">Warm-up</span></div>
+      <div class="week-body">
+        <div class="item launch"><span class="when">Jun 1–7</span><span class="what">Waterproof Blanket push</span></div>
+        <div class="item promo"><span class="when">Jun 1–11</span><span class="what">Wet Masturbation theme</span></div>
+        <div class="item neutral"><span class="when">Jun 5</span><span class="what">DJ — Part 3</span></div>
+      </div>
+    </div>
+
+    <div class="week">
+      <div class="week-head"><span class="week-range">Jun 8–14</span><span class="week-tag">Pre-launch</span></div>
+      <div class="week-body">
+        <div class="item launch"><span class="when">Jun 9</span><span class="what">Snack Pack / Lube</span><span class="note">Pre-launch teaser</span></div>
+        <div class="item neutral"><span class="when">Jun 11</span><span class="what">DJ — Part 4</span></div>
+        <div class="item promo"><span class="when">Jun 12</span><span class="what">→ Pride Sale starts</span><span class="note">Switch from Wet Masturbation</span></div>
+      </div>
+    </div>
+
+    <div class="week">
+      <div class="week-head"><span class="week-range">Jun 15–21</span><span class="week-tag">Drops + Merch</span></div>
+      <div class="week-body">
+        <div class="item launch"><span class="when">Jun 15</span><span class="what">Snack Pack ready to ship</span></div>
+        <div class="item launch"><span class="when">Jun 18</span><span class="what">Perfume Stick launch</span></div>
+        <div class="item merch"><span class="when">Jun 20</span><span class="what">Merch drop: Cap + Tee</span></div>
+      </div>
+    </div>
+
+    <div class="week anchor">
+      <div class="week-head"><span class="week-range">Jun 22–28</span><span class="week-tag">★ London × Nick</span></div>
+      <div class="week-body">
+        <div class="item event star"><span class="when">Jun 27</span><span class="what">London × Nick activation</span><span class="note">Live event — nothing else this week</span></div>
+      </div>
+    </div>
+
+    <div class="week">
+      <div class="week-head"><span class="week-range">Jun 29–Jul 5</span><span class="week-tag">Pivot to summer</span></div>
+      <div class="week-body">
+        <div class="item promo"><span class="when">Jul 1</span><span class="what">Pride → Summer Sale</span></div>
+        <div class="item launch"><span class="when">Jul 2</span><span class="what">Launch BT Lem</span></div>
+      </div>
+    </div>
+
+    <div class="week">
+      <div class="week-head"><span class="week-range">Jul 6–12</span><span class="week-tag">Summer push</span></div>
+      <div class="week-body">
+        <div class="item launch"><span class="when">Jul 6–12</span><span class="what">Push BT Lem × Travel</span></div>
+        <div class="item launch"><span class="when">Jul 9</span><span class="what">Plushy × Butt</span></div>
+        <div class="item promo"><span class="when">All July</span><span class="what">Summer Sale running</span></div>
+      </div>
+    </div>
+
+    <div class="week">
+      <div class="week-head"><span class="week-range">Jul 13–20</span><span class="week-tag">Expand</span></div>
+      <div class="week-body">
+        <div class="item launch"><span class="when">Jul 14</span><span class="what">Pouch</span></div>
+        <div class="item launch"><span class="when">Jul 20</span><span class="what">Foam Wipe</span></div>
+        <div class="item merch"><span class="when">Jul 20</span><span class="what">Merch review</span><span class="note">Decide what else to push</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ MERCH + EVENT/PROMO ============ -->
+  <div class="sec"><div class="sec-title"><span class="bar"></span>Merch Drop Plan &amp; Event Anchors</div></div>
+  <div class="grid2">
+
+    <div class="panel">
+      <h3><svg class="ficon" viewBox="0 0 20 16" fill="none"><path d="M1 3.2C1 2 2 1 3.2 1h3.6c.5 0 1 .2 1.4.6L9.4 3H16.8C18 3 19 4 19 5.2v8.6c0 1.2-1 2.2-2.2 2.2H3.2C2 16 1 15 1 13.8V3.2Z" fill="#5aa17a"/></svg>Merch — phased to the event</h3>
+      <p class="sub">Cap + Tee are the only two that <strong>must</strong> exist before Jun 20 (store live + event). Start there, then roll out the rest and lean into a tennis tie-in for Nick.</p>
+
+      <div class="phase ph-crit">
+        <div class="phase-label"><span class="badge">CRITICAL</span><span class="ttl">Ship before the event · Jun 20</span></div>
+        <div class="chips">
+          <span class="chip crit"><span class="gico">🧢</span>Cap</span>
+          <span class="chip crit"><span class="gico">👕</span>T-shirt</span>
+        </div>
+      </div>
+
+      <div class="phase ph-exp">
+        <div class="phase-label"><span class="badge">ROLL OUT</span><span class="ttl">After launch</span></div>
+        <div class="chips">
+          <span class="chip"><span class="gico">👝</span>Pouch</span>
+          <span class="chip"><span class="gico">🧸</span>Plushy × Butt</span>
+        </div>
+      </div>
+
+      <div class="phase ph-nick">
+        <div class="phase-label"><span class="badge">TENNIS TIE-IN</span><span class="ttl">Nick / London activation</span></div>
+        <div class="chips">
+          <span class="chip nick"><span class="gico">🎾</span>Tennis ball</span>
+          <span class="chip nick"><span class="gico">🍶</span>Water bottle</span>
+          <span class="chip nick"><span class="gico">🎽</span>Headband</span>
+        </div>
+      </div>
+
+      <div class="phase ph-opt">
+        <div class="phase-label"><span class="badge">OPTIONAL</span><span class="ttl">Nice-to-have · test demand</span></div>
+        <div class="chips">
+          <span class="chip opt"><span class="gico">☂️</span>Umbrella</span>
+          <span class="chip opt"><span class="gico">🪭</span>Hand fan</span>
+          <span class="chip opt"><span class="gico">🧶</span>Sweater</span>
+          <span class="chip opt"><span class="gico">🛍️</span>Tote bag</span>
+          <span class="chip opt"><span class="gico">👚</span>Crop top</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="panel">
+        <h3>📍 Event anchor &amp; merch drop</h3>
+        <p class="sub">The event is the anchor — Cap + Tee land just before it so the merch is ready for the room.</p>
+        <div class="milestone web">
+          <div class="m-when">Jun 20 · before event</div>
+          <div class="m-what">Merch drop — Cap + Tee</div>
+          <div class="m-note">Ready to wear / sell at the activation.</div>
+        </div>
+        <div class="milestone">
+          <div class="m-when">Jun 27</div>
+          <div class="m-what">London × Nick — live activation</div>
+          <div class="m-note">Cap + Tee + tennis tie-in merch worn / sold on-site.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>🎉 Promotion calendar</h3>
+        <div class="promo-row"><span class="pdate">Jun 1–11</span><span><span class="pname">Wet Masturbation</span> &nbsp;<span class="pdesc">early-June theme</span></span></div>
+        <div class="promo-row"><span class="pdate">Jun 12–30</span><span><span class="pname">Pride Sale</span></span></div>
+        <div class="promo-row"><span class="pdate">Jul 1–31</span><span><span class="pname">Summer Sale</span> &nbsp;<span class="pdesc">BT Lem × travel runs under this</span></span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ PRODUCT LAUNCH LINEUP ============ -->
+  <div class="sec"><div class="sec-title"><span class="bar"></span>Product Launch Lineup</div></div>
+  <div class="lineup">
+    <div class="pcard"><svg class="ficon" viewBox="0 0 20 16"><path d="M1 3.2C1 2 2 1 3.2 1h3.6c.5 0 1 .2 1.4.6L9.4 3H16.8C18 3 19 4 19 5.2v8.6c0 1.2-1 2.2-2.2 2.2H3.2C2 16 1 15 1 13.8V3.2Z" fill="#4a8cf0"/></svg><span class="pn">01</span><span class="pt">Snack Pack / Lube</span><span class="pd">Jun 9–15</span></div>
+    <div class="pcard"><svg class="ficon" viewBox="0 0 20 16"><path d="M1 3.2C1 2 2 1 3.2 1h3.6c.5 0 1 .2 1.4.6L9.4 3H16.8C18 3 19 4 19 5.2v8.6c0 1.2-1 2.2-2.2 2.2H3.2C2 16 1 15 1 13.8V3.2Z" fill="#4a8cf0"/></svg><span class="pn">02</span><span class="pt">Perfume Stick</span><span class="pd">Jun 18</span></div>
+    <div class="pcard"><svg class="ficon" viewBox="0 0 20 16"><path d="M1 3.2C1 2 2 1 3.2 1h3.6c.5 0 1 .2 1.4.6L9.4 3H16.8C18 3 19 4 19 5.2v8.6c0 1.2-1 2.2-2.2 2.2H3.2C2 16 1 15 1 13.8V3.2Z" fill="#5aa17a"/></svg><span class="pn">03</span><span class="pt">Merch (Cap + Tee →)</span><span class="pd">Jun 20</span></div>
+    <div class="pcard"><svg class="ficon" viewBox="0 0 20 16"><path d="M1 3.2C1 2 2 1 3.2 1h3.6c.5 0 1 .2 1.4.6L9.4 3H16.8C18 3 19 4 19 5.2v8.6c0 1.2-1 2.2-2.2 2.2H3.2C2 16 1 15 1 13.8V3.2Z" fill="#4a8cf0"/></svg><span class="pn">04</span><span class="pt">BT Lem</span><span class="pd">Jul 2</span></div>
+    <div class="pcard"><svg class="ficon" viewBox="0 0 20 16"><path d="M1 3.2C1 2 2 1 3.2 1h3.6c.5 0 1 .2 1.4.6L9.4 3H16.8C18 3 19 4 19 5.2v8.6c0 1.2-1 2.2-2.2 2.2H3.2C2 16 1 15 1 13.8V3.2Z" fill="#4a8cf0"/></svg><span class="pn">05</span><span class="pt">Plushy × Butt</span><span class="pd">Jul 9</span></div>
+    <div class="pcard"><svg class="ficon" viewBox="0 0 20 16"><path d="M1 3.2C1 2 2 1 3.2 1h3.6c.5 0 1 .2 1.4.6L9.4 3H16.8C18 3 19 4 19 5.2v8.6c0 1.2-1 2.2-2.2 2.2H3.2C2 16 1 15 1 13.8V3.2Z" fill="#4a8cf0"/></svg><span class="pn">06</span><span class="pt">Pouch</span><span class="pd">Jul 14</span></div>
+    <div class="pcard"><svg class="ficon" viewBox="0 0 20 16"><path d="M1 3.2C1 2 2 1 3.2 1h3.6c.5 0 1 .2 1.4.6L9.4 3H16.8C18 3 19 4 19 5.2v8.6c0 1.2-1 2.2-2.2 2.2H3.2C2 16 1 15 1 13.8V3.2Z" fill="#4a8cf0"/></svg><span class="pn">07</span><span class="pt">Foam Wipe</span><span class="pd">Jul 20</span></div>
+  </div>
+
+  <div class="foot">
+    <span class="v">v1.003 · Hello Nancy · planning board</span>
+    <span class="note">Anchor: everything converges on London × Nick (Jun 20–27) — Cap/Tee drop Jun 20, activation Jun 27.</span>
+  </div>
+
+</div>
+</body>
+</html>
