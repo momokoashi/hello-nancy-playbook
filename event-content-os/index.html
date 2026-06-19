@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hello Nancy · Event Content OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+<style>
+/* ES Rebond Grotesque — brand body font, self-hosted on Shopify CDN (CORS *) */
+@font-face{font-family:'ES Rebond Grotesque';src:url('https://cdn.shopify.com/s/files/1/0726/3764/5121/files/ESRebondGrotesque-Regular.woff') format('woff');font-weight:400;font-display:swap;}
+@font-face{font-family:'ES Rebond Grotesque';src:url('https://cdn.shopify.com/s/files/1/0726/3764/5121/files/ESRebondGrotesque-Semibold.woff') format('woff');font-weight:600;font-display:swap;}
+@font-face{font-family:'ES Rebond Grotesque';src:url('https://cdn.shopify.com/s/files/1/0726/3764/5121/files/ESRebondGrotesque-Bold.woff') format('woff');font-weight:700;font-display:swap;}
+
+:root{
+  --cream:#FBF3E9; --cream-2:#F4E7D5; --card:#FFFFFF; --ink:#211C18; --ink-60:#6B635A;
+  --pink:#FF4E9B; --pink-soft:#FBD9E6; --pink-50:#FFE7F1;
+  --yellow:#FFCF4A; --yellow-soft:#FFF1C9;
+  --sage:#3F8E7D; --sage-soft:#DCEEE8;
+  --line:#EADCC8; --shadow:0 2px 0 rgba(33,28,24,.06),0 14px 34px -18px rgba(33,28,24,.35);
+  --serif:'Fraunces',Georgia,serif; --sans:'ES Rebond Grotesque','Helvetica Neue',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--cream);color:var(--ink);line-height:1.45;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.serif{font-family:var(--serif)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 26px}
+
+/* ---------- Header ---------- */
+header{background:var(--cream);border-bottom:1.5px solid var(--line);position:sticky;top:0;z-index:40}
+.bar{display:flex;align-items:center;gap:18px;padding:16px 0 14px}
+.logo{font-family:var(--serif);font-weight:600;font-size:21px;letter-spacing:-.01em}
+.logo b{color:var(--pink)}
+.sub{font-size:12.5px;color:var(--ink-60);border-left:1.5px solid var(--line);padding-left:16px}
+.math{margin-left:auto;display:flex;gap:10px;align-items:stretch}
+.mchip{background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:7px 13px;text-align:center;min-width:84px;box-shadow:var(--shadow)}
+.mchip .k{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-60)}
+.mchip .v{font-family:var(--serif);font-weight:600;font-size:19px}
+.mchip .v small{font-size:12px;color:var(--ink-60)}
+.mchip.hot{background:var(--pink);border-color:var(--pink)}
+.mchip.hot .k,.mchip.hot .v{color:#fff}
+
+/* ---------- Tabs ---------- */
+nav.tabs{display:flex;gap:6px;padding:4px 0 0;overflow-x:auto}
+.tab{appearance:none;border:none;background:transparent;font-family:var(--sans);font-weight:600;font-size:14px;color:var(--ink-60);
+  padding:11px 16px 14px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.tab .n{display:inline-grid;place-items:center;width:21px;height:21px;border-radius:50%;background:var(--cream-2);font-size:11.5px;color:var(--ink)}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--ink);border-bottom-color:var(--pink)}
+.tab.on .n{background:var(--pink);color:#fff}
+.tab .ct{font-size:11px;background:var(--ink);color:#fff;border-radius:20px;padding:1px 7px;margin-left:2px}
+
+/* ---------- Views ---------- */
+main{padding:28px 0 80px}
+.view{display:none;animation:fade .25s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.vhead{display:flex;align-items:flex-end;gap:16px;margin-bottom:6px;flex-wrap:wrap}
+.vhead h2{font-size:30px;font-weight:600;letter-spacing:-.015em}
+.vhead p{color:var(--ink-60);font-size:14px;max-width:560px;margin-top:4px}
+.vhead .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+
+/* ---------- Funnel strip ---------- */
+.funnel{display:flex;gap:0;align-items:stretch;background:var(--card);border:1.5px solid var(--line);border-radius:16px;overflow:hidden;margin:18px 0 22px;box-shadow:var(--shadow)}
+.fstep{flex:1;padding:14px 16px;border-right:1.5px solid var(--line);position:relative}
+.fstep:last-child{border-right:none}
+.fstep .fn{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-60)}
+.fstep .fv{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1.1}
+.fstep .fd{font-size:12px;color:var(--ink-60)}
+.fstep.act{background:var(--pink-50)}
+
+/* ---------- Filters ---------- */
+.filters{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.fpill{appearance:none;border:1.5px solid var(--line);background:var(--card);border-radius:20px;padding:7px 14px;font-family:var(--sans);font-weight:600;font-size:13px;color:var(--ink-60);cursor:pointer}
+.fpill.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hint{font-size:12.5px;color:var(--ink-60);margin-left:auto}
+
+/* ---------- Table ---------- */
+.tbl{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1.5px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.tbl th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-60);text-align:left;padding:13px 14px;background:var(--cream-2);font-weight:600;border-bottom:1.5px solid var(--line)}
+.tbl td{padding:13px 14px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr.gated td{opacity:.5}
+.tbl tr.picked{background:var(--pink-50)}
+.src{font-weight:600}
+.src small{display:block;color:var(--ink-60);font-weight:400;font-size:12px}
+.why{color:var(--ink-60);font-style:italic}
+
+/* chips */
+.score{display:inline-grid;place-items:center;min-width:44px;height:30px;border-radius:9px;font-family:var(--serif);font-weight:600;font-size:16px;padding:0 7px}
+.score.s9{background:#FFD3E6;color:#B3055B}
+.score.s6{background:#FFE2B8;color:#9A5B00}
+.score.s3{background:var(--sage-soft);color:#1F5A4C}
+.score.s0{background:#ECECEC;color:#8A8A8A}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:.01em}
+.b-A{background:var(--sage-soft);color:#1F5A4C}
+.b-B{background:var(--pink-soft);color:#B3055B}
+.b-easy{background:var(--sage-soft);color:#1F5A4C}
+.b-med{background:var(--yellow-soft);color:#8A5B00}
+.b-hard{background:#FBD9E6;color:#B3055B}
+.b-gate{background:#ECE7DE;color:#8A8278}
+.prio{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.prio.must{color:var(--pink)} .prio.should{color:#9A5B00} .prio.could{color:var(--ink-60)}
+
+/* buttons */
+.btn{appearance:none;font-family:var(--sans);font-weight:600;font-size:13px;border-radius:11px;padding:9px 15px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;transition:transform .08s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:none}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.pink{background:var(--pink);border-color:var(--pink)}
+.btn.sm{padding:7px 12px;font-size:12.5px}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none}
+.cflag{font-weight:700;color:var(--pink)}
+
+/* ---------- Concepts board ---------- */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.ccard{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s ease,border-color .1s ease;position:relative;overflow:hidden}
+.ccard:hover{transform:translateY(-3px);border-color:var(--pink)}
+.ccard .letter{position:absolute;top:-8px;right:10px;font-family:var(--serif);font-weight:700;font-size:74px;color:var(--cream-2);line-height:1;z-index:0}
+.ccard>*{position:relative;z-index:1}
+.ccard h3{font-size:19px;font-weight:600;margin:8px 0 4px;max-width:80%}
+.ccard .meta{font-size:12.5px;color:var(--ink-60);margin-bottom:12px}
+.ccard .row{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.ccard .open{font-weight:600;color:var(--pink);font-size:13px;display:inline-flex;gap:5px;align-items:center}
+.empty{background:var(--card);border:1.5px dashed var(--line);border-radius:18px;padding:40px;text-align:center;color:var(--ink-60)}
+
+/* ---------- Brief ---------- */
+.brief{background:var(--card);border:1.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.brief .top{padding:22px 26px;background:linear-gradient(180deg,var(--pink-50),var(--card));border-bottom:1.5px solid var(--line)}
+.brief .top .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--pink);font-weight:700}
+.brief .top h2{font-size:30px;font-weight:600;margin:4px 0 8px}
+.brief .top .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bbody{display:grid;grid-template-columns:1.15fr .85fr;gap:0}
+@media(max-width:860px){.bbody{grid-template-columns:1fr}}
+.bcol{padding:22px 26px}
+.bcol+.bcol{border-left:1.5px solid var(--line)}
+@media(max-width:860px){.bcol+.bcol{border-left:none;border-top:1.5px solid var(--line)}}
+.blk{margin-bottom:22px}
+.blk h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.blk h4 .tag{background:var(--yellow);color:var(--ink);font-size:10px;padding:2px 7px;border-radius:20px;letter-spacing:0}
+/* timeline */
+.tl{border-left:2px solid var(--pink-soft);margin-left:6px}
+.tl li{list-style:none;position:relative;padding:0 0 13px 18px}
+.tl li::before{content:'';position:absolute;left:-7px;top:4px;width:11px;height:11px;border-radius:50%;background:var(--pink);border:2px solid var(--card)}
+.tl .t{font-family:var(--serif);font-weight:600;font-size:13px;color:var(--pink);margin-right:8px}
+.tl .d{font-size:13.5px}
+.script li{font-size:13.5px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.script li:last-child{border:none}
+.script .t{font-family:var(--serif);color:var(--sage);font-weight:600;margin-right:8px}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.spec .k{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-60)}
+.spec .v{font-size:13.5px;font-weight:600}
+.recipe{background:var(--sage-soft);border-radius:13px;padding:14px 16px;font-size:13.5px}
+.recipe b{color:var(--sage)}
+.callout{background:var(--yellow-soft);border:1.5px solid var(--yellow);border-radius:13px;padding:12px 15px;font-size:13px;margin-top:6px}
+
+/* ---------- Schedule ---------- */
+.sched{display:flex;flex-direction:column;gap:14px}
+.block{background:var(--card);border:1.5px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.block .bh{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1.5px solid var(--line);background:var(--cream-2)}
+.block .time{font-family:var(--serif);font-weight:600;font-size:17px;min-width:118px}
+.block .setup{font-weight:600}
+.block .setup small{display:block;color:var(--ink-60);font-weight:400;font-size:12px}
+.block .talent{margin-left:auto;font-size:12.5px;color:var(--ink-60)}
+.block .bcards{display:flex;gap:10px;padding:14px 18px;flex-wrap:wrap}
+.scard{border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;min-width:190px;cursor:pointer}
+.scard:hover{border-color:var(--pink)}
+.scard .st{font-size:11px;color:var(--ink-60)}
+.scard .sn{font-weight:600;font-size:14px;margin:2px 0 6px}
+.batch{font-size:12px;color:var(--sage);font-weight:600;display:flex;align-items:center;gap:6px}
+
+/* ---------- Kanban ---------- */
+.kan{display:grid;grid-template-columns:repeat(7,minmax(140px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
+.kcol{background:var(--cream-2);border-radius:14px;padding:10px;min-height:140px}
+.kcol h4{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-60);margin-bottom:9px;display:flex;justify-content:space-between}
+.kcard{background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:10px 11px;margin-bottom:9px;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+.kcard:hover{border-color:var(--pink)}
+.kcard .kn{font-weight:600;font-size:13px}
+.kcard .km{font-size:11.5px;color:var(--ink-60);margin-top:3px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:30px;font-weight:600;font-size:13.5px;opacity:0;transition:.3s;z-index:90;box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.foot{text-align:center;color:var(--ink-60);font-size:12px;padding:30px 0 10px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="bar">
+      <div class="logo">Hello <b>Nancy</b></div>
+      <div class="sub">Event Content OS<br/>outlier → concept → shoot → publish</div>
+      <div class="math">
+        <div class="mchip"><div class="k">Cost</div><div class="v">$20<small>k</small></div></div>
+        <div class="mchip"><div class="k">Views need</div><div class="v">20<small>M</small></div></div>
+        <div class="mchip"><div class="k">Videos (N)</div><div class="v">80</div></div>
+        <div class="mchip hot"><div class="k">Target CPM</div><div class="v">$1</div></div>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab on" data-v="refs"><span class="n">1</span> Reference Bank <span class="ct" id="ct-refs">0</span></button>
+      <button class="tab" data-v="concepts"><span class="n">2</span> Concepts <span class="ct" id="ct-con">0</span></button>
+      <button class="tab" data-v="sched"><span class="n">3</span> Shoot Schedule</button>
+      <button class="tab" data-v="pipe"><span class="n">4</span> Edit &amp; Publish</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ VIEW 1 · REFERENCE BANK ============ -->
+  <section class="view on" id="v-refs">
+    <div class="vhead">
+      <div>
+        <h2>Reference Bank</h2>
+        <p>Every "Liars"/competitor + creator video, scored by outlier. <b>Select the winners</b> — each one you pick becomes Concept A, B, C…</p>
+      </div>
+    </div>
+
+    <div class="funnel">
+      <div class="fstep act"><div class="fn">Collected</div><div class="fv" id="f-all">10</div><div class="fd">references scored</div></div>
+      <div class="fstep"><div class="fn">Pass the gate</div><div class="fv" id="f-gate">8</div><div class="fd">outlier ≥3 + recreatable</div></div>
+      <div class="fstep"><div class="fn">Selected</div><div class="fv" id="f-sel">3</div><div class="fd">→ became concepts</div></div>
+      <div class="fstep"><div class="fn">Target</div><div class="fv">~25</div><div class="fd">to staff for $1 CPM</div></div>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="fpill on" data-f="all">All</button>
+      <button class="fpill" data-f="gate">Passes gate</button>
+      <button class="fpill" data-f="A">Track A · Product/Demo</button>
+      <button class="fpill" data-f="B">Track B · Recreation</button>
+      <span class="hint">Gate = Outlier ≥ 3 · recreatable · hook in 2s · recipe writable now</span>
+    </div>
+
+    <table class="tbl" id="reftbl">
+      <thead><tr>
+        <th>Reference</th><th>Format</th><th>Their median</th><th>This video</th><th>Outlier</th><th>Why it worked</th><th>Track</th><th>Recreatable</th><th></th>
+      </tr></thead>
+      <tbody id="refbody"></tbody>
+    </table>
+  </section>
+
+  <!-- ============ VIEW 2 · CONCEPTS ============ -->
+  <section class="view" id="v-concepts">
+    <div class="vhead">
+      <div>
+        <h2>Concepts</h2>
+        <p>Everything you selected. Click any card to open its <b>Concept Unit Brief</b> — the shoot-day bible (Table 2).</p>
+      </div>
+      <div class="right"><button class="btn ghost" onclick="go('refs')">← Add more from Reference Bank</button></div>
+    </div>
+    <div class="cgrid" id="cgrid"></div>
+  </section>
+
+  <!-- ============ CONCEPT BRIEF (Table 2 detail) ============ -->
+  <section class="view" id="v-brief">
+    <div class="vhead"><button class="btn ghost" onclick="go('concepts')">← Back to Concepts</button></div>
+    <div id="briefmount"></div>
+  </section>
+
+  <!-- ============ VIEW 3 · SCHEDULE ============ -->
+  <section class="view" id="v-sched">
+    <div class="vhead">
+      <div>
+        <h2>Shoot Schedule</h2>
+        <p>Generated from your concepts, <b>batched by setup</b> — every concept that shares a wall/location shoots back-to-back. Re-lighting per concept is the #1 time killer.</p>
+      </div>
+    </div>
+    <div class="sched" id="schedmount"></div>
+  </section>
+
+  <!-- ============ VIEW 4 · PIPELINE ============ -->
+  <section class="view" id="v-pipe">
+    <div class="vhead">
+      <div>
+        <h2>Edit &amp; Publish</h2>
+        <p>The "upload every 1–2 hours" engine. Each concept moves left → right; an editor owns it end to end. New selections land in <b>Shot</b>.</p>
+      </div>
+    </div>
+    <div class="kan" id="kanmount"></div>
+  </section>
+
+  <div class="foot">Hello Nancy · Event Content OS — mockup v1.0 · plugs into the nancy-hub Content Guide</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ========================= DATA ========================= */
+// Track A = Product/Demo (evergreen, web+banner) · Track B = Outlier recreation (viral)
+const REFS = [
+ {id:'R-001', src:'@thesoftlife', url:'tiktok', format:'POV product reveal', median:11000, views:99000, why:'text hook + reveal', track:'B', diff:'Easy'},
+ {id:'R-002', src:'Dr. Lane (OB-GYN)', url:'tiktok', format:'"Things I wish I knew at 30"', median:18000, views:126000, why:'credential + listicle', track:'B', diff:'Med'},
+ {id:'R-003', src:'@studio.macro', url:'reels', format:'"How it actually works" demo', median:9000, views:31000, why:'satisfying macro loop', track:'A', diff:'Easy'},
+ {id:'R-004', src:'@askthestreets', url:'tiktok', format:'Street interview · "what’s in your bag"', median:22000, views:140000, why:'stranger candid + product', track:'B', diff:'Med'},
+ {id:'R-005', src:'Maya PT (pelvic floor)', url:'tiktok', format:'Expert myth-bust explainer', median:40000, views:320000, why:'expert myth-bust', track:'B', diff:'Hard'},
+ {id:'R-006', src:'@morningsofmine', url:'reels', format:'GRWM with product cameo', median:15000, views:78000, why:'routine + soft mention', track:'B', diff:'Easy'},
+ {id:'R-007', src:'@unbox.asmr', url:'tiktok', format:'ASMR unboxing', median:12000, views:50000, why:'tactile sound + reveal', track:'A', diff:'Easy'},
+ {id:'R-008', src:'@gadgetrated', url:'reels', format:'"Rating viral wellness gadgets"', median:20000, views:70000, why:'rank + verdict', track:'B', diff:'Med'},
+ {id:'R-009', src:'@reactqueen', url:'tiktok', format:'Duet / reaction overlay', median:30000, views:48000, why:'reaction overlay', track:'B', diff:'Easy'},
+ {id:'R-010', src:'@trenddancer', url:'tiktok', format:'Trend dance w/ product', median:25000, views:30000, why:'trend audio only', track:'B', diff:'Easy'},
+];
+REFS.forEach(r=>{r.outlier=+(r.views/r.median).toFixed(1); r.selected=false; r.concept=null;});
+
+// Pre-written briefs for the seeded concepts (the showcase)
+const BRIEFS = {
+ 'R-001':{title:'POV: you finally found the one', prio:'Must', shootMin:12,
+   shots:[['0:00','hands hold product'],['0:02','text hook appears'],['0:04','face — soft reaction'],['0:06','product macro insert'],['0:09','CTA end card']],
+   script:[['0:00','"POV: you finally found the one 🌹"'],['0:04','"the one that just… gets it"'],['0:08','"link in bio, bestie"']],
+   talent:'Maya', props:'Rose, soft bedding, warm lamp', setup:'Bedroom set (warm)', wardrobe:'Neutral loungewear · no logos',
+   broll:'Product macro · clean plate · 2 alt reactions',
+   recipe:'Trending audio "soft girl pt.4" · auto-captions (berry) · 6 fast cuts on beat · warm glow LUT · CTA end card',
+   note:'Hook must land in frame 1 — the text overlay is the whole reason this hit 9×. Match the original’s first 2 seconds exactly.'},
+ 'R-002':{title:'3 things I wish I knew at 30', prio:'Must', shootMin:9,
+   shots:[['0:00','talking head, direct'],['0:02','on-screen "#1"'],['0:05','b-roll cutaway'],['0:08','"#2" + product'],['0:13','soft CTA']],
+   script:[['0:00','"3 things no one told me at 30…"'],['0:05','"one: your body changes — that’s normal"'],['0:13','"save this for later"']],
+   talent:'Dr. Lane (or Maya as host)', props:'Product, notebook, bright desk', setup:'Bright wall · talking head', wardrobe:'Smart-casual · credible',
+   broll:'Listicle text plates · 2 cutaways · clean plate',
+   recipe:'No music bed under VO · big bold captions · numbered text plates · slow zoom · save-CTA end',
+   note:'Education is our proven viral engine. Keep it health-framed, never pleasure-framed (Meta-safe & travels further).'},
+ 'R-003':{title:'How it actually works (macro demo)', prio:'Should', shootMin:18,
+   shots:[['0:00','product on clean surface'],['0:02','macro detail glide'],['0:05','in-use motion (hands)'],['0:09','satisfying loop point'],['0:12','logo end frame']],
+   script:[['0:00','(text only) "how it actually works ✨"'],['0:05','"3 speeds. fully waterproof."'],['0:12','"hellonancy.com"']],
+   talent:'Hands only', props:'Product, water droplets, seamless backdrop', setup:'Product macro table', wardrobe:'—',
+   broll:'360 spin · droplet macro · texture detail · clean plate',
+   recipe:'No talent · ASMR product sound up · seamless loop · soft studio light · also export 1:1 + 16:9 for web banner',
+   note:'Track A — this is an asset bank shot. Doesn’t need to go viral; it lives forever on the PDP, banners & ads.'},
+};
+
+// Schedule setups, keyed by track + a setup label. New concepts drop into the matching setup or "Unscheduled".
+const SETUPS = [
+ {time:'9:00 – 10:30', setup:'Warm bedroom set', sub:'Track B · soft, intimate', track:'B', talent:'Maya', match:'bedroom'},
+ {time:'10:30 – 12:00', setup:'Product macro table', sub:'Track A · clean, lit, slow', track:'A', talent:'Hands only', match:'macro'},
+ {time:'13:00 – 14:00', setup:'Bright wall · talking head', sub:'Track B · education', track:'B', talent:'Dr. Lane / Maya', match:'wall'},
+ {time:'14:00 – 15:30', setup:'Outdoor / street', sub:'Track B · run-and-gun', track:'B', talent:'Maya + crew', match:'street'},
+];
+function setupFor(ref){
+  const b=BRIEFS[ref.id]; const s=(b?b.setup:'').toLowerCase();
+  if(s.includes('bedroom')) return 0;
+  if(s.includes('macro')||ref.track==='A') return 1;
+  if(s.includes('wall')||ref.format.toLowerCase().includes('wish')) return 2;
+  if(ref.format.toLowerCase().includes('street')) return 3;
+  return ref.track==='A'?1:0;
+}
+
+const STAGES=['Shot','Ingested','Assigned','Editing','Review','Approved','Published'];
+const STAGECLR={Shot:'#C9BBA6',Ingested:'#FFCF4A',Assigned:'#7AA7FF',Editing:'#FF4E9B',Review:'#B98BFF',Approved:'#3F8E7D',Published:'#1F5A4C'};
+// seeded pipeline state for the 3 concepts
+const PIPE={'R-001':{stage:'Editing',editor:'Editor 1',pub:'11:00'},'R-002':{stage:'Assigned',editor:'Editor 2',pub:'12:30'},'R-003':{stage:'Ingested',editor:'—',pub:'14:00'}};
+
+let conceptSeq=0;
+function nextLetter(){return String.fromCharCode(65+conceptSeq++);} // A,B,C...
+
+/* ========================= RENDER ========================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let filter='all';
+
+function scoreClass(o){return o>=8?'s9':o>=5?'s6':o>=3?'s3':'s0';}
+function gatePass(r){return r.outlier>=3;}
+
+function renderRefs(){
+  const body=$('#refbody'); body.innerHTML='';
+  REFS.filter(r=>{
+    if(filter==='all')return true;
+    if(filter==='gate')return gatePass(r);
+    return r.track===filter;
+  }).forEach(r=>{
+    const gated=!gatePass(r);
+    const tr=document.createElement('tr');
+    tr.className=(gated?'gated ':'')+(r.selected?'picked':'');
+    tr.innerHTML=`
+      <td class="src">${r.src}<small>${r.id} · ${r.url}</small></td>
+      <td>${r.format}</td>
+      <td>${(r.median/1000)}k</td>
+      <td><b>${(r.views/1000)}k</b></td>
+      <td><span class="score ${scoreClass(r.outlier)}">${r.outlier}×</span></td>
+      <td class="why">"${r.why}"</td>
+      <td><span class="badge b-${r.track}">${r.track==='A'?'A · Demo':'B · Recreate'}</span></td>
+      <td>${gated?'<span class="badge b-gate">Below gate</span>':'<span class="badge b-'+r.diff.toLowerCase()+'">'+r.diff+'</span>'}</td>
+      <td>${
+        r.selected ? `<span class="cflag">Concept ${r.concept}</span>`
+        : gated ? `<button class="btn ghost sm" disabled>Gated out</button>`
+        : `<button class="btn pink sm" onclick="pick('${r.id}')">+ Make Concept</button>`
+      }</td>`;
+    body.appendChild(tr);
+  });
+  // funnel + tab counts
+  $('#f-all').textContent=REFS.length;
+  $('#f-gate').textContent=REFS.filter(gatePass).length;
+  const sel=REFS.filter(r=>r.selected).length;
+  $('#f-sel').textContent=sel;
+  $('#ct-refs').textContent=REFS.filter(gatePass).length;
+  $('#ct-con').textContent=sel;
+}
+
+function renderConcepts(){
+  const g=$('#cgrid'); g.innerHTML='';
+  const sel=REFS.filter(r=>r.selected).sort((a,b)=>a.concept.localeCompare(b.concept));
+  if(!sel.length){g.innerHTML='<div class="empty">No concepts yet — go to the <b>Reference Bank</b> and select a few winners.</div>';return;}
+  sel.forEach(r=>{
+    const b=BRIEFS[r.id];
+    const card=document.createElement('div');
+    card.className='ccard';
+    card.onclick=()=>openBrief(r.id);
+    card.innerHTML=`
+      <div class="letter">${r.concept}</div>
+      <span class="badge b-${r.track}">${r.track==='A'?'A · Demo':'B · Recreate'}</span>
+      <h3>${b?b.title:r.format}</h3>
+      <div class="meta">${r.id} · from ${r.src}</div>
+      <div class="row">
+        <span class="score ${scoreClass(r.outlier)}">${r.outlier}×</span>
+        <span class="prio ${b?b.prio.toLowerCase():'should'}">${b?b.prio:'Should'}</span>
+        <span style="font-size:12px;color:var(--ink-60)">${b?b.shootMin+' min shoot':'~12 min'}</span>
+      </div>
+      <span class="open">Open Concept Brief →</span>`;
+    g.appendChild(card);
+  });
+}
+
+function openBrief(id){
+  const r=REFS.find(x=>x.id===id); const b=BRIEFS[id];
+  const m=$('#briefmount');
+  if(!b){ // generated stub for a freshly-selected ref
+    m.innerHTML=`<div class="brief"><div class="top">
+      <div class="eyebrow">Concept ${r.concept} · ${r.id}</div>
+      <h2>${r.format}</h2>
+      <div class="row"><span class="badge b-${r.track}">${r.track==='A'?'A · Demo':'B · Recreate'}</span>
+      <span class="score ${scoreClass(r.outlier)}">${r.outlier}× outlier</span></div>
+      </div>
+      <div class="bcol"><div class="callout">⚡ This brief is a <b>stub</b> — auto-created when you selected it. The team fills the shot breakdown + edit recipe before shoot day, exactly like the worked examples (Concept A/B/C). Reference: "${r.why}".</div></div>
+      </div>`;
+    go('brief'); return;
+  }
+  m.innerHTML=`
+  <div class="brief">
+    <div class="top">
+      <div class="eyebrow">Concept ${r.concept} · ${r.id} · recreate from ${r.src}</div>
+      <h2>${b.title}</h2>
+      <div class="row">
+        <span class="badge b-${r.track}">${r.track==='A'?'A · Demo (evergreen)':'B · Recreate (viral)'}</span>
+        <span class="score ${scoreClass(r.outlier)}">${r.outlier}× outlier</span>
+        <span class="prio ${b.prio.toLowerCase()}">${b.prio}</span>
+        <span style="font-size:13px;color:var(--ink-60)">⏱ ${b.shootMin} min on set</span>
+      </div>
+    </div>
+    <div class="bbody">
+      <div class="bcol">
+        <div class="blk"><h4>Shot breakdown <span class="tag">≤6 words each</span></h4>
+          <ul class="tl">${b.shots.map(s=>`<li><span class="t">${s[0]}</span><span class="d">${s[1]}</span></li>`).join('')}</ul>
+        </div>
+        <div class="blk"><h4>Script (branded)</h4>
+          <ul class="script">${b.script.map(s=>`<li><span class="t">${s[0]}</span>${s[1]}</li>`).join('')}</ul>
+        </div>
+      </div>
+      <div class="bcol">
+        <div class="blk"><h4>On set</h4>
+          <div class="specs">
+            <div class="spec"><div class="k">Talent</div><div class="v">${b.talent}</div></div>
+            <div class="spec"><div class="k">Setup</div><div class="v">${b.setup}</div></div>
+            <div class="spec"><div class="k">Props / product</div><div class="v">${b.props}</div></div>
+            <div class="spec"><div class="k">Wardrobe</div><div class="v">${b.wardrobe}</div></div>
+            <div class="spec" style="grid-column:1/3"><div class="k">B-roll / coverage</div><div class="v">${b.broll}</div></div>
+          </div>
+        </div>
+        <div class="blk"><h4>Edit recipe <span class="tag">travels with footage</span></h4>
+          <div class="recipe"><b>Editor does exactly this:</b><br/>${b.recipe}</div>
+        </div>
+        <div class="blk"><h4>Director note</h4>
+          <div class="callout">${b.note}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  go('brief');
+}
+
+function renderSched(){
+  const m=$('#schedmount'); m.innerHTML='';
+  const buckets=SETUPS.map(()=>[]);
+  REFS.filter(r=>r.selected).forEach(r=>buckets[setupFor(r)].push(r));
+  SETUPS.forEach((s,i)=>{
+    const items=buckets[i];
+    const block=document.createElement('div');
+    block.className='block';
+    block.innerHTML=`
+      <div class="bh">
+        <div class="time">${s.time}</div>
+        <div class="setup">${s.setup}<small>${s.sub}</small></div>
+        <div class="talent">🎬 ${s.talent}</div>
+      </div>
+      <div class="bcards">
+        ${items.length? items.map(r=>{const b=BRIEFS[r.id];return `
+          <div class="scard" onclick="openBrief('${r.id}')">
+            <div class="st">Concept ${r.concept} · ${r.id}</div>
+            <div class="sn">${b?b.title:r.format}</div>
+            <span class="batch">◆ batched · ${r.track==='A'?'demo':'recreate'}</span>
+          </div>`;}).join('')
+          : '<div style="color:var(--ink-60);font-size:13px;padding:4px 0">No concepts in this setup yet — select more in the Reference Bank.</div>'}
+      </div>`;
+    m.appendChild(block);
+  });
+}
+
+function renderKan(){
+  const m=$('#kanmount'); m.innerHTML='';
+  const sel=REFS.filter(r=>r.selected);
+  STAGES.forEach(stage=>{
+    const col=document.createElement('div'); col.className='kcol';
+    const inCol=sel.filter(r=>(PIPE[r.id]?PIPE[r.id].stage:'Shot')===stage);
+    col.innerHTML=`<h4><span><span class="dot" style="background:${STAGECLR[stage]}"></span>${stage}</span><span>${inCol.length}</span></h4>`+
+      inCol.map(r=>{const b=BRIEFS[r.id];const p=PIPE[r.id]||{editor:'—',pub:'—'};return `
+        <div class="kcard" onclick="openBrief('${r.id}')">
+          <div class="kn">Concept ${r.concept} · ${b?b.title:r.format}</div>
+          <div class="km">${p.editor} · publish ${p.pub}</div>
+        </div>`;}).join('');
+    m.appendChild(col);
+  });
+}
+
+/* ========================= ACTIONS ========================= */
+function pick(id){
+  const r=REFS.find(x=>x.id===id);
+  if(r.selected) return;
+  r.selected=true; r.concept=nextLetter();
+  if(!PIPE[id]) PIPE[id]={stage:'Shot',editor:'Unassigned',pub:'TBD'};
+  renderRefs(); renderConcepts(); renderSched(); renderKan();
+  toast(`Selected → Concept ${r.concept}. Added to Concepts, Schedule & Pipeline.`);
+}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
+function go(v){
+  $$('.view').forEach(x=>x.classList.remove('on'));
+  $('#v-'+v).classList.add('on');
+  $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===v));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+$('#tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(t)go(t.dataset.v);});
+$('#filters').addEventListener('click',e=>{const p=e.target.closest('.fpill');if(!p)return;
+  filter=p.dataset.f;$$('.fpill').forEach(x=>x.classList.toggle('on',x===p));renderRefs();});
+
+/* ===== seed: pre-select Concept A/B/C so the team sees a populated example ===== */
+['R-001','R-002','R-003'].forEach(id=>{const r=REFS.find(x=>x.id===id);r.selected=true;r.concept=nextLetter();});
+renderRefs(); renderConcepts(); renderSched(); renderKan();
+</script>
+</body>
+</html>
