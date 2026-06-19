@@ -165,6 +165,22 @@ main{padding:28px 0 80px}
 .recipe{background:var(--sage-soft);border-radius:13px;padding:14px 16px;font-size:13.5px}
 .recipe b{color:var(--sage)}
 .callout{background:var(--yellow-soft);border:1.5px solid var(--yellow);border-radius:13px;padding:12px 15px;font-size:13px}
+/* editable fields (everything in the brief is editable + auto-saves) */
+.edit{outline:none;border-radius:5px;padding:0 3px;cursor:text;transition:background .12s,box-shadow .12s}
+.edit:hover{background:var(--pink-50)}
+.edit:focus{background:#fff;box-shadow:0 0 0 2px var(--pink-soft)}
+.edit:empty:before{content:'tap to add…';color:#B9AE9E}
+h2 .edit{display:inline-block;min-width:60px}
+.escene{font-family:var(--sans);font-size:11.5px;color:var(--ink-60);border:1.5px solid var(--line);border-radius:8px;padding:4px 7px;background:var(--card);cursor:pointer;max-width:100%}
+.escene:hover{border-color:var(--pink)}
+.ebanner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-60);background:rgba(255,255,255,.6);border:1.5px solid var(--line);padding:8px 13px;border-radius:11px;margin-top:12px}
+.ebanner a{color:var(--pink);cursor:pointer;font-weight:600}
+#savepill{background:var(--sage);color:#fff;font-weight:600;padding:2px 9px;border-radius:20px;font-size:11px;opacity:0;transition:opacity .2s}
+#savepill.on{opacity:1}
+.xshot{margin-left:auto;border:none;background:transparent;color:var(--ink-60);cursor:pointer;font-size:13px;opacity:.45;line-height:1}
+.xshot:hover{opacity:1;color:var(--pink)}
+button.prio{border:1.5px solid currentColor;background:transparent;border-radius:20px;padding:3px 11px;cursor:pointer;font-family:var(--sans)}
+.addshot{margin-top:14px;width:auto}
 
 /* ---------- Schedule (bundled by scene) ---------- */
 .sintro{background:var(--sage-soft);border-radius:14px;padding:13px 17px;font-size:13.5px;margin:16px 0 20px}
@@ -361,6 +377,18 @@ const REFS = [
  {id:'R-010', src:'@trenddancer', hue:120, median:25000, views:30000, fmt:'Trend dance w/ product', why:'trend audio only', dur:'0:16', gated:true, shots:[]},
 ];
 REFS.forEach(r=>{r.outlier=+(r.views/r.median).toFixed(1); r.selected=false; r.concept=null;});
+// Default crew + prop per concept (all editable in the brief)
+const EXTRA={
+ 'R-001':{vg:'Videographer A',prop:'The product · soft bedding · warm lamp'},
+ 'R-002':{vg:'Videographer A',prop:'The product · notebook'},
+ 'R-003':{vg:'Videographer B',prop:'The product · water droplets · seamless backdrop'},
+ 'R-004':{vg:'Videographer A + B',prop:'Giant inflatable · the product'},
+ 'R-006':{vg:'Videographer B',prop:'Giant inflatable · the product'},
+ 'R-005':{vg:'Videographer A',prop:'The product'},
+ 'R-007':{vg:'Videographer B',prop:'The product · box'},
+ 'R-008':{vg:'Videographer A',prop:'The product lineup'},
+};
+REFS.forEach(r=>{const x=EXTRA[r.id]; r.vg=x?x.vg:'Assign on set'; r.prop=x?x.prop:'—';});
 
 const STAGES=['Shot','Ingested','Assigned','Editing','Review','Approved','Published'];
 const STAGECLR={Shot:'#C9BBA6',Ingested:'#FFCF4A',Assigned:'#7AA7FF',Editing:'#FF4E9B',Review:'#B98BFF',Approved:'#3F8E7D',Published:'#1F5A4C'};
@@ -382,6 +410,29 @@ function tile(hue,opts={}){ // stand-in for the real clip/photo
     ${opts.handle?`<div class="handle">${opts.handle}</div>`:''}
   </div>`;
 }
+
+/* ========================= EDIT STATE (everything is editable + auto-saves) ========================= */
+const LS='eos_edits_v1'; let EDITS={};
+try{EDITS=JSON.parse(localStorage.getItem(LS)||'{}')||{};}catch(e){EDITS={};}
+function ed(id){return EDITS[id]||(EDITS[id]={});}
+function saveEdits(){try{localStorage.setItem(LS,JSON.stringify(EDITS));}catch(e){} flashSaved();}
+function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+// working (merged) concept = defaults overlaid with the user's saved edits
+function wc(r){const e=EDITS[r.id]||{};
+  const shots=e.shots?e.shots:(r.shots||[]).map(s=>({t:s[0],desc:s[1],scene:s[2],script:s[3]}));
+  return {title:e.title??r.title,vg:e.vg??r.vg,talent:e.talent??r.talent,wardrobe:e.wardrobe??r.wardrobe,
+    prop:e.prop??r.prop,recipe:e.recipe??r.recipe,note:e.note??r.note,prio:e.prio??r.prio,shots};}
+function materializeShots(id){const r=REFS.find(x=>x.id===id);const e=ed(id);
+  if(!e.shots)e.shots=(r.shots||[]).map(s=>({t:s[0],desc:s[1],scene:s[2],script:s[3]}));return e.shots;}
+function flashSaved(){const p=document.getElementById('savepill');if(p){p.classList.add('on');clearTimeout(p._t);p._t=setTimeout(()=>p.classList.remove('on'),1200);}}
+let _rt; function refreshDerived(){renderConcepts();renderSched();renderKan();}
+function refreshDerivedDebounced(){clearTimeout(_rt);_rt=setTimeout(refreshDerived,400);}
+function efield(id,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-field="${field}">${esc(val)}</span>`;}
+function eshot(id,i,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-shot="${i}" data-field="${field}">${esc(val)}</span>`;}
+function sceneSelect(id,i,cur){return `<select class="escene" onchange="setScene('${id}',${i},this.value)">
+  <option value="">✦ Graphic / end card — no shoot</option>
+  ${Object.keys(SCENES).map(k=>`<option value="${k}"${k===cur?' selected':''}>🎬 ${SCENES[k].name} · ${SCENES[k].loc}</option>`).join('')}
+</select>`;}
 
 /* ========================= RENDER ========================= */
 function renderRefs(){
@@ -417,18 +468,19 @@ function renderConcepts(){
   const sel=REFS.filter(r=>r.selected).sort((a,b)=>a.concept-b.concept);
   if(!sel.length){g.innerHTML='<div class="empty">No concepts yet — go to the <b>Reference Bank</b> and select a few winners.</div>';return;}
   sel.forEach(r=>{
+    const c=wc(r);
     const card=document.createElement('div'); card.className='ccard'; card.onclick=()=>openBrief(r.id);
-    const thumbs=r.shots.slice(0,4).map(s=>tile(s[2]?SCENES[s[2]].hue:0,{cls:''})).join('');
+    const thumbs=c.shots.slice(0,4).map(s=>tile(s.scene?SCENES[s.scene].hue:0,{cls:''})).join('');
     card.innerHTML=`
       <div class="num">${r.concept}</div>
       <div class="ceyebrow">Concept ${r.concept}</div>
-      <h3>${r.title}</h3>
+      <h3>${esc(c.title)}</h3>
       <div class="meta">${r.id} · from ${r.src}</div>
       <div class="thumbs">${thumbs}</div>
       <div class="row">
         <span class="score ${scoreClass(r.outlier)}">${r.outlier}×</span>
-        <span class="prio ${r.prio.toLowerCase()}">${r.prio}</span>
-        <span style="font-size:12px;color:var(--ink-60)">${r.shots.length} shots · ${r.mins} min</span>
+        <span class="prio ${c.prio.toLowerCase()}">${c.prio}</span>
+        <span style="font-size:12px;color:var(--ink-60)">${c.shots.length} shots</span>
       </div>
       <span class="open">Open Concept Brief →</span>`;
     g.appendChild(card);
@@ -436,16 +488,17 @@ function renderConcepts(){
 }
 
 function openBrief(id){
-  const r=REFS.find(x=>x.id===id); const m=$('#briefmount');
-  const shotRows=r.shots.map((s,i)=>{
-    const sc=s[2]?SCENES[s[2]]:null;
+  const r=REFS.find(x=>x.id===id); const c=wc(r); const m=$('#briefmount');
+  const shotRows=c.shots.map((s,i)=>{
+    const sc=s.scene?SCENES[s.scene]:null;
     return `<div class="shotrow">
-      ${tile(sc?sc.hue:0,{cls:'',dur:s[0]})}
+      ${tile(sc?sc.hue:0,{cls:'',dur:s.t})}
       <div>
-        <div class="sn"><span class="stime">${s[0]}</span><b>Shot ${i+1}</b></div>
-        <div class="sdesc">${s[1]}</div>
-        ${s[3]?`<div class="sscript">🎙 ${s[3]}</div>`:''}
-        <div class="sscene">${sc?`🎬 ${sc.name} · ${sc.loc}`:'✦ Graphic / end card — no shoot'}</div>
+        <div class="sn"><span class="stime">${eshot(id,i,'t',s.t)}</span><b>Shot ${i+1}</b>
+          <button class="xshot" title="remove shot" onclick="removeShot('${id}',${i})">✕</button></div>
+        <div class="sdesc">${eshot(id,i,'desc',s.desc)}</div>
+        <div class="sscript">🎙 ${eshot(id,i,'script',s.script||'')}</div>
+        <div class="sscene">${sceneSelect(id,i,s.scene)}</div>
       </div>
     </div>`;
   }).join('');
@@ -453,32 +506,37 @@ function openBrief(id){
   <div class="brief">
     <div class="top">
       <div class="eyebrow">Concept ${r.concept} · ${r.id} · recreate from ${r.src}</div>
-      <h2>${r.title}</h2>
+      <h2>${efield(id,'title',c.title)}</h2>
       <div class="row">
         <span class="score ${scoreClass(r.outlier)}">${r.outlier}× outlier</span>
-        <span class="prio ${r.prio.toLowerCase()}">${r.prio}</span>
-        <span style="font-size:13px;color:var(--ink-60)">⏱ ${r.mins} min on set · ${r.shots.length} shots</span>
+        <button class="prio ${c.prio.toLowerCase()}" onclick="cyclePrio('${id}')" title="tap to change priority">${c.prio}</button>
+        <span style="font-size:13px;color:var(--ink-60)">${c.shots.length} shots</span>
       </div>
+      <div class="ebanner">✎ Everything here is editable — tap any field, type, and it saves automatically.
+        <span id="savepill">Saved ✓</span>
+        <a onclick="resetConcept('${id}')">↺ reset to original</a></div>
     </div>
     <div class="bbody">
       <div class="bcol">
         <div class="blk"><h4>Shot list <span class="tag">a clip/photo for every shot — copy the framing exactly</span></h4>
           ${shotRows}
+          <button class="btn ghost sm addshot" onclick="addShot('${id}')">+ Add shot</button>
         </div>
       </div>
       <div class="bcol">
         <div class="blk"><h4>On set</h4>
           <div class="specs">
-            <div class="spec"><div class="k">Talent</div><div class="v">${r.talent}</div></div>
-            <div class="spec"><div class="k">Wardrobe</div><div class="v">${r.wardrobe}</div></div>
-            <div class="spec" style="grid-column:1/3"><div class="k">Scenes this concept needs</div><div class="v">${[...new Set(r.shots.filter(s=>s[2]).map(s=>SCENES[s[2]].name))].join(' · ')||'—'}</div></div>
+            <div class="spec"><div class="k">Videographer</div><div class="v">${efield(id,'vg',c.vg)}</div></div>
+            <div class="spec"><div class="k">Talent</div><div class="v">${efield(id,'talent',c.talent)}</div></div>
+            <div class="spec"><div class="k">Wardrobe <span style="text-transform:none;font-weight:400">(if needed)</span></div><div class="v">${efield(id,'wardrobe',c.wardrobe)}</div></div>
+            <div class="spec"><div class="k">Prop</div><div class="v">${efield(id,'prop',c.prop)}</div></div>
           </div>
         </div>
         <div class="blk"><h4>Edit recipe <span class="tag">travels with the footage</span></h4>
-          <div class="recipe"><b>Editor does exactly this:</b><br/>${r.recipe}</div>
+          <div class="recipe"><b>Editor does exactly this:</b><br/>${efield(id,'recipe',c.recipe)}</div>
         </div>
-        <div class="blk"><h4>Director note</h4>
-          <div class="callout">${r.note}</div>
+        <div class="blk"><h4>Director note <span class="tag">edit freely</span></h4>
+          <div class="callout">${efield(id,'note',c.note)}</div>
         </div>
       </div>
     </div>
@@ -490,9 +548,9 @@ function renderSched(){
   const m=$('#schedmount'); m.innerHTML='';
   // map scene -> [{concept, shotIndex}]
   const use={};
-  REFS.filter(r=>r.selected).forEach(r=>r.shots.forEach((s,i)=>{
-    if(!s[2])return; (use[s[2]]=use[s[2]]||[]).push({c:r.concept,t:r.title,i:i+1,id:r.id});
-  }));
+  REFS.filter(r=>r.selected).forEach(r=>{const c=wc(r);c.shots.forEach((s,i)=>{
+    if(!s.scene||!SCENES[s.scene])return; (use[s.scene]=use[s.scene]||[]).push({c:r.concept,t:c.title,i:i+1,id:r.id});
+  });});
   let any=false;
   LOC_ORDER.forEach(loc=>{
     const scenesHere=Object.keys(SCENES).filter(k=>SCENES[k].loc===loc && use[k]);
@@ -527,7 +585,7 @@ function renderKan(){
     col.innerHTML=`<h4><span><span class="dot" style="background:${STAGECLR[stage]}"></span>${stage}</span><span>${inCol.length}</span></h4>`+
       inCol.map(r=>{const p=PIPE[r.id]||{editor:'—',pub:'—'};return `
         <div class="kcard" onclick="openBrief('${r.id}')">
-          <div class="kn">Concept ${r.concept} · ${r.title}</div>
+          <div class="kn">Concept ${r.concept} · ${esc(wc(r).title)}</div>
           <div class="km">${p.editor} · publish ${p.pub}</div>
         </div>`;}).join('');
     m.appendChild(col);
@@ -548,6 +606,21 @@ function go(v){$$('.view').forEach(x=>x.classList.remove('on'));$('#v-'+v).class
 $('#tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(t)go(t.dataset.v);});
 $('#filters').addEventListener('click',e=>{const p=e.target.closest('.fpill');if(!p)return;
   filter=p.dataset.f;$$('.fpill').forEach(x=>x.classList.toggle('on',x===p));renderRefs();});
+
+/* ---- editing actions ---- */
+function setScene(id,i,v){materializeShots(id)[i].scene=v||null;saveEdits();openBrief(id);refreshDerived();}
+function addShot(id){materializeShots(id).push({t:'0:00',desc:'new shot',scene:null,script:''});saveEdits();openBrief(id);refreshDerived();}
+function removeShot(id,i){const s=materializeShots(id);s.splice(i,1);saveEdits();openBrief(id);refreshDerived();}
+function cyclePrio(id){const order=['Must','Should','Could'];const cur=wc(REFS.find(r=>r.id===id)).prio;
+  ed(id).prio=order[(order.indexOf(cur)+1)%3];saveEdits();openBrief(id);refreshDerived();}
+function resetConcept(id){delete EDITS[id];saveEdits();openBrief(id);refreshDerived();toast('Concept reset to original.');}
+// live text edits — save without re-rendering the brief, so your cursor stays put
+document.getElementById('briefmount').addEventListener('input',e=>{
+  const el=e.target.closest('[data-field]'); if(!el)return;
+  const id=el.dataset.id, f=el.dataset.field, si=el.dataset.shot, v=el.textContent;
+  if(si!=null){materializeShots(id)[+si][f]=v;} else {ed(id)[f]=v;}
+  saveEdits(); refreshDerivedDebounced();
+});
 
 /* seed: pre-select Concepts 1–5 so the team sees a populated example */
 ['R-001','R-002','R-003','R-004','R-006'].forEach(id=>{const r=REFS.find(x=>x.id===id);r.selected=true;r.concept=nextNum();});
