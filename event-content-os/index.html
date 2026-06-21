@@ -106,6 +106,11 @@ main{padding:28px 0 80px}
 .badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
 .b-gate{background:#ECE7DE;color:#8A8278}
 .b-event{background:var(--pink-50);color:var(--pink)}
+.evpick{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.evlbl{font-size:10.5px;color:var(--ink-60);font-weight:700;text-transform:uppercase;letter-spacing:.03em;width:100%}
+.evchip{appearance:none;border:1.5px solid var(--line);background:var(--card);border-radius:20px;padding:4px 11px;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--ink-60);cursor:pointer}
+.evchip:hover{border-color:var(--pink)}
+.evchip.on{background:var(--pink);border-color:var(--pink);color:#fff}
 .b-clone{background:#E7E0F5;color:#6B4FB0}
 .ccard.clone{border-style:dashed;border-color:#C9B8EE}
 .evsel{font-family:var(--sans);font-size:12px;color:var(--ink);border:1.5px solid var(--line);border-radius:20px;padding:4px 9px;background:var(--card);cursor:pointer}
@@ -696,7 +701,31 @@ function deleteConcept(id){
   delete EDITS[id]; reindexConcepts(); saveClones(); saveEdits();
   renderConcepts();renderSched();renderKan(); go('concepts'); toast('Copy deleted.');
 }
-function setEvent(id,v){ed(id).event=v||'';saveEdits();renderConcepts();openBrief(id);}
+function setEvent(id,v){ed(id).event=v||'';saveEdits();renderConcepts();renderRefs();openBrief(id);}
+// which events already have a copy of this concept
+function refEvents(refId){const s=new Set();REFS.filter(x=>x._clone&&x.srcId===refId).forEach(c=>{const e=(EDITS[c.id]&&EDITS[c.id].event)||c.event;if(e)s.add(e);});return s;}
+function makeEventClone(srcId,ev){
+  const src=REFS.find(x=>x.id===srcId); if(!src)return;
+  const cur=wc(src);
+  const n=REFS.filter(r=>r._clone&&r.srcId===srcId).length+1;
+  const newId=srcId+'__'+ev.toLowerCase()+'_'+n;
+  const clone=Object.assign({},src,{id:newId,_clone:true,srcId:srcId,selected:true,concept:null,
+    title:cur.title,prio:cur.prio,vg:cur.vg,talent:cur.talent,prop:cur.prop,copy:cur.copy,recipe:cur.recipe,note:cur.note,feedback:'',event:ev,
+    shots:cur.shots.map(s=>({t:s.t,desc:s.desc,location:s.location,script:s.script,out:s.out,props:(s.props||[]).slice()}))});
+  delete EDITS[newId]; REFS.push(clone);
+  if(!PIPE[newId])PIPE[newId]={stage:'Shot',editor:'Unassigned',pub:'TBD'};
+}
+// toggle an event on a reference: ON = make a copy bucketed to that event · OFF = remove that copy (original untouched)
+function toggleRefEvent(refId,ev){
+  const base=REFS.find(x=>x.id===refId); if(!base)return;
+  if(!base.selected)base.selected=true;
+  const existing=REFS.filter(x=>x._clone&&x.srcId===refId).find(c=>((EDITS[c.id]&&EDITS[c.id].event)||c.event)===ev);
+  if(existing){ if(!confirm('Remove the '+ev+' copy of this concept?'))return; const i=REFS.indexOf(existing);if(i>=0)REFS.splice(i,1);delete EDITS[existing.id]; }
+  else makeEventClone(refId,ev);
+  reindexConcepts(); saveClones(); saveEdits();
+  renderRefs(); renderConcepts(); renderSched(); renderKan();
+  toast(existing?ev+' copy removed.':'Copied into '+ev+'. See the Concepts tab.');
+}
 // —— backup / restore (so nothing is ever lost, even if the browser is cleared) ——
 function exportBackup(){
   const data={v:1,when:new Date().toISOString(),edits:EDITS,clones:REFS.filter(r=>r._clone)};
@@ -813,6 +842,8 @@ function refCard(r){
     ${ r.selected ? `<div class="cflag">★ Concept ${r.concept}</div>`
       : gated ? `<button class="btn ghost sm" disabled>Below gate${r.outlier==null?'':' ('+r.outlier+'×)'}</button>`
       : `<button class="btn pink sm" onclick="pick('${r.id}')">+ Make this a Concept</button>` }
+    ${ r.selected ? `<div class="evpick"><div class="evlbl">📍 copy into events:</div>
+      ${EVENTS.map(ev=>`<button class="evchip ${refEvents(r.id).has(ev)?'on':''}" onclick="event.stopPropagation();toggleRefEvent('${r.id}','${ev}')">${ev}</button>`).join('')}</div>` : '' }
     ${r.flag?`<div style="font-size:11px;color:#9A5B00;margin-top:6px">⚠ ${esc(r.flag)}</div>`:''}`;
   return card;
 }
