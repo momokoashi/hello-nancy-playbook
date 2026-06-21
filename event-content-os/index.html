@@ -390,11 +390,10 @@ const LOC_TIME={'Main stage':'9:00 – 11:00','Product table':'11:00 – 12:30',
 const SEGMENTS=[
  {key:'event',   name:'Event & Activation', desc:'Pop-ups, store openings, activations, crowd & public moments'},
  {key:'product', name:'Product',            desc:'Product as hero — demo, tasting, launch reveal'},
- {key:'listicle',name:'Listicle',           desc:'Ranked / "X things" / countdown formats (12 places, 3 things I love)'},
  {key:'people',  name:'People & Talking',   desc:'Street interview, talking head, reactions, candid'},
  {key:'teaser',  name:'Teaser & BTS',       desc:'Pre-event hype & behind-the-scenes'},
 ];
-const ALL_TAGS=['founder','celebrity','creator','meme','educational','freebie','giant-prop','store-opening','pov','crowd','rundown','brand-teaser'];
+const ALL_TAGS=['founder','celebrity','creator','meme','educational','freebie','giant-prop','store-opening','pov','crowd','rundown','brand-teaser','listicle'];
 
 /* ========================= REFERENCES (real, Apify; outlier<2 removed) =========================
    outlier = views / account median (last 24 reels). clip = local mp4 for lazy inline <video>. */
@@ -413,7 +412,7 @@ const REFS = [
    hook:'The rumors are true... See you soon Miami', caption:'The rumors are true... Miami, we are coming in hot', views:2210742, accMedian:297769, outlier:7.4},
  {id:'DZmt8ivM-Wj', owner:'digitaldiarylondon', seg:'product', tags:['pov'], cname:'Product hero POV (hands holding)',
    hook:'your new summer obsession in london', caption:'your new summer obsession in london: snow peach gelato', views:133083, accMedian:25942, outlier:5.1},
- {id:'DZVbXg2MP8Y', owner:'russogioacchino', seg:'listicle', tags:['rundown'], cname:'Venue rundown (listicle)',
+ {id:'DZVbXg2MP8Y', owner:'russogioacchino', seg:'event', tags:['listicle','rundown'], cname:'Venue rundown (listicle)',
    hook:'12 places in London you must visit - 1. Sky Garden', caption:'12 Places in London you should visit at least once', views:504505, accMedian:130950, outlier:3.9},
  {id:'DZSlWcqCzcM', owner:'chloewlp_p_', seg:'people', tags:['meme'], cname:'Relatable candid moment',
    hook:'(no on-screen text - pure visual moment)', caption:'very awkward situation', views:97970124, accMedian:472061, outlier:207.5,
@@ -753,7 +752,7 @@ function renderKan(){
 /* ========================= ACTIONS ========================= */
 function pick(id){
   const r=REFS.find(x=>x.id===id); if(r.selected)return;
-  r.selected=true; r.concept=nextNum();
+  r.selected=true; r.concept=nextNum(); ed(id).sel=r.concept; saveEdits();
   if(!PIPE[id]) PIPE[id]={stage:'Shot',editor:'Unassigned',pub:'TBD'};
   renderRefs(); renderConcepts(); renderSched(); renderKan();
   toast(`Selected → Concept ${r.concept}. Added to Concepts, Schedule & Pipeline.`);
@@ -771,7 +770,7 @@ function addShot(id){materializeShots(id).push({t:'0:00',desc:'new shot',scene:n
 function removeShot(id,i){const s=materializeShots(id);s.splice(i,1);saveEdits();openBrief(id);refreshDerived();}
 function cyclePrio(id){const order=['Must','Should','Could'];const cur=wc(getItem(id)).prio;
   ed(id).prio=order[(order.indexOf(cur)+1)%3];saveEdits();openBrief(id);refreshDerived();}
-function resetConcept(id){delete EDITS[id];saveEdits();openBrief(id);refreshDerived();toast('Reset to original.');}
+function resetConcept(id){const e=EDITS[id]||{};const k={};if(e.sel!=null)k.sel=e.sel;if(e.seg)k.seg=e.seg;if(e.tags)k.tags=e.tags;EDITS[id]=k;saveEdits();openBrief(id);refreshDerived();toast('Brief reset (approval kept).');}
 function addProduct(){
   const n=PSHOOTS.length+1; const id='P-'+String(n).padStart(3,'0');
   PSHOOTS.push({id,kind:'product',type:'Website asset',title:'New product shoot',prio:'Should',
@@ -790,6 +789,8 @@ document.getElementById('briefmount').addEventListener('input',e=>{
 });
 
 /* seed: pre-select Concepts 1–5 so the team sees a populated example */
+// restore approved concepts from saved memory
+(function(){let mx=0;REFS.forEach(r=>{const e=EDITS[r.id];if(e&&e.sel){r.selected=true;r.concept=e.sel;if(e.sel>mx)mx=e.sel;if(!PIPE[r.id])PIPE[r.id]={stage:'Shot',editor:'Unassigned',pub:'TBD'};}});conceptSeq=mx;})();
 setupFilters();
 renderRefs(); renderConcepts(); renderProduct(); renderSched(); renderKan();
 
