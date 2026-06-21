@@ -390,26 +390,34 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
 <script>
 /* ========================= SCENES (the bundling unit) ========================= */
 // A scene = one physical setup/action you light & rig once, then capture for every concept that needs it.
+// each station has a TYPE (location / prop / product / people) for the dropdown, and a loc for the schedule
 const SCENES = {
-  london:    {name:'London street',                loc:'London',  props:'Recognisable London street', hue:222},
-  court:     {name:'Paddle court (hero)',          loc:'Court',   props:'Court · play in progress',   hue:330},
-  lemInf:    {name:'Giant Lem inflatable',         loc:'Court',   props:'Giant inflatable Lem',       hue:48},
-  berriInf:  {name:'Giant Berri inflatable',       loc:'Court',   props:'Giant inflatable Berri',     hue:338},
-  tennisInf: {name:'Giant tennis-ball inflatable', loc:'Court',   props:'Giant inflatable tennis ball', hue:62},
-  crowd:     {name:'Crowd / cheer squad',          loc:'Stands',  props:'Bleachers · crowd · reactions', hue:280},
-  truck:     {name:'Nancy truck',                  loc:'Truck',   props:'Nancy truck',                hue:45},
-  food:      {name:'Ice-cream / freebie',          loc:'Truck',   props:'Ice cream · free giveaway',  hue:25},
-  merch:     {name:'Merch wall',                   loc:'Truck',   props:'Merch · totes · tees',       hue:200},
-  product:   {name:'Product close-up (Lem)',       loc:'Product', props:'Lem · macro lens',           hue:160},
-  nick:      {name:'Nick Kyrgios (celeb)',         loc:'Roaming', props:'Nick — roaming / celeb',     hue:300},
-  founder:   {name:'Founder (Momoko)',             loc:'Roaming', props:'Momoko — talking head',      hue:18},
-  ai:        {name:'AI / screen-record (desk)',    loc:'Desk',    props:'3D render / AI — no location', hue:265},
-  // product-shoot stations (kept so the Product Shoot track still works)
-  macro:     {name:'Product macro',                loc:'Product', props:'Product · macro lens', hue:160},
-  tank:      {name:'Waterproof tank dunk',         loc:'Product', props:'Water tank · towels',  hue:185},
-  applic:    {name:'Application close-up',          loc:'Product', props:'Skin · macro',         hue:30},
-  demoSet:   {name:'How-to-use set',               loc:'Product', props:'Bedside styling',      hue:340},
-  unbox:     {name:'Unboxing / vanity',            loc:'Product', props:'Mailer · vanity',      hue:260},
+  // —— Locations ——
+  court:     {name:'Paddle court (hero)',          type:'location', loc:'Court',   props:'Court · play in progress',   hue:330},
+  london:    {name:'London street',                type:'location', loc:'London',  props:'Recognisable London street', hue:222},
+  crowd:     {name:'Crowd / cheer squad',          type:'location', loc:'Stands',  props:'Bleachers · crowd · reactions', hue:280},
+  demoSet:   {name:'How-to-use set',               type:'location', loc:'Product', props:'Bedside styling',      hue:340},
+  unbox:     {name:'Unboxing / vanity set',        type:'location', loc:'Product', props:'Mailer · vanity',      hue:260},
+  ai:        {name:'AI / screen-record (desk)',    type:'location', loc:'Desk',    props:'3D render / AI — no location', hue:265},
+  // —— Props ——
+  lemInf:    {name:'Giant Lem inflatable',         type:'prop',     loc:'Court',   props:'Giant inflatable Lem',       hue:48},
+  berriInf:  {name:'Giant Berri inflatable',       type:'prop',     loc:'Court',   props:'Giant inflatable Berri',     hue:338},
+  tennisInf: {name:'Giant tennis-ball inflatable', type:'prop',     loc:'Court',   props:'Giant inflatable tennis ball', hue:62},
+  truck:     {name:'Nancy truck',                  type:'prop',     loc:'Truck',   props:'Nancy truck',                hue:45},
+  merch:     {name:'Merch wall',                   type:'prop',     loc:'Truck',   props:'Merch · totes · tees',       hue:200},
+  food:      {name:'Ice-cream / freebie',          type:'prop',     loc:'Truck',   props:'Ice cream · free giveaway',  hue:25},
+  tank:      {name:'Waterproof tank dunk',         type:'prop',     loc:'Product', props:'Water tank · towels',  hue:185},
+  // —— Products ——
+  product:   {name:'Lem',                          type:'product',  loc:'Product', props:'Lem · macro lens',     hue:160},
+  pBerri:    {name:'BeRRi',                         type:'product',  loc:'Product', props:'BeRRi',                hue:338},
+  pAvo:      {name:'Avo',                           type:'product',  loc:'Product', props:'Avo',                  hue:110},
+  pSnack:    {name:'Snack Pack',                    type:'product',  loc:'Product', props:'Snack Pack',           hue:40},
+  pBlanket:  {name:'Blanket',                       type:'product',  loc:'Product', props:'Blanket',              hue:205},
+  macro:     {name:'Product macro (any)',          type:'product',  loc:'Product', props:'Product · macro lens', hue:160},
+  applic:    {name:'Application close-up (skin)',   type:'product',  loc:'Product', props:'Skin · macro',         hue:30},
+  // —— People ——
+  nick:      {name:'Nick Kyrgios (celeb)',         type:'people',   loc:'Roaming', props:'Nick — roaming / celeb',     hue:300},
+  founder:   {name:'Founder (Momoko)',             type:'people',   loc:'Roaming', props:'Momoko — talking head',      hue:18},
 };
 const LOC_ORDER=['London','Court','Stands','Truck','Product','Roaming','Desk'];
 const LOC_TIME={'London':'9:00 – 10:00','Court':'10:00 – 12:00','Stands':'12:00 – 12:30','Truck':'13:00 – 14:00','Product':'14:00 – 15:00','Roaming':'all day','Desk':'pre-event'};
@@ -614,15 +622,16 @@ let _rt; function refreshDerived(){renderConcepts();renderProduct();renderSched(
 function refreshDerivedDebounced(){clearTimeout(_rt);_rt=setTimeout(refreshDerived,400);}
 function efield(id,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-field="${field}">${esc(val)}</span>`;}
 function eshot(id,i,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-shot="${i}" data-field="${field}">${esc(val)}</span>`;}
-// options grouped by location (Court first), so props are easy to scan/sort by where you shoot
+// options grouped by TYPE — Location · Prop · Products · People — so they're easy to scan & sort
 function sceneOptions(cur){
-  const order=['Court','Stands','London','Truck','Product','Roaming','Desk'];
-  const locs=[...new Set(Object.values(SCENES).map(s=>s.loc))];
-  order.push(...locs.filter(l=>!order.includes(l)));
-  return order.filter(l=>Object.values(SCENES).some(s=>s.loc===l)).map(loc=>{
-    const opts=Object.keys(SCENES).filter(k=>SCENES[k].loc===loc)
+  const order=['location','prop','product','people'];
+  const label={location:'📍 Location',prop:'🎪 Prop',product:'🍋 Products',people:'🧑 People'};
+  const types=[...new Set(Object.values(SCENES).map(s=>s.type||'location'))];
+  order.push(...types.filter(t=>!order.includes(t)));
+  return order.filter(t=>Object.values(SCENES).some(s=>(s.type||'location')===t)).map(t=>{
+    const opts=Object.keys(SCENES).filter(k=>(SCENES[k].type||'location')===t)
       .map(k=>`<option value="${k}"${k===cur?' selected':''}>📦 ${SCENES[k].name}</option>`).join('');
-    return `<optgroup label="📍 ${loc}">${opts}</optgroup>`;
+    return `<optgroup label="${label[t]||t}">${opts}</optgroup>`;
   }).join('');
 }
 function sceneSelect(id,i,cur){return `<select class="escene" onchange="setScene('${id}',${i},this.value)">
