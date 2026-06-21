@@ -227,6 +227,25 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
 .emove:hover{border-color:var(--pink)}
 .rthumb{cursor:pointer}
 .ph{display:grid;place-items:center;height:100%;font-size:11px;color:var(--ink-60);padding:10px;text-align:center}
+.day{margin-bottom:24px}
+.dayh{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.dayh h3{font-size:21px;font-weight:600}
+.daytag{font-size:11px;font-weight:600;background:var(--cream-2);border-radius:20px;padding:2px 10px;color:var(--ink-60)}
+.hourblock{background:var(--card);border:1.5px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:11px;overflow:hidden}
+.hourblock.conf{border-color:var(--sage)}
+.hb-head{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--cream-2)}
+.hb-time{font-family:var(--serif);font-weight:600;font-size:15px;min-width:108px}
+.hb-act{font-weight:600}
+.hb-note{font-weight:400;color:var(--ink-60);font-size:12.5px}
+.hb-status{margin-left:auto;font-size:11px;font-weight:700;border-radius:20px;padding:3px 9px}
+.hb-status.confirmed{background:var(--sage-soft);color:#1f5a4c}
+.hb-status.placeholder{background:#ECE7DE;color:#8A8278}
+.shotscroll{display:flex;gap:10px;padding:13px 16px;overflow-x:auto}
+.schot{min-width:120px;cursor:pointer}
+.schot-media{position:relative;aspect-ratio:9/16;width:120px;border-radius:11px;background:linear-gradient(160deg,hsl(var(--h,42) 70% 90%),hsl(var(--h,42) 55% 76%));border:1.5px solid rgba(0,0,0,.06)}
+.schot-media .play{position:absolute;inset:0;margin:auto;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;font-size:12px}
+.schot-d{font-size:12px;margin-top:5px;width:120px;color:var(--ink)}
+.hb-empty{font-size:12.5px;color:var(--ink-60);padding:4px 0}
 /* reference strip inside the brief */
 .refstrip{display:flex;gap:12px;margin-top:12px;background:rgba(255,255,255,.55);border:1.5px solid var(--line);border-radius:13px;padding:10px}
 .refthumb{position:relative;width:54px;aspect-ratio:9/16;border-radius:9px;overflow:hidden;flex:none}
@@ -956,37 +975,45 @@ function openBrief(id){
   go('brief');
 }
 
+/* Shoot Schedule = per-hour activity blocks. PLACEHOLDER until the run-of-show is confirmed.
+   Confirmed only: Jun 27 pop-ups, Jun 28 7pm dinner w/ Lottie Moss. */
+const EVENT_DAYS=[
+ {date:'Fri · Jun 27', tag:'Pop-ups', blocks:[
+   {t:'TBC', act:'Pop-ups around the city', note:'locations & times to confirm', status:'confirmed',
+    shots:['Establishing wide of the pop-up','Product hero close-up','Queue / crowd reaction','Host walk-through']},
+ ]},
+ {date:'Sat · Jun 28', tag:'Main day', blocks:[
+   {t:'10:00 – 11:00', act:'Location shooting', status:'placeholder', shots:['Wide establishing','Hero detail','Talent walk-in']},
+   {t:'11:00 – 12:00', act:'Product & demo', status:'placeholder', shots:['Macro close-up','How-it-works','POV hands']},
+   {t:'12:00 – 18:00', act:'(fill once the run-of-show is confirmed)', status:'placeholder', shots:[]},
+   {t:'19:00 → late', act:'Dinner with Lottie Moss', status:'confirmed', celeb:true,
+    shots:['Arrivals moment','Table candids','Toast / speech','Lottie × founder moment','Product on the table']},
+ ]},
+];
+function schot(desc,hue){return `<div class="schot" onclick="toast('A clip attaches here once this scene is shot or linked to a concept.')">
+  <div class="schot-media" style="--h:${hue}"><div class="play">▶</div></div>
+  <div class="schot-d">${esc(desc)}</div></div>`;}
 function renderSched(){
   const m=$('#schedmount'); m.innerHTML='';
-  // map scene -> [{concept, shotIndex}]
-  const use={};
-  activeItems().forEach(it=>{const c=wc(it.obj);c.shots.forEach((s,i)=>{
-    const keys=[...new Set([s.location,...(s.props||[])].filter(k=>k&&SCENES[k]))];
-    keys.forEach(k=>{(use[k]=use[k]||[]).push({label:it.label,kind:it.kind,t:c.title,i:i+1,id:it.id});});
-  });});
-  let any=false;
-  LOC_ORDER.forEach(loc=>{
-    const scenesHere=Object.keys(SCENES).filter(k=>SCENES[k].loc===loc && use[k]);
-    if(!scenesHere.length)return; any=true;
-    const locEl=document.createElement('div'); locEl.className='loc';
-    const totalFeeds=scenesHere.reduce((a,k)=>a+use[k].length,0);
-    locEl.innerHTML=`<div class="loch"><h3>${loc}</h3><span class="ltime">${LOC_TIME[loc]||''}</span>
-      <span class="lct">${scenesHere.length} scene${scenesHere.length>1?'s':''} · ${totalFeeds} shot${totalFeeds>1?'s':''} to capture</span></div>`;
-    scenesHere.forEach(k=>{
-      const sc=SCENES[k]; const u=use[k]; const distinct=new Set(u.map(x=>x.label)).size; const multi=distinct>1;
-      const sceneEl=document.createElement('div'); sceneEl.className='scene';
-      sceneEl.innerHTML=`
-        <div class="sh">${tile(sc.hue,{cls:'thumb'})}
-          <div><div class="sname">${sc.name}</div><div class="sprops">📦 ${sc.props}</div></div>
-          <div class="feeds ${multi?'multi':''}">${multi?'▶ shoot once → '+u.length+' clips for '+distinct+' items':u.length+' clip'+(u.length>1?'s':'')+' · 1 item'}</div>
+  const si=document.querySelector('#v-sched .sintro');
+  if(si)si.innerHTML='🗓️ <b>Placeholder.</b> Confirmed so far: <b>Jun 27 — pop-ups</b> (locations TBC) and <b>Jun 28, 7pm — dinner with Lottie Moss</b>. Build the rest hour-by-hour when the run-of-show lands. Each shot becomes a <b>clickable clip</b> once it’s linked to a concept.';
+  EVENT_DAYS.forEach(d=>{
+    const day=document.createElement('div'); day.className='day';
+    day.innerHTML=`<div class="dayh"><h3>${d.date}</h3><span class="daytag">${d.tag}</span></div>`;
+    d.blocks.forEach(b=>{
+      const hue=b.celeb?280:(b.status==='confirmed'?160:42);
+      const hb=document.createElement('div'); hb.className='hourblock'+(b.status==='confirmed'?' conf':'');
+      hb.innerHTML=`
+        <div class="hb-head">
+          <span class="hb-time">${b.t}</span>
+          <span class="hb-act">${b.celeb?'⭐ ':''}${esc(b.act)}${b.note?` <span class="hb-note">· ${esc(b.note)}</span>`:''}</span>
+          <span class="hb-status ${b.status}">${b.status==='confirmed'?'✓ confirmed':'placeholder'}</span>
         </div>
-        <div class="needs">${u.map(x=>`<div class="needchip" onclick="openBrief('${x.id}')">
-          <div class="nq"><span class="sdot ${x.kind}"></span>${x.label} · shot ${x.i}</div><div class="nt">${esc(x.t)}</div></div>`).join('')}</div>`;
-      locEl.appendChild(sceneEl);
+        <div class="shotscroll">${b.shots.length?b.shots.map(s=>schot(s,hue)).join(''):'<div class="hb-empty">No shots planned yet — add them when the schedule firms up.</div>'}</div>`;
+      day.appendChild(hb);
     });
-    m.appendChild(locEl);
+    m.appendChild(day);
   });
-  if(!any)m.innerHTML='<div class="empty">Select concepts to build the schedule.</div>';
 }
 
 function renderKan(){
