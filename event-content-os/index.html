@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hello Nancy · Event Content OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+<style>
+/* ES Rebond Grotesque — brand body font, self-hosted on Shopify CDN (CORS *) */
+@font-face{font-family:'ES Rebond Grotesque';src:url('https://cdn.shopify.com/s/files/1/0726/3764/5121/files/ESRebondGrotesque-Regular.woff') format('woff');font-weight:400;font-display:swap;}
+@font-face{font-family:'ES Rebond Grotesque';src:url('https://cdn.shopify.com/s/files/1/0726/3764/5121/files/ESRebondGrotesque-Semibold.woff') format('woff');font-weight:600;font-display:swap;}
+@font-face{font-family:'ES Rebond Grotesque';src:url('https://cdn.shopify.com/s/files/1/0726/3764/5121/files/ESRebondGrotesque-Bold.woff') format('woff');font-weight:700;font-display:swap;}
+
+:root{
+  --cream:#FBF3E9; --cream-2:#F4E7D5; --card:#FFFFFF; --ink:#211C18; --ink-60:#6B635A;
+  --pink:#FF4E9B; --pink-soft:#FBD9E6; --pink-50:#FFE7F1;
+  --yellow:#FFCF4A; --yellow-soft:#FFF1C9;
+  --sage:#3F8E7D; --sage-soft:#DCEEE8;
+  --line:#EADCC8; --shadow:0 2px 0 rgba(33,28,24,.06),0 14px 34px -18px rgba(33,28,24,.35);
+  --serif:'Fraunces',Georgia,serif; --sans:'ES Rebond Grotesque','Helvetica Neue',Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--cream);color:var(--ink);line-height:1.45;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.serif{font-family:var(--serif)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 26px}
+
+/* ---------- Header ---------- */
+header{background:var(--cream);border-bottom:1.5px solid var(--line);position:sticky;top:0;z-index:40}
+.bar{display:flex;align-items:center;gap:18px;padding:16px 0 14px}
+.logo{font-family:var(--serif);font-weight:600;font-size:21px;letter-spacing:-.01em}
+.logo b{color:var(--pink)}
+.sub{font-size:12.5px;color:var(--ink-60);border-left:1.5px solid var(--line);padding-left:16px}
+.math{margin-left:auto;display:flex;gap:10px;align-items:stretch}
+.mchip{background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:7px 13px;text-align:center;min-width:84px;box-shadow:var(--shadow)}
+.mchip .k{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-60)}
+.mchip .v{font-family:var(--serif);font-weight:600;font-size:19px}
+.mchip .v small{font-size:12px;color:var(--ink-60)}
+.mchip.hot{background:var(--pink);border-color:var(--pink)}
+.mchip.hot .k,.mchip.hot .v{color:#fff}
+
+/* ---------- Tabs ---------- */
+nav.tabs{display:flex;gap:6px;padding:4px 0 0;overflow-x:auto}
+.tab{appearance:none;border:none;background:transparent;font-family:var(--sans);font-weight:600;font-size:14px;color:var(--ink-60);
+  padding:11px 16px 14px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.tab .n{display:inline-grid;place-items:center;width:21px;height:21px;border-radius:50%;background:var(--cream-2);font-size:11.5px;color:var(--ink)}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--ink);border-bottom-color:var(--pink)}
+.tab.on .n{background:var(--pink);color:#fff}
+.tab .ct{font-size:11px;background:var(--ink);color:#fff;border-radius:20px;padding:1px 7px;margin-left:2px}
+
+/* ---------- Views ---------- */
+main{padding:28px 0 80px}
+.view{display:none;animation:fade .25s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.vhead{display:flex;align-items:flex-end;gap:16px;margin-bottom:6px;flex-wrap:wrap}
+.vhead h2{font-size:30px;font-weight:600;letter-spacing:-.015em}
+.vhead p{color:var(--ink-60);font-size:14px;max-width:620px;margin-top:4px}
+.vhead .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+
+/* ---------- Funnel strip ---------- */
+.funnel{display:flex;gap:0;align-items:stretch;background:var(--card);border:1.5px solid var(--line);border-radius:16px;overflow:hidden;margin:18px 0 22px;box-shadow:var(--shadow)}
+.fstep{flex:1;padding:14px 16px;border-right:1.5px solid var(--line)}
+.fstep:last-child{border-right:none}
+.fstep .fn{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-60)}
+.fstep .fv{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1.1}
+.fstep .fd{font-size:12px;color:var(--ink-60)}
+.fstep.act{background:var(--pink-50)}
+
+/* ---------- Filters ---------- */
+.filters{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.fpill{appearance:none;border:1.5px solid var(--line);background:var(--card);border-radius:20px;padding:7px 14px;font-family:var(--sans);font-weight:600;font-size:13px;color:var(--ink-60);cursor:pointer}
+.fpill.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hint{font-size:12.5px;color:var(--ink-60);margin-left:auto}
+
+/* ---------- Media tile (stands in for the real video/clip) ---------- */
+.media{position:relative;aspect-ratio:9/16;border-radius:13px;overflow:hidden;border:1.5px solid rgba(0,0,0,.06);
+  background:linear-gradient(165deg,hsl(var(--h,330) 75% 90%),hsl(var(--h,330) 62% 74%));cursor:pointer}
+.media .play{position:absolute;inset:0;margin:auto;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.82);
+  display:grid;place-items:center;color:var(--ink);font-size:15px;padding-left:3px;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.media .dur{position:absolute;left:8px;bottom:8px;background:rgba(33,28,24,.78);color:#fff;font-size:11px;font-weight:600;padding:2px 7px;border-radius:7px}
+.media .score-ov{position:absolute;right:8px;top:8px}
+.media .handle{position:absolute;left:0;right:0;bottom:0;padding:18px 8px 7px;font-size:11.5px;font-weight:600;color:#fff;
+  background:linear-gradient(0deg,rgba(33,28,24,.6),transparent)}
+.media.sm{border-radius:10px}
+.media.sm .play{width:26px;height:26px;font-size:10px}
+
+/* ---------- Reference grid ---------- */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:18px}
+.rcard{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:11px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px}
+.rcard.picked{border-color:var(--pink);box-shadow:0 0 0 2px var(--pink-soft),var(--shadow)}
+.rcard.gated{opacity:.55}
+.rcard .rmeta .src{font-weight:600;font-size:13.5px}
+.rcard .rmeta .fmt{font-size:12px;color:var(--ink-60)}
+.rcard .why{font-size:12.5px;color:var(--ink-60);font-style:italic;min-height:32px}
+.rcard .stats{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--ink-60)}
+
+/* chips */
+.score{display:inline-grid;place-items:center;min-width:42px;height:28px;border-radius:8px;font-family:var(--serif);font-weight:600;font-size:15px;padding:0 7px}
+.score.s9{background:#FFD3E6;color:#B3055B}
+.score.s6{background:#FFE2B8;color:#9A5B00}
+.score.s3{background:var(--sage-soft);color:#1F5A4C}
+.score.s0{background:#ECECEC;color:#8A8A8A}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.b-gate{background:#ECE7DE;color:#8A8278}
+.b-event{background:var(--pink-50);color:var(--pink)}
+.evpick{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.evlbl{font-size:10.5px;color:var(--ink-60);font-weight:700;text-transform:uppercase;letter-spacing:.03em;width:100%}
+.evchip{appearance:none;border:1.5px solid var(--line);background:var(--card);border-radius:20px;padding:4px 11px;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--ink-60);cursor:pointer}
+.evchip:hover{border-color:var(--pink)}
+.evchip.on{background:var(--pink);border-color:var(--pink);color:#fff}
+.b-clone{background:#E7E0F5;color:#6B4FB0}
+.ccard.clone{border-style:dashed;border-color:#C9B8EE}
+.evsel{font-family:var(--sans);font-size:12px;color:var(--ink);border:1.5px solid var(--line);border-radius:20px;padding:4px 9px;background:var(--card);cursor:pointer}
+.evsel:hover{border-color:var(--pink)}
+.saveind{font-size:12.5px;color:var(--sage);font-weight:600;align-self:center;margin-right:4px}
+.ebanner a{margin-left:2px}
+.b-ptype{background:var(--sage-soft);color:#1F5A4C}
+.sdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+.sdot.social{background:var(--pink)} .sdot.product{background:var(--sage)}
+.b-scene{background:var(--cream-2);color:var(--ink);font-weight:600}
+.prio{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.prio.must{color:var(--pink)} .prio.should{color:#9A5B00} .prio.could{color:var(--ink-60)}
+
+/* buttons */
+.btn{appearance:none;font-family:var(--sans);font-weight:600;font-size:13px;border-radius:11px;padding:9px 15px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;transition:transform .08s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:none}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.pink{background:var(--pink);border-color:var(--pink)}
+.btn.sm{padding:8px 12px;font-size:12.5px;width:100%}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none;border-color:var(--line)}
+.cflag{font-weight:700;color:var(--pink);text-align:center;padding:7px;background:var(--pink-50);border-radius:10px;font-size:13px}
+
+/* ---------- Concepts board ---------- */
+.cgrid-inner{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:8px}
+.cseg{display:flex;align-items:baseline;gap:12px;margin:22px 0 12px;padding-bottom:7px;border-bottom:2px solid var(--line)}
+.cseg h3{font-size:20px;font-weight:600}
+.cseg .csd{font-size:12.5px;color:var(--ink-60)}
+.cseg .csc{margin-left:auto;font-size:12px;color:var(--ink-60);background:var(--cream-2);border-radius:20px;padding:2px 10px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.ccard{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s ease,border-color .1s ease;position:relative;overflow:hidden}
+.ccard:hover{transform:translateY(-3px);border-color:var(--pink)}
+.ccard .num{position:absolute;top:-14px;right:8px;font-family:var(--serif);font-weight:700;font-size:74px;color:var(--cream-2);line-height:1;z-index:0}
+.ccard>*{position:relative;z-index:1}
+.ccard .ceyebrow{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--pink);font-weight:700}
+.ccard h3{font-size:19px;font-weight:600;margin:5px 0 4px;max-width:78%}
+.ccard .meta{font-size:12.5px;color:var(--ink-60);margin-bottom:12px}
+.ccard .row{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.ccard .thumbs{display:flex;gap:5px;margin-bottom:12px}
+.ccard .thumbs .media{width:34px;aspect-ratio:9/16;border-radius:7px}
+.ccard .thumbs .media .play,.ccard .thumbs .media .dur,.ccard .thumbs .media .handle{display:none}
+.ccard .open{font-weight:600;color:var(--pink);font-size:13px;display:inline-flex;gap:5px;align-items:center}
+.empty{background:var(--card);border:1.5px dashed var(--line);border-radius:18px;padding:40px;text-align:center;color:var(--ink-60)}
+
+/* ---------- Brief ---------- */
+.brief{background:var(--card);border:1.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.brief .top{padding:22px 26px;background:linear-gradient(180deg,var(--pink-50),var(--card));border-bottom:1.5px solid var(--line)}
+.brief .top .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--pink);font-weight:700}
+.brief .top h2{font-size:30px;font-weight:600;margin:4px 0 8px}
+.brief .top .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bbody{display:grid;grid-template-columns:1.25fr .75fr;gap:0}
+@media(max-width:880px){.bbody{grid-template-columns:1fr}}
+.bcol{padding:22px 26px}
+.bcol+.bcol{border-left:1.5px solid var(--line)}
+@media(max-width:880px){.bcol+.bcol{border-left:none;border-top:1.5px solid var(--line)}}
+.blk{margin-bottom:24px}
+.blk h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.blk h4 .tag{background:var(--yellow);color:var(--ink);font-size:10px;padding:2px 7px;border-radius:20px;letter-spacing:0;text-transform:none}
+/* shot rows: each shot = a clip/image + how-to */
+.shotrow{display:grid;grid-template-columns:78px 1fr;gap:14px;padding:13px 0;border-bottom:1px dashed var(--line)}
+.shotvid{cursor:pointer}
+.shotvid img{width:100%;height:100%;object-fit:cover}
+.propline{margin-top:7px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.propline .plk{font-size:11px;color:var(--ink-60);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.proptag{font-size:11.5px;font-weight:600;background:var(--cream-2);border:1.5px solid var(--line);border-radius:20px;padding:3px 9px;cursor:pointer;color:var(--ink)}
+.proptag:hover{border-color:var(--pink);color:var(--pink)}
+.addprop{font-family:var(--sans);font-size:11.5px;color:var(--ink-60);border:1.5px dashed var(--line);border-radius:20px;padding:3px 8px;background:var(--card);cursor:pointer}
+.shotrow:last-child{border-bottom:none}
+.shotrow .media{width:78px}
+.shotrow .sn{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.shotrow .sn b{font-family:var(--serif);font-weight:600;font-size:15px}
+.shotrow .stime{font-family:var(--serif);color:var(--pink);font-weight:600;font-size:13px}
+.shotrow .sdesc{font-size:15px;font-weight:600}
+.shotrow .sscript{font-size:13px;color:var(--sage);margin-top:3px}
+.shotrow .sscene{font-size:11.5px;color:var(--ink-60);margin-top:5px;display:inline-flex;align-items:center;gap:5px}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.spec .k{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-60)}
+.spec .v{font-size:13.5px;font-weight:600}
+.recipe{background:var(--sage-soft);border-radius:13px;padding:14px 16px;font-size:13.5px}
+.recipe b{color:var(--sage)}
+.callout{background:var(--yellow-soft);border:1.5px solid var(--yellow);border-radius:13px;padding:12px 15px;font-size:13px}
+/* editable fields (everything in the brief is editable + auto-saves) */
+.edit{outline:none;border-radius:5px;padding:0 3px;cursor:text;transition:background .12s,box-shadow .12s}
+.edit:hover{background:var(--pink-50)}
+.edit:focus{background:#fff;box-shadow:0 0 0 2px var(--pink-soft)}
+.edit:empty:before{content:'tap to add…';color:#B9AE9E}
+h2 .edit{display:inline-block;min-width:60px}
+.escene{font-family:var(--sans);font-size:11.5px;color:var(--ink-60);border:1.5px solid var(--line);border-radius:8px;padding:4px 7px;background:var(--card);cursor:pointer;max-width:100%}
+.escene:hover{border-color:var(--pink)}
+.ebanner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-60);background:rgba(255,255,255,.6);border:1.5px solid var(--line);padding:8px 13px;border-radius:11px;margin-top:12px}
+.ebanner a{color:var(--pink);cursor:pointer;font-weight:600}
+#savepill{background:var(--sage);color:#fff;font-weight:600;padding:2px 9px;border-radius:20px;font-size:11px;opacity:0;transition:opacity .2s}
+#savepill.on{opacity:1}
+.xshot{margin-left:auto;border:none;background:transparent;color:var(--ink-60);cursor:pointer;font-size:13px;opacity:.45;line-height:1}
+.xshot:hover{opacity:1;color:var(--pink)}
+button.prio{border:1.5px solid currentColor;background:transparent;border-radius:20px;padding:3px 11px;cursor:pointer;font-family:var(--sans)}
+.addshot{margin-top:14px;width:auto}
+/* reference bank — segments + real thumbnails */
+.seg{margin-bottom:30px}
+.segh{display:flex;align-items:baseline;gap:10px;margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+.segh h3{font-size:22px;font-weight:600}
+.segh .sd{font-size:12.5px;color:var(--ink-60)}
+.segh .sc{margin-left:auto;font-size:12px;color:var(--ink-60)}
+.rthumb{position:relative;aspect-ratio:9/16;border-radius:13px;overflow:hidden;border:1.5px solid rgba(0,0,0,.06);background:var(--cream-2);display:block}
+.rthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.rthumb .play{position:absolute;inset:0;margin:auto;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;color:var(--ink);font-size:15px;padding-left:3px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.rthumb .ov-score{position:absolute;right:8px;top:8px}
+.rthumb .ov-views{position:absolute;left:8px;bottom:8px;background:rgba(33,28,24,.8);color:#fff;font-size:11px;font-weight:600;padding:2px 7px;border-radius:7px}
+.rconcept{font-weight:700;font-size:14px;margin-top:2px}
+.rhook{font-size:12.5px;color:var(--ink);background:var(--yellow-soft);border-radius:8px;padding:5px 8px;margin:1px 0}
+.rhook b{font-weight:700}
+.rcap{font-size:12px;color:var(--ink-60);font-style:italic}
+.rstats{display:flex;gap:6px;flex-wrap:wrap;font-size:11px;color:var(--ink-60);align-items:center}
+.rstats .pill{background:var(--cream-2);border-radius:20px;padding:2px 7px;font-weight:600}
+.watch{font-size:11.5px;color:var(--pink);font-weight:600;text-decoration:none}
+.tagrow{display:flex;gap:6px;flex-wrap:wrap;width:100%;margin-top:8px}
+.tagpill{font-size:11px;padding:5px 10px;border-radius:20px;border:1.5px dashed var(--line);background:transparent;color:var(--ink-60);cursor:pointer;font-family:var(--sans);font-weight:600}
+.tagpill.on{background:var(--ink);color:#fff;border-style:solid;border-color:var(--ink)}
+.tagchips{display:flex;gap:5px;flex-wrap:wrap;margin:1px 0}
+.tag-chip{font-size:10.5px;font-weight:600;color:var(--sage);background:var(--sage-soft);border-radius:20px;padding:2px 8px}
+.tag-chip.muted{color:var(--ink-60);background:var(--cream-2);font-weight:400}
+.moverow{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-60);margin-top:4px}
+.emove{font-family:var(--sans);font-size:11px;border:1.5px solid var(--line);border-radius:7px;padding:3px 6px;background:var(--card);cursor:pointer;color:var(--ink)}
+.emove:hover{border-color:var(--pink)}
+.rthumb{cursor:pointer}
+.ph{display:grid;place-items:center;height:100%;font-size:11px;color:var(--ink-60);padding:10px;text-align:center}
+.day{margin-bottom:24px}
+.dayh{display:flex;align-items:baseline;gap:10px;border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:12px}
+.dayh h3{font-size:21px;font-weight:600}
+.daytag{font-size:11px;font-weight:600;background:var(--cream-2);border-radius:20px;padding:2px 10px;color:var(--ink-60)}
+.hourblock{background:var(--card);border:1.5px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:11px;overflow:hidden}
+.hourblock.conf{border-color:var(--sage)}
+.hb-head{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--cream-2)}
+.hb-time{font-family:var(--serif);font-weight:600;font-size:15px;min-width:108px}
+.hb-act{font-weight:600}
+.hb-note{font-weight:400;color:var(--ink-60);font-size:12.5px}
+.hb-status{margin-left:auto;font-size:11px;font-weight:700;border-radius:20px;padding:3px 9px}
+.hb-status.confirmed{background:var(--sage-soft);color:#1f5a4c}
+.hb-status.placeholder{background:#ECE7DE;color:#8A8278}
+.shotscroll{display:flex;gap:10px;padding:13px 16px;overflow-x:auto}
+.schot{min-width:120px;cursor:pointer}
+.schot-media{position:relative;aspect-ratio:9/16;width:120px;border-radius:11px;background:linear-gradient(160deg,hsl(var(--h,42) 70% 90%),hsl(var(--h,42) 55% 76%));border:1.5px solid rgba(0,0,0,.06)}
+.schot-media .play{position:absolute;inset:0;margin:auto;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;font-size:12px}
+.schot-d{font-size:12px;margin-top:5px;width:120px;color:var(--ink)}
+.hb-empty{font-size:12.5px;color:var(--ink-60);padding:4px 0}
+/* reference strip inside the brief */
+.refstrip{display:flex;gap:12px;margin-top:12px;background:rgba(255,255,255,.55);border:1.5px solid var(--line);border-radius:13px;padding:10px}
+.refthumb{position:relative;width:54px;aspect-ratio:9/16;border-radius:9px;overflow:hidden;flex:none}
+.refthumb img{width:100%;height:100%;object-fit:cover}
+.refthumb .play{position:absolute;inset:0;margin:auto;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;font-size:9px}
+.rb-hook{font-size:13px;background:var(--yellow-soft);border-radius:7px;padding:3px 8px;display:inline-block}
+.rb-cap{font-size:12px;color:var(--ink-60);font-style:italic;margin-top:4px}
+/* caption compare + team feedback */
+.capcompare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:680px){.capcompare{grid-template-columns:1fr}}
+.capk{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-60);margin-bottom:6px;font-weight:700}
+.capbox{background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:11px 13px;font-size:14px;font-family:var(--serif);line-height:1.5;min-height:54px}
+.capbox.muted{background:var(--cream-2);color:var(--ink-60)}
+.fbblk{margin-top:12px}
+.fbbox{background:var(--yellow-soft);border:1.5px dashed var(--yellow);border-radius:11px;padding:10px 13px;font-size:13.5px;min-height:44px;line-height:1.5}
+.vglegend{list-style:none;font-size:12px;color:var(--ink-60);line-height:1.6;background:var(--cream-2);border-radius:9px;padding:9px 12px;margin-top:12px}
+.vglegend li{position:relative;padding-left:14px}
+.vglegend li:before{content:'•';position:absolute;left:2px;color:var(--pink)}
+.vglegend b{color:var(--ink)}
+.eout{color:var(--ink)!important}
+
+/* ---------- Schedule (bundled by scene) ---------- */
+.sintro{background:var(--sage-soft);border-radius:14px;padding:13px 17px;font-size:13.5px;margin:16px 0 20px}
+.loc{margin-bottom:26px}
+.loch{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+.loch h3{font-size:21px;font-weight:600}
+.loch .ltime{font-family:var(--serif);font-weight:600;color:var(--pink);font-size:15px}
+.loch .lct{margin-left:auto;font-size:12px;color:var(--ink-60)}
+.scene{background:var(--card);border:1.5px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}
+.scene .sh{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1.5px solid var(--line);background:var(--cream-2)}
+.scene .sh .thumb{width:30px;aspect-ratio:9/16;border-radius:6px}
+.scene .sh .thumb .play,.scene .sh .thumb .dur,.scene .sh .thumb .handle{display:none}
+.scene .sname{font-weight:600;font-size:16px}
+.scene .sprops{font-size:12.5px;color:var(--ink-60)}
+.scene .feeds{margin-left:auto;font-weight:700;font-size:12.5px;color:var(--sage);white-space:nowrap}
+.scene .feeds.multi{color:var(--pink)}
+.scene .needs{display:flex;gap:9px;padding:14px 18px;flex-wrap:wrap}
+.needchip{border:1.5px solid var(--line);border-radius:11px;padding:9px 12px;cursor:pointer;font-size:13px;min-width:170px}
+.needchip:hover{border-color:var(--pink)}
+.needchip .nq{font-size:11px;color:var(--ink-60)}
+.needchip .nt{font-weight:600;margin-top:1px}
+
+/* ---------- Kanban ---------- */
+.kan{display:grid;grid-template-columns:repeat(7,minmax(140px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
+.kcol{background:var(--cream-2);border-radius:14px;padding:10px;min-height:140px}
+.kcol h4{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-60);margin-bottom:9px;display:flex;justify-content:space-between}
+.kcard{background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:10px 11px;margin-bottom:9px;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+.kcard:hover{border-color:var(--pink)}
+.kcard .kn{font-weight:600;font-size:13px}
+.kcard .km{font-size:11.5px;color:var(--ink-60);margin-top:3px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:30px;font-weight:600;font-size:13.5px;opacity:0;transition:.3s;z-index:90;box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.foot{text-align:center;color:var(--ink-60);font-size:12px;padding:30px 0 10px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="bar">
+      <div class="logo">Hello <b>Nancy</b></div>
+      <div class="sub">Event Content OS<br/>reference → concept → scene → publish</div>
+      <div class="math">
+        <div class="mchip"><div class="k">Cost</div><div class="v">$20<small>k</small></div></div>
+        <div class="mchip"><div class="k">Views need</div><div class="v">20<small>M</small></div></div>
+        <div class="mchip"><div class="k">Videos</div><div class="v">80</div></div>
+        <div class="mchip hot"><div class="k">Target CPM</div><div class="v">$1</div></div>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab on" data-v="refs"><span class="n">1</span> Reference Bank <span class="ct" id="ct-refs">0</span></button>
+      <button class="tab" data-v="concepts"><span class="n">2</span> Concepts <span class="ct" id="ct-con">0</span></button>
+      <button class="tab" data-v="prod"><span class="n">3</span> Product Shoot <span class="ct" id="ct-prod">0</span></button>
+      <button class="tab" data-v="sched"><span class="n">4</span> Shoot Schedule</button>
+      <button class="tab" data-v="pipe"><span class="n">5</span> Edit &amp; Publish</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ VIEW 1 · REFERENCE BANK ============ -->
+  <section class="view on" id="v-refs">
+    <div class="vhead">
+      <div>
+        <h2>Reference Bank <span style="font-size:14px;color:var(--ink-60);font-family:var(--sans);font-weight:600">· social</span></h2>
+        <p>What’s going viral on social — embedded so you can watch it, scored by outlier. <b>Tap “Make this a Concept”</b> on the winners to duplicate the idea as ours. (Product/website shoots live in the <b>Product Shoot</b> tab.)</p>
+      </div>
+    </div>
+
+    <div class="funnel">
+      <div class="fstep act"><div class="fn">Collected</div><div class="fv" id="f-all">10</div><div class="fd">references, scored</div></div>
+      <div class="fstep"><div class="fn">Pass the gate</div><div class="fv" id="f-gate">8</div><div class="fd">outlier ≥3</div></div>
+      <div class="fstep"><div class="fn">Made concepts</div><div class="fv" id="f-sel">5</div><div class="fd">selected so far</div></div>
+      <div class="fstep"><div class="fn">Target</div><div class="fv">~25</div><div class="fd">to staff for $1 CPM</div></div>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="fpill on" data-f="all">All</button>
+      <button class="fpill" data-f="gate">Passes the gate</button>
+      <button class="fpill" data-f="open">Not yet selected</button>
+      <span class="hint">Gate = Outlier ≥ 3 · clear hook in 2s · we can recreate it</span>
+    </div>
+
+    <div id="refgrid"></div>
+  </section>
+
+  <!-- ============ VIEW 2 · CONCEPTS ============ -->
+  <section class="view" id="v-concepts">
+    <div class="vhead">
+      <div>
+        <h2>Concepts</h2>
+        <p>Click a card to open its <b>Concept Brief</b>. Tag each by <b>event</b>, and <b>duplicate</b> one to reuse the same style for another event. Everything auto-saves — use <b>Backup</b> to keep a copy you can never lose.</p>
+      </div>
+      <div class="right">
+        <span class="saveind">✓ Auto-saved</span>
+        <button class="btn ghost" onclick="exportBackup()">⬇ Backup</button>
+        <label class="btn ghost" style="cursor:pointer">⬆ Restore<input type="file" accept="application/json" onchange="importBackup(this)" style="display:none"></label>
+        <button class="btn ghost" onclick="go('refs')">← Reference Bank</button>
+      </div>
+    </div>
+    <div class="filters" id="eventfilter"></div>
+    <div id="cgrid"></div>
+  </section>
+
+  <!-- ============ VIEW 3 · PRODUCT SHOOT ============ -->
+  <section class="view" id="v-prod">
+    <div class="vhead">
+      <div>
+        <h2>Product Shoot</h2>
+        <p>Our own production list — <b>website assets, how-to-use videos, and new launches</b>. Not from social; these are the things we always wish we’d shot. Same shot-list brief as Concepts, so the team knows exactly what to capture.</p>
+      </div>
+      <div class="right"><button class="btn pink" onclick="addProduct()">+ Add product shoot</button></div>
+    </div>
+    <div class="cgrid" id="pgrid"></div>
+  </section>
+
+  <!-- ============ CONCEPT / PRODUCT BRIEF ============ -->
+  <section class="view" id="v-brief">
+    <div class="vhead"><button class="btn ghost" id="briefback" onclick="go('concepts')">← Back</button></div>
+    <div id="briefmount"></div>
+  </section>
+
+  <!-- ============ VIEW 4 · SCHEDULE ============ -->
+  <section class="view" id="v-sched">
+    <div class="vhead">
+      <div>
+        <h2>Shoot Schedule</h2>
+        <p>Bundled by <b>prop / location</b>, pulling from <b>both</b> Concepts (social) and Product Shoots. Everything that needs the same setup — e.g. the giant inflatable — is grouped so you rig it <b>once</b> and capture it all in one block.</p>
+      </div>
+    </div>
+    <div class="sintro">🎬 Read it as: <b>this hour → this location & prop → shoot it once → it feeds these items.</b> The corner number shows how many videos each setup serves. Pink = social concept · green = product shoot.</div>
+    <div id="schedmount"></div>
+  </section>
+
+  <!-- ============ VIEW 4 · PIPELINE ============ -->
+  <section class="view" id="v-pipe">
+    <div class="vhead">
+      <div>
+        <h2>Edit &amp; Publish</h2>
+        <p>The “upload every 1–2 hours” engine — <b>both</b> social concepts and product shoots. As each block wraps, footage lands in <b>Shot</b>; an editor owns each item to <b>Published</b>. Pink = social · green = product.</p>
+      </div>
+    </div>
+    <div class="kan" id="kanmount"></div>
+  </section>
+
+  <div class="foot">Hello Nancy · Event Content OS — mockup v1.3 · social + product, one shoot schedule · plugs into the nancy-hub Content Guide</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ========================= SCENES (the bundling unit) ========================= */
+// A scene = one physical setup/action you light & rig once, then capture for every concept that needs it.
+// each station has a TYPE (location / prop / product / people) for the dropdown, and a loc for the schedule
+const SCENES = {
+  // —— Locations ——
+  court:     {name:'Paddle court (hero)',          type:'location', loc:'Court',   props:'Court · play in progress',   hue:330},
+  london:    {name:'London street',                type:'location', loc:'London',  props:'Recognisable London street', hue:222},
+  crowd:     {name:'Crowd / cheer squad',          type:'location', loc:'Stands',  props:'Bleachers · crowd · reactions', hue:280},
+  demoSet:   {name:'How-to-use set',               type:'location', loc:'Product', props:'Bedside styling',      hue:340},
+  unbox:     {name:'Unboxing / vanity set',        type:'location', loc:'Product', props:'Mailer · vanity',      hue:260},
+  ai:        {name:'AI / screen-record (desk)',    type:'location', loc:'Desk',    props:'3D render / AI — no location', hue:265},
+  // —— Props ——
+  lemInf:    {name:'Giant Lem inflatable',         type:'prop',     loc:'Court',   props:'Giant inflatable Lem',       hue:48},
+  berriInf:  {name:'Giant Berri inflatable',       type:'prop',     loc:'Court',   props:'Giant inflatable Berri',     hue:338},
+  tennisInf: {name:'Giant tennis-ball inflatable', type:'prop',     loc:'Court',   props:'Giant inflatable tennis ball', hue:62},
+  truck:     {name:'Nancy truck',                  type:'prop',     loc:'Truck',   props:'Nancy truck',                hue:45},
+  merch:     {name:'Merch wall',                   type:'prop',     loc:'Truck',   props:'Merch · totes · tees',       hue:200},
+  food:      {name:'Ice-cream / freebie',          type:'prop',     loc:'Truck',   props:'Ice cream · free giveaway',  hue:25},
+  tank:      {name:'Waterproof tank dunk',         type:'prop',     loc:'Product', props:'Water tank · towels',  hue:185},
+  // —— Products ——
+  product:   {name:'Lem',                          type:'product',  loc:'Product', props:'Lem · macro lens',     hue:160},
+  pBerri:    {name:'BeRRi',                         type:'product',  loc:'Product', props:'BeRRi',                hue:338},
+  pAvo:      {name:'Avo',                           type:'product',  loc:'Product', props:'Avo',                  hue:110},
+  pSnack:    {name:'Snack Pack',                    type:'product',  loc:'Product', props:'Snack Pack',           hue:40},
+  pBlanket:  {name:'Blanket',                       type:'product',  loc:'Product', props:'Blanket',              hue:205},
+  macro:     {name:'Product macro (any)',          type:'product',  loc:'Product', props:'Product · macro lens', hue:160},
+  applic:    {name:'Application close-up (skin)',   type:'product',  loc:'Product', props:'Skin · macro',         hue:30},
+  // —— People ——
+  nick:      {name:'Nick Kyrgios (celeb)',         type:'people',   loc:'Roaming', props:'Nick — roaming / celeb',     hue:300},
+  founder:   {name:'Founder (Momoko)',             type:'people',   loc:'Roaming', props:'Momoko — talking head',      hue:18},
+};
+const LOC_ORDER=['London','Court','Stands','Truck','Product','Roaming','Desk'];
+const LOC_TIME={'London':'9:00 – 10:00','Court':'10:00 – 12:00','Stands':'12:00 – 12:30','Truck':'13:00 – 14:00','Product':'14:00 – 15:00','Roaming':'all day','Desk':'pre-event'};
+
+/* ========================= SEGMENTS (moment-based) + TAGS ========================= */
+const SEGMENTS=[
+ {key:'event',   name:'Event & Activation', desc:'Pop-ups, store openings, activations, crowd & public moments'},
+ {key:'product', name:'Product',            desc:'Product as hero — demo, tasting, launch reveal'},
+ {key:'people',  name:'People & Talking',   desc:'Street interview, talking head, reactions, candid'},
+ {key:'teaser',  name:'Teaser & BTS',       desc:'Pre-event hype & behind-the-scenes'},
+];
+const ALL_TAGS=['founder','celebrity','creator','meme','educational','freebie','giant-prop','store-opening','pov','crowd','rundown','brand-teaser','listicle'];
+
+/* ========================= REFERENCES (real, Apify; outlier<2 removed) =========================
+   outlier = views / account median (last 24 reels). clip = local mp4 for lazy inline <video>. */
+const REFS = [
+ {id:'DXuN52TDGD2', owner:'londonlivingdisneydreaming', seg:'event', tags:['giant-prop'], cname:'Giant-prop pop-up reveal',
+   hook:'Coach pop up Oxford street', caption:'We love a fun pop up - Selfridges corner shop, Oxford street', views:114852, accMedian:2273, outlier:50.5},
+ {id:'DWjgY1hiCF8', owner:'somethingsomethingbeauty', seg:'event', tags:['freebie'], cname:'Free public activation reveal',
+   hook:'FREE outdoor cinema in Covent Garden', caption:'Big Screen on the Piazza! Covent Garden Piazza, London', views:204950, accMedian:5589, outlier:36.7},
+ {id:'DXXG2t8ASid', owner:'ilovesainthonore', seg:'product', tags:['founder','creator'], cname:'Product tasting + launch tease (talking head)',
+   hook:'MIAMI we are coming for you - May 3rd, 11AM', caption:'MIAMI we are coming for you on May 3rd at 11AM! First time leaving home...', views:289730, accMedian:22372, outlier:13},
+ {id:'DZQCDBpNlP8', owner:'vippopups', seg:'event', tags:['freebie','giant-prop'], cname:'Branded truck pop-up + freebie',
+   hook:'Coach Cherry NYC Free Pop Up - free cherry Matcha', caption:'Coach Cherry Truck New York Free Pop Up', views:326245, accMedian:33231, outlier:9.8},
+ {id:'DWbeVCQjLig', owner:'anotr.music', seg:'event', tags:['crowd'], cname:'Crowd-energy activation reveal',
+   hook:'(visual) Wall of speakers + roaring crowd', caption:'miami music week pop up #TTY', views:6465348, accMedian:775981, outlier:8.3},
+ {id:'DIefmFwoRoL', owner:'gisou', seg:'teaser', tags:['brand-teaser'], cname:'BTS building the activation + teaser',
+   hook:'The rumors are true... See you soon Miami', caption:'The rumors are true... Miami, we are coming in hot', views:2210742, accMedian:297769, outlier:7.4},
+ {id:'DZmt8ivM-Wj', owner:'digitaldiarylondon', seg:'product', tags:['pov'], cname:'Product hero POV (hands holding)',
+   hook:'your new summer obsession in london', caption:'your new summer obsession in london: snow peach gelato', views:133083, accMedian:25942, outlier:5.1},
+ {id:'DZVbXg2MP8Y', owner:'russogioacchino', seg:'event', tags:['listicle','rundown'], cname:'Venue rundown (listicle)',
+   hook:'12 places in London you must visit - 1. Sky Garden', caption:'12 Places in London you should visit at least once', views:504505, accMedian:130950, outlier:3.9},
+ {id:'DZSlWcqCzcM', owner:'chloewlp_p_', seg:'people', tags:['meme'], cname:'Relatable candid moment',
+   hook:'(no on-screen text - pure visual moment)', caption:'very awkward situation', views:97970124, accMedian:472061, outlier:207.5,
+   flag:'Mega-viral but a meme moment, not a recreatable format'},
+ {id:'DZMLCuru6h6', owner:'fitnessproductfinder', seg:'event', tags:['store-opening'], cname:'New store opening POV',
+   hook:'DAVID SCOOP SHOP - 109 Leroy St, West Village', caption:'Now open in the West Village @davidprotein', views:133381, accMedian:59065, outlier:2.3},
+];
+REFS.forEach(r=>{
+  r.median=r.accMedian; r.src='@'+r.owner; r.title=r.cname;
+  r.thumb='assets/thumb_'+r.id+'.jpg'; r.clip='assets/clips/'+r.id+'.mp4'; r.ig='https://www.instagram.com/p/'+r.id+'/';
+  r.selected=false; r.concept=null; r.prio='Should'; r.shots=[];
+  r.vg=undefined; r.talent=undefined; r.wardrobe=undefined; r.prop=undefined; r.recipe=''; r.note='';
+});
+
+/* ===================== CONCEPT DETAILS — our brief per reference (reference bank itself untouched) =====================
+   Only the 9 gate-passers (outlier ≥3). Mapped to the London "First come, first served" paddle-court event.
+   shot = [time, what we shoot (our version), prop/station, on-screen copy, 📷/🎬 output]. */
+const CONCEPT_DETAILS = {
+ 'DXuN52TDGD2':{prio:'Must', vg:'Jackie', talent:'Crowd + passersby', prop:'Giant Lem inflatable · court · merch',
+   copy:'we don’t do small 🍋 the Nancy London pop-up is LIVE — first come, first served. #SayItLouder',
+   recipe:'Wide establishing → crowd reactions → free giveaway → product macro → wide crowd. Trending “look at this” audio · bold location text · 9:16.',
+   note:'Spectacle = shares. Lead with the giant inflatable in one wide frame. Grab a still for the grid.',
+   shots:[['0:00–0:03','Wide: giant Lem inflatable towering over the court','lemInf','(text) “a giant lemon took over London 🍋”','Both'],
+          ['0:03–0:08','People reacting / selfies at the inflatable','crowd','—','Video'],
+          ['0:08–0:12','Staff in merch handing out free Lem kits','truck','“first come, first served”','Video'],
+          ['0:12–0:15','Wide crowd + location/date card','court','(text) “📍London · this weekend”','Both']]},
+ 'DWjgY1hiCF8':{prio:'Must', vg:'Susan', talent:'Crystal + crowd', prop:'Ice cream · court · merch',
+   copy:'FREE entry, FREE ice cream, FREE play 🍋 London — first come, first served. #SayItLouder',
+   recipe:'“FREE” hits in second 1 · fast cuts of the freebies · people playing · date/location end. Upbeat audio · 9:16.',
+   note:'The word FREE must be on screen immediately and stay. Show the value (ice cream, games, merch).',
+   shots:[['0:00–0:03','Wide of the activation; bold “FREE” text','court','(text) “FREE this weekend in London 🍋”','Both'],
+          ['0:03–0:09','Hands grabbing free ice cream / Lem kits','food','—','Video'],
+          ['0:09–0:14','People playing on the paddle court','court','“come play — it’s free”','Video'],
+          ['0:14–0:18','Merch giveaway + date/location card','merch','(text) “📍London · free entry”','Both']]},
+ 'DXXG2t8ASid':{prio:'Must', vg:'Corrine', talent:'Momoko (founder)', prop:'Lem · London street',
+   copy:'I can’t believe we’re doing this 🍋 London, we’re coming for you. First come, first served. #SayItLouder',
+   recipe:'Founder talking head, direct + warm · bold date/location text · cut to court/London · save-CTA. 9:16.',
+   note:'Founder-face builds trust. Big “first time / we’re coming for you” energy — state the date & time clearly.',
+   shots:[['0:00–0:04','Momoko to camera: “London, we’re coming for you”','founder','(text) “London, we’re coming for you 🍋”','Video'],
+          ['0:04–0:08','She holds up the Lem','product','“the one you’ve been waiting for”','Both'],
+          ['0:08–0:12','Cut to the court / a London street','london','—','Video'],
+          ['0:12–0:14','Date/time end card','court','(text) “📍London · [date] · 11AM”','Both']]},
+ 'DZQCDBpNlP8':{prio:'Should', vg:'Jackie', talent:'Crystal / Susan + crowd', prop:'Nancy truck · ice cream · snack pack',
+   copy:'the Nancy truck is in London — and it’s FREE 🍋 you know the rule: first come, first served. #SayItLouder',
+   recipe:'Wide of the truck → free item over the counter → close of freebie → happy crowd → location. Upbeat · 9:16.',
+   note:'Truck is the hero + the FREE item is the hook. Keep the line/crowd visible for FOMO.',
+   shots:[['0:00–0:03','Wide of the Nancy truck on a London street','truck','(text) “the Nancy truck landed in London 🍋”','Both'],
+          ['0:03–0:08','Free Lem-ade / ice cream handed over the counter','truck','“it’s free 👀”','Video'],
+          ['0:08–0:12','Close of the freebie + happy crowd','food','“first come, first served”','Video'],
+          ['0:12–0:15','Wide line at the truck + location card','truck','(text) “📍London”','Both']]},
+ 'DWbeVCQjLig':{prio:'Should', vg:'Jackie', talent:'Crowd / cheer squad + Nick', prop:'Court · bleachers · inflatable',
+   copy:'London showed UP 🍋🎾 first come, first served. #SayItLouder',
+   recipe:'Pure energy — packed stands, slow-mo roar, Nick point, inflatable drop. Big audio drop · 9:16.',
+   note:'Sell “you had to be there.” Get the crowd roar in slow-mo + one big payoff beat.',
+   shots:[['0:00–0:03','Wide of packed bleachers / cheer squad','crowd','(text) “the energy in London rn 🍋”','Video'],
+          ['0:03–0:08','Slow-mo crowd roar on a big point','court','—','Video'],
+          ['0:08–0:12','Nick reacts / inflatable drops into frame','nick','“first come, first served”','Video']]},
+ 'DIefmFwoRoL':{prio:'Should', vg:'Jackie', talent:'Team (BTS)', prop:'Court build · truck · inflatable',
+   copy:'the rumours are true 🍋 we’ve been building something in London. first come, first served. #SayItLouder',
+   recipe:'BTS/timelapse of the setup · inflatable inflating · merch wall · “rumours are true” text. Sped-up trending audio · 9:16.',
+   note:'Pre-event hype — show the build, not the full reveal. Ship this EARLY in the teaser wave.',
+   shots:[['0:00–0:03','Timelapse: court / truck being set up','court','(text) “the rumours are true…”','Both'],
+          ['0:03–0:06','Giant Lem inflatable inflating','lemInf','—','Video'],
+          ['0:06–0:09','Merch wall + “see you soon London” text','merch','(text) “see you soon, London 🍋”','Both']]},
+ 'DZmt8ivM-Wj':{prio:'Should', vg:'Corrine', talent:'Hands (Crystal / Susan)', prop:'Lem · court / London',
+   copy:'meet your new London obsession 🍋 first come, first served. #SayItLouder',
+   recipe:'POV hands raise the Lem against the court/sky · macro detail · turn in hand · clean end. ASMR product sound · 9:16 + 1:1.',
+   note:'Make the Lem look craveable — wellness-framed, never explicit. Shoot the macro as a still for PDP/ads too.',
+   shots:[['0:00–0:03','POV hands raise the Lem against the court/sky','product','(text) “your new London obsession 🍋”','Both'],
+          ['0:03–0:06','Macro detail of the Lem','product','—','Both'],
+          ['0:06–0:09','Turn it in hand, on-brand end card','product','“first come, first served”','Both']]},
+ 'DZVbXg2MP8Y':{prio:'Should', vg:'Susan', talent:'Crystal + crowd', prop:'Court · food · inflatable · merch · product',
+   copy:'5 things to do at the Nancy London pop-up (save this) 🍋 first come, first served. #SayItLouder',
+   recipe:'Numbered listicle 1–5 · clean text plates · quick aesthetic beats · save-CTA end. Trending audio · 9:16.',
+   note:'Listicles drive SAVES. Number each beat on screen. End with “save this for your London weekend.”',
+   shots:[['0:00–0:03','Hook: “5 things to do at the Nancy pop-up”','court','(text) “5 things to do 🍋 (save this)”','Video'],
+          ['0:03–0:06','#1 play the paddle court','court','“1. play the court”','Video'],
+          ['0:06–0:09','#2 free ice cream','food','“2. free ice cream”','Video'],
+          ['0:09–0:12','#3 selfie with the giant Lem','lemInf','“3. giant Lem selfie”','Both'],
+          ['0:12–0:15','#4 grab merch · #5 sample the Lem · save-CTA','merch','“4. merch · 5. sample 🍋 save this”','Both']]},
+ 'DZSlWcqCzcM':{prio:'Could', vg:'Susan', talent:'Anyone candid + Nick', prop:'Court · inflatable · crowd',
+   copy:'very London. 🎾🍋 #SayItLouder #FirstComeFirstServed',
+   recipe:'Pure visual candid — no script. Capture the funny/awkward unscripted moment, let it breathe. Trending meme audio · 9:16.',
+   note:'⚠ Went mega-viral (207×) as a MEME, not a repeatable format. Assign someone to film candidly ALL DAY and post the best unscripted moment (e.g. someone bonked by the inflatable, Nick’s reaction). Don’t force or script it.',
+   shots:[['0:00–0:05','Candid: the unscripted funny/awkward moment','court','(let the moment speak — no overlay)','Video'],
+          ['0:05–0:08','Reaction beat / cut to the crowd or Nick','crowd','—','Video']]},
+};
+REFS.forEach(r=>{const d=CONCEPT_DETAILS[r.id]; if(!d)return;
+  r.prio=d.prio; r.vg=d.vg; r.talent=d.talent; r.prop=d.prop; r.copy=d.copy; r.recipe=d.recipe; r.note=d.note; r.shots=d.shots; r.feedback='';});
+
+// effective segment honours a user "Move to" override; tags are editable too
+function segOf(r){const e=EDITS[r.id];return (e&&e.seg)||r.seg;}
+function tagsOf(r){const e=EDITS[r.id];return (e&&e.tags)||r.tags||[];}
+
+
+const STAGES=['Shot','Ingested','Assigned','Editing','Review','Approved','Published'];
+const STAGECLR={Shot:'#C9BBA6',Ingested:'#FFCF4A',Assigned:'#7AA7FF',Editing:'#FF4E9B',Review:'#B98BFF',Approved:'#3F8E7D',Published:'#1F5A4C'};
+const PIPE={};
+
+/* ========================= PRODUCT SHOOTS (our own production: website / how-to-use / launches) ========================= */
+// Same brief shape as a social concept — these are just sourced from our own needs, not from social.
+const PSHOOTS = [
+ {id:'P-001', kind:'product', type:'Website asset', title:'Massage Oil — PDP hero + texture', prio:'Must',
+   vg:'Videographer B', talent:'Hands / forearm', wardrobe:'—', prop:'Massage Oil bottle · skin · seamless backdrop',
+   recipe:'Slow macro · warm soft light · 4 stills + 1 pour loop · export 1:1, 4:5 & 16:9 for PDP + banner',
+   note:'Evergreen website asset — quality over virality. Capture stills AND a short loop in the same setup.',
+   shots:[['—','bottle hero on backdrop','macro','(still) clean front label'],['—','oil pour / drip macro','macro','(loop) glossy texture'],['—','hands warming the oil','applic','"a few drops is all you need"'],['—','applied to skin (forearm)','applic','"sinks in, never greasy"']]},
+ {id:'P-002', kind:'product', type:'How-to-use', title:'Snack Pack — how to use (lube + oil)', prio:'Must',
+   vg:'Videographer A', talent:'Maya (hands + VO)', wardrobe:'Neutral', prop:'Snack Pack box · both bottles · bedside set',
+   recipe:'Step captions 1·2·3 · calm VO · soft set · 30–45s · vertical + square for site',
+   note:'Website + organic. Health-framed, never explicit (Meta-safe). Show the 2-bottle “why”.',
+   shots:[['0:00','open the Snack Pack box','demoSet','(text) "how to use your Snack Pack"'],['0:05','oil for the build-up','demoSet','"oil for everything leading up"'],['0:10','water-based lube for play','demoSet','"water-based = toy + condom safe"'],['0:15','reseal / on the nightstand','demoSet','"keep it close 🤍"']]},
+ {id:'P-003', kind:'product', type:'New launch', title:'Jelly Balm — unboxing + first impression', prio:'Should',
+   vg:'Videographer A', talent:'Maya', wardrobe:'Casual', prop:'Jelly Balm · mailer · vanity',
+   recipe:'ASMR open · first-swipe macro · honest reaction · trending audio · vertical',
+   note:'Launch asset that doubles as social. Capture the very first reveal — it only happens once.',
+   shots:[['0:00','mailer reveal','unbox','(text) "the Jelly Balm is finally here"'],['0:04','first swipe / texture','macro','"this texture though…"'],['0:08','on lips / glow','applic','"glassy, not sticky"']]},
+ {id:'P-004', kind:'product', type:'How-to-use', title:'Lem — 3-speed demo (how it works)', prio:'Should',
+   vg:'Videographer B', talent:'Hands only', wardrobe:'—', prop:'Lem · water tank · seamless backdrop',
+   recipe:'Macro · button-press inserts · waterproof tank dunk · seamless loop · 1:1 + 16:9 banner',
+   note:'Evergreen demo for PDP + ads. The waterproof tank dunk is the iconic share-trigger — get 3 takes.',
+   shots:[['0:00','product hero','macro','(text) "how it works"'],['0:03','press through 3 speeds','macro','"3 speeds"'],['0:06','waterproof tank dunk','tank','"fully waterproof"'],['0:09','logo end',null,'"hellonancy.com"']]},
+];
+const PPIPE={'P-001':{stage:'Ingested',editor:'Editor 2',pub:'site'},'P-002':{stage:'Shot',editor:'—',pub:'site'},'P-003':{stage:'Assigned',editor:'Editor 1',pub:'15:00'},'P-004':{stage:'Shot',editor:'Editor 3',pub:'site'}};
+Object.assign(PIPE,PPIPE);
+
+let conceptSeq=0;
+function nextNum(){return ++conceptSeq;}
+
+/* ========================= HELPERS ========================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let filter='all';
+function scoreClass(o){return o>=8?'s9':o>=5?'s6':o>=3?'s3':'s0';}
+function gatePass(r){return !r.gated && r.outlier>=3;}
+function tile(hue,opts={}){ // stand-in for the real clip/photo
+  return `<div class="media ${opts.cls||''}" style="--h:${hue}">
+    <div class="play">▶</div>
+    ${opts.dur?`<div class="dur">${opts.dur}</div>`:''}
+    ${opts.score?`<span class="score-ov">${opts.score}</span>`:''}
+    ${opts.handle?`<div class="handle">${opts.handle}</div>`:''}
+  </div>`;
+}
+
+/* ========================= EDIT STATE (everything is editable + auto-saves) ========================= */
+const LS='eos_edits_v1'; let EDITS={};
+try{EDITS=JSON.parse(localStorage.getItem(LS)||'{}')||{};}catch(e){EDITS={};}
+function ed(id){return EDITS[id]||(EDITS[id]={});}
+function saveEdits(){try{localStorage.setItem(LS,JSON.stringify(EDITS));}catch(e){} flashSaved();}
+function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+// working (merged) concept = defaults overlaid with the user's saved edits
+// normalize a shot to {t,desc,script,out,location,props}. Handles legacy array shape AND legacy {scene}
+// (so any edits you already saved in the browser keep working — scene → location or props automatically).
+function normShot(s){
+  if(Array.isArray(s)) s={t:s[0],desc:s[1],scene:s[2],script:s[3],out:s[4],props:s[5]};
+  s=s||{};
+  let props=Array.isArray(s.props)?s.props.slice():[];
+  // fold any legacy location / scene into the single props/tags list
+  [s.location,s.scene].forEach(k=>{ if(k&&SCENES[k]&&!props.includes(k)) props.push(k); });
+  return {t:s.t||'',desc:s.desc||'',script:s.script||'',out:s.out||'Video',props};
+}
+function wc(r){const e=EDITS[r.id]||{};
+  const shots=(e.shots||r.shots||[]).map(normShot);
+  return {title:e.title??r.title,copy:e.copy??(r.copy||''),feedback:e.feedback??(r.feedback||''),event:e.event??(r.event||''),
+    vg:e.vg??r.vg,talent:e.talent??r.talent,wardrobe:e.wardrobe??r.wardrobe,
+    prop:e.prop??r.prop,recipe:e.recipe??r.recipe,note:e.note??r.note,prio:e.prio??r.prio,shots};}
+function materializeShots(id){const r=getItem(id);const e=ed(id);
+  e.shots=(e.shots||r.shots||[]).map(normShot);return e.shots;}
+// unified item access across social (REFS) + product (PSHOOTS)
+function getItem(id){return REFS.find(x=>x.id===id) || PSHOOTS.find(x=>x.id===id);}
+function itemLabel(id){const r=REFS.find(x=>x.id===id); if(r&&r.concept)return 'Concept '+r.concept;
+  const pi=PSHOOTS.findIndex(x=>x.id===id); if(pi>=0)return 'Product '+(pi+1); return id;}
+function isProduct(id){return !!PSHOOTS.find(x=>x.id===id);}
+// every shootable thing for the schedule + pipeline (social concepts that are selected, + all product shoots)
+function activeItems(){
+  const social=REFS.filter(r=>r.selected).map(r=>({id:r.id,kind:'social',label:'Concept '+r.concept,obj:r}));
+  const product=PSHOOTS.map((p,i)=>({id:p.id,kind:'product',label:'Product '+(i+1),obj:p}));
+  return social.concat(product);
+}
+
+/* ===================== EVENTS · DUPLICATE (clones) · BACKUP ===================== */
+const EVENTS=['Popup','Dinner','Wimbledon','London'];
+const LSC='eos_clones_v1';
+let eventFilter='all';
+// number concepts: seeded refs first (REFS order), then duplicates — stable + includes clones
+function reindexConcepts(){let n=0;
+  const ordered=REFS.filter(r=>r.selected&&!r._clone).concat(REFS.filter(r=>r._clone));
+  ordered.forEach(r=>{r.concept=++n; if(!PIPE[r.id])PIPE[r.id]={stage:'Shot',editor:'Unassigned',pub:'TBD'};});
+  conceptSeq=n;}
+function getClonesRaw(){try{return JSON.parse(localStorage.getItem(LSC)||'[]');}catch(e){return [];}}
+function saveClones(){try{localStorage.setItem(LSC,JSON.stringify(REFS.filter(r=>r._clone)));}catch(e){} flashSaved();}
+function loadClones(){getClonesRaw().forEach(c=>{if(!REFS.find(x=>x.id===c.id)){c.selected=true;REFS.push(c);}});}
+// duplicate a concept (keeps the original untouched) so you can adapt the same style for another event
+function duplicateConcept(srcId){
+  const src=getItem(srcId); if(!src)return;
+  const cur=wc(src);
+  const n=REFS.filter(r=>r._clone&&r.srcId===(src.srcId||srcId)).length+1;
+  const baseId=src.srcId||srcId; const newId=baseId+'__copy'+n+'_'+(REFS.filter(r=>r._clone).length+1);
+  const clone=Object.assign({},src,{id:newId,_clone:true,srcId:baseId,selected:true,concept:null,
+    title:(cur.title||src.title||'')+' (copy)',prio:cur.prio,vg:cur.vg,talent:cur.talent,prop:cur.prop,
+    copy:cur.copy,recipe:cur.recipe,note:cur.note,feedback:'',event:cur.event,
+    shots:cur.shots.map(s=>({t:s.t,desc:s.desc,location:s.location,script:s.script,out:s.out,props:(s.props||[]).slice()}))});
+  delete EDITS[newId];
+  REFS.push(clone); reindexConcepts(); saveClones();
+  renderConcepts();renderSched();renderKan(); openBrief(newId);
+  toast('Duplicated → set its Event and tweak. Original is untouched.');
+}
+function deleteConcept(id){
+  const r=getItem(id);
+  if(!r||!r._clone){toast('Only duplicated copies can be deleted (originals stay).');return;}
+  if(!confirm('Delete this duplicated copy? The original concept is NOT affected.'))return;
+  const idx=REFS.findIndex(x=>x.id===id); if(idx>=0)REFS.splice(idx,1);
+  delete EDITS[id]; reindexConcepts(); saveClones(); saveEdits();
+  renderConcepts();renderSched();renderKan(); go('concepts'); toast('Copy deleted.');
+}
+function setEvent(id,v){ed(id).event=v||'';saveEdits();renderConcepts();renderRefs();openBrief(id);}
+// which events already have a copy of this concept
+function refEvents(refId){const s=new Set();REFS.filter(x=>x._clone&&x.srcId===refId).forEach(c=>{const e=(EDITS[c.id]&&EDITS[c.id].event)||c.event;if(e)s.add(e);});return s;}
+function makeEventClone(srcId,ev){
+  const src=REFS.find(x=>x.id===srcId); if(!src)return;
+  const cur=wc(src);
+  const n=REFS.filter(r=>r._clone&&r.srcId===srcId).length+1;
+  const newId=srcId+'__'+ev.toLowerCase()+'_'+n;
+  const clone=Object.assign({},src,{id:newId,_clone:true,srcId:srcId,selected:true,concept:null,
+    title:cur.title,prio:cur.prio,vg:cur.vg,talent:cur.talent,prop:cur.prop,copy:cur.copy,recipe:cur.recipe,note:cur.note,feedback:'',event:ev,
+    shots:cur.shots.map(s=>({t:s.t,desc:s.desc,location:s.location,script:s.script,out:s.out,props:(s.props||[]).slice()}))});
+  delete EDITS[newId]; REFS.push(clone);
+  if(!PIPE[newId])PIPE[newId]={stage:'Shot',editor:'Unassigned',pub:'TBD'};
+}
+// toggle an event on a reference: ON = make a copy bucketed to that event · OFF = remove that copy (original untouched)
+function toggleRefEvent(refId,ev){
+  const base=REFS.find(x=>x.id===refId); if(!base)return;
+  if(!base.selected)base.selected=true;
+  const existing=REFS.filter(x=>x._clone&&x.srcId===refId).find(c=>((EDITS[c.id]&&EDITS[c.id].event)||c.event)===ev);
+  if(existing){ if(!confirm('Remove the '+ev+' copy of this concept?'))return; const i=REFS.indexOf(existing);if(i>=0)REFS.splice(i,1);delete EDITS[existing.id]; }
+  else makeEventClone(refId,ev);
+  reindexConcepts(); saveClones(); saveEdits();
+  renderRefs(); renderConcepts(); renderSched(); renderKan();
+  toast(existing?ev+' copy removed.':'Copied into '+ev+'. See the Concepts tab.');
+}
+// —— backup / restore (so nothing is ever lost, even if the browser is cleared) ——
+function exportBackup(){
+  const data={v:1,when:new Date().toISOString(),edits:EDITS,clones:REFS.filter(r=>r._clone)};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='nancy-event-content-backup.json'; document.body.appendChild(a); a.click(); a.remove();
+  toast('⬇ Backup downloaded — keep it safe.');
+}
+function importBackup(input){const f=input.files&&input.files[0]; if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{const d=JSON.parse(rd.result);
+    if(!confirm('Restore this backup? It replaces your current edits in this browser.'))return;
+    if(d.edits)localStorage.setItem(LS,JSON.stringify(d.edits));
+    if(d.clones)localStorage.setItem(LSC,JSON.stringify(d.clones));
+    location.reload();
+  }catch(e){alert('Could not read that backup file.');}};
+  rd.readAsText(f);}
+function flashSaved(){const p=document.getElementById('savepill');if(p){p.classList.add('on');clearTimeout(p._t);p._t=setTimeout(()=>p.classList.remove('on'),1200);}}
+let _rt; function refreshDerived(){renderConcepts();renderProduct();renderSched();renderKan();}
+function refreshDerivedDebounced(){clearTimeout(_rt);_rt=setTimeout(refreshDerived,400);}
+function efield(id,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-field="${field}">${esc(val)}</span>`;}
+function eshot(id,i,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-shot="${i}" data-field="${field}">${esc(val)}</span>`;}
+// options grouped by TYPE — Location · Prop · Products · People — so they're easy to scan & sort
+function sceneOptions(cur){
+  const order=['location','prop','product','people'];
+  const label={location:'📍 Location',prop:'🎪 Prop',product:'🍋 Products',people:'🧑 People'};
+  const types=[...new Set(Object.values(SCENES).map(s=>s.type||'location'))];
+  order.push(...types.filter(t=>!order.includes(t)));
+  return order.filter(t=>Object.values(SCENES).some(s=>(s.type||'location')===t)).map(t=>{
+    const opts=Object.keys(SCENES).filter(k=>(SCENES[k].type||'location')===t)
+      .map(k=>`<option value="${k}"${k===cur?' selected':''}>📦 ${SCENES[k].name}</option>`).join('');
+    return `<optgroup label="${label[t]||t}">${opts}</optgroup>`;
+  }).join('');
+}
+function sceneSelect(id,i,cur){return `<select class="escene" onchange="setScene('${id}',${i},this.value)">
+  <option value="">✦ Graphic / end card — no shoot</option>
+  ${sceneOptions(cur)}
+</select>`;}
+function outSelect(id,i,cur){const o=[['Video','🎬 Video'],['Photo','📷 Photo'],['Both','📷🎬 Both']];
+  return `<select class="escene eout" onchange="setShotField('${id}',${i},'out',this.value)" title="capture as photo, video, or both">
+    ${o.map(([v,l])=>`<option value="${v}"${v===cur?' selected':''}>${l}</option>`).join('')}</select>`;}
+function outIcon(o){return o==='Photo'?'📷':o==='Both'?'📷🎬':'🎬';}
+// single LOCATION picker (location-type only)
+function locationSelect(id,i,cur){return `<select class="escene" onchange="setShotField('${id}',${i},'location',this.value)">
+  <option value="">— pick location —</option>
+  ${Object.keys(SCENES).filter(k=>SCENES[k].type==='location').map(k=>`<option value="${k}"${k===cur?' selected':''}>📍 ${SCENES[k].name}</option>`).join('')}
+</select>`;}
+// PROPS / PRODUCTS (+ people) multi-tagger
+function propOptions(){const order=['location','prop','product','people'];const label={location:'📍 Location',prop:'🎪 Prop',product:'🍋 Products',people:'🧑 People'};
+  return order.filter(t=>Object.values(SCENES).some(s=>s.type===t)).map(t=>{
+    const opts=Object.keys(SCENES).filter(k=>SCENES[k].type===t).map(k=>`<option value="${k}">📦 ${SCENES[k].name}</option>`).join('');
+    return `<optgroup label="${label[t]}">${opts}</optgroup>`;}).join('');}
+function addPropSelect(id,i){return `<select class="addprop" onchange="if(this.value){addShotProp('${id}',${i},this.value);this.value='';}">
+  <option value="">＋ tag prop / product</option>
+  ${propOptions()}</select>`;}
+
+/* ========================= RENDER ========================= */
+function fmt(n){n=+n||0;return n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,'')+'M':n>=1e3?Math.round(n/1e3)+'k':String(n);}
+// lazy inline playback: click cover -> play the local clip; if missing (public build) fall back to IG
+function playClip(el,src,ig){
+  if(el.dataset.on)return; el.dataset.on='1';
+  const v=document.createElement('video');
+  v.src=src; v.controls=true; v.autoplay=true; v.playsInline=true; v.muted=true;
+  v.style.cssText='width:100%;height:100%;object-fit:cover;background:#000';
+  v.onerror=()=>{ el.dataset.on=''; el.innerHTML='<div class="ph">Clip is on the private build — opening Instagram…</div>'; window.open(ig,'_blank'); };
+  el.innerHTML=''; el.appendChild(v);
+}
+// parse a shot timestamp like "0:03–0:08" → {start:3,end:8} (handles any dash; null if not a range)
+function parseRange(t){if(!t)return null;const m=String(t).split(/[–—-]/);if(m.length<2)return null;
+  const toS=x=>{const p=x.trim().split(':').map(Number);if(p.some(n=>isNaN(n)))return null;return p.length===2?p[0]*60+p[1]:p[0];};
+  const a=toS(m[0]),b=toS(m[1]);if(a==null||b==null||b<=a)return null;return {start:a,end:b};}
+// play just this shot's beat of the reference clip (HTML5 media fragment), pausing at the end
+function playShot(el,clip,start,end,ig){
+  if(el.dataset.on)return; el.dataset.on='1';
+  const v=document.createElement('video');
+  v.src=clip+'#t='+start+','+end; v.controls=true; v.autoplay=true; v.playsInline=true; v.muted=true;
+  v.style.cssText='width:100%;height:100%;object-fit:cover;background:#000';
+  v.addEventListener('loadedmetadata',()=>{try{v.currentTime=Math.min(start,(v.duration||start));}catch(e){}});
+  v.ontimeupdate=()=>{if(end&&v.currentTime>=end)v.pause();};
+  v.onerror=()=>{ el.dataset.on=''; el.innerHTML='<div class="ph">Clip is on the private build — opening Instagram…</div>'; window.open(ig,'_blank'); };
+  el.innerHTML=''; el.appendChild(v);
+}
+function setupFilters(){
+  const f=$('#filters');
+  f.innerHTML=`<button class="fpill on" data-f="all">All</button>`+
+    `<button class="fpill" data-f="gate">Passes gate (≥3×)</button>`+
+    SEGMENTS.map(s=>`<button class="fpill" data-f="${s.key}">${s.name}</button>`).join('')+
+    `<span class="hint">filter by who/tone ↓</span>`+
+    `<div class="tagrow">`+ALL_TAGS.map(t=>`<button class="fpill tagpill" data-f="tag:${t}">#${t}</button>`).join('')+`</div>`;
+}
+function moveSeg(id,seg){ed(id).seg=seg;saveEdits();renderRefs();const s=SEGMENTS.find(x=>x.key===seg);toast('Moved to '+(s?s.name:seg));}
+function refCard(r){
+  const gated=!gatePass(r);
+  const scoreChip=`<span class="score ${scoreClass(r.outlier)}">${r.outlier==null?'—':r.outlier+'×'}</span>`;
+  const tags=tagsOf(r).map(t=>`<span class="tag-chip">#${t}</span>`).join('');
+  const card=document.createElement('div');
+  card.className='rcard'+(r.selected?' picked':'')+(gated?' gated':'');
+  card.innerHTML=`
+    <div class="rthumb" title="Click to play" onclick="playClip(this,'${r.clip}','${r.ig}')">
+      <img src="${r.thumb}" alt="" loading="lazy"/>
+      <div class="play">▶</div>
+      <span class="ov-score">${scoreChip}</span>
+      <span class="ov-views">▶ ${fmt(r.views)}</span>
+    </div>
+    <div class="rconcept">${esc(r.cname)}</div>
+    <div class="rhook"><b>Hook:</b> ${esc(r.hook)}</div>
+    <div class="rcap">“${esc((r.caption||'').slice(0,84))}${(r.caption||'').length>84?'…':''}”</div>
+    <div class="tagchips">${tags||'<span class="tag-chip muted">no tags</span>'}</div>
+    <div class="rstats"><span class="pill">▶ ${fmt(r.views)}</span><span class="pill">avg ${fmt(r.median)}</span><span class="pill">${r.outlier==null?'—':r.outlier+'×'}</span><a class="watch" href="${r.ig}" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ IG</a></div>
+    <div class="moverow">↔ Move to:
+      <select class="emove" onchange="moveSeg('${r.id}',this.value)">
+        ${SEGMENTS.map(sg=>`<option value="${sg.key}"${segOf(r)===sg.key?' selected':''}>${sg.name}</option>`).join('')}
+      </select></div>
+    ${ r.selected ? `<div class="cflag">★ Concept ${r.concept}</div>`
+      : gated ? `<button class="btn ghost sm" disabled>Below gate${r.outlier==null?'':' ('+r.outlier+'×)'}</button>`
+      : `<button class="btn pink sm" onclick="pick('${r.id}')">+ Make this a Concept</button>` }
+    ${ r.selected ? `<div class="evpick"><div class="evlbl">📍 copy into events:</div>
+      ${EVENTS.map(ev=>`<button class="evchip ${refEvents(r.id).has(ev)?'on':''}" onclick="event.stopPropagation();toggleRefEvent('${r.id}','${ev}')">${ev}</button>`).join('')}</div>` : '' }
+    ${r.flag?`<div style="font-size:11px;color:#9A5B00;margin-top:6px">⚠ ${esc(r.flag)}</div>`:''}`;
+  return card;
+}
+function refMatches(r){
+  if(filter==='all')return true;
+  if(filter==='gate')return gatePass(r);
+  if(filter.indexOf('tag:')===0)return tagsOf(r).includes(filter.slice(4));
+  return segOf(r)===filter;
+}
+function renderRefs(){
+  const wrap=$('#refgrid'); wrap.innerHTML='';
+  const sel=REFS.filter(r=>!r._clone&&refMatches(r));
+  const onlySeg=(filter==='all'||filter==='gate'||filter.indexOf('tag:')===0)?null:filter;
+  SEGMENTS.forEach(s=>{
+    if(onlySeg&&onlySeg!==s.key)return;
+    const items=sel.filter(r=>segOf(r)===s.key);
+    if(!items.length&&(filter==='gate'||filter.indexOf('tag:')===0))return;
+    const sec=document.createElement('div'); sec.className='seg';
+    sec.innerHTML=`<div class="segh"><h3>${s.name}</h3><span class="sd">${s.desc}</span><span class="sc">${items.length} ref${items.length!==1?'s':''}</span></div>`;
+    const grid=document.createElement('div'); grid.className='rgrid';
+    if(items.length){items.sort((a,b)=>(b.outlier||0)-(a.outlier||0)).forEach(r=>grid.appendChild(refCard(r)));}
+    else{const e=document.createElement('div'); e.className='empty'; e.style.gridColumn='1/-1'; e.textContent='No references here yet.'; grid.appendChild(e);}
+    sec.appendChild(grid); wrap.appendChild(sec);
+  });
+  const reals=REFS.filter(r=>!r._clone);
+  $('#f-all').textContent=reals.length;
+  $('#f-gate').textContent=reals.filter(gatePass).length;
+  $('#f-sel').textContent=reals.filter(r=>r.selected).length;
+  $('#ct-refs').textContent=reals.filter(gatePass).length;
+  $('#ct-con').textContent=REFS.filter(r=>r.selected).length;
+}
+
+function conceptCardEl(r){
+  const c=wc(r);
+  const card=document.createElement('div'); card.className='ccard'+(r._clone?' clone':''); card.onclick=()=>openBrief(r.id);
+  const thumbs=c.shots.slice(0,4).map(s=>{const k=s.props&&s.props[0];return tile((SCENES[k]&&SCENES[k].hue)||0,{cls:''});}).join('');
+  card.innerHTML=`
+    <div class="num">${r.concept}</div>
+    <div class="ceyebrow">Concept ${r.concept}${r._clone?' · copy':''}</div>
+    <h3>${esc(c.title)}</h3>
+    <div class="meta">${r._clone?'duplicate of '+r.srcId:r.id+' · from '+r.src}</div>
+    <div class="thumbs">${thumbs}</div>
+    <div class="row">
+      ${r._clone?'<span class="badge b-clone">⎘ copy</span>':`<span class="score ${scoreClass(r.outlier)}">${r.outlier}×</span>`}
+      <span class="prio ${c.prio.toLowerCase()}">${c.prio}</span>
+      ${c.event?`<span class="badge b-event">📍 ${c.event}</span>`:''}
+      <span style="font-size:12px;color:var(--ink-60)">${c.shots.length} shots</span>
+    </div>
+    <span class="open">Open Concept Brief →</span>`;
+  return card;
+}
+function renderConcepts(){
+  const g=$('#cgrid'); g.innerHTML='';
+  // event sub-tabs (pick the event, then concepts group by segment under it)
+  const ef=$('#eventfilter');
+  if(ef)ef.innerHTML=['all',...EVENTS].map(e=>`<button class="fpill ${eventFilter===e?'on':''}" onclick="eventFilter='${e}';renderConcepts();">${e==='all'?'All events':(e==='London'?'London (general)':e)}</button>`).join('');
+  let pool=REFS.filter(r=>r.selected);
+  if(eventFilter!=='all') pool=pool.filter(r=>wc(r).event===eventFilter);
+  if(!pool.length){g.innerHTML='<div class="empty">No concepts'+(eventFilter!=='all'?' tagged "'+eventFilter+'" — tick this event on a card in the Reference Bank':' yet — select winners in the Reference Bank')+'.</div>';return;}
+  // group by content segment (Event & Activation · Product · People & Talking · Teaser & BTS)
+  SEGMENTS.forEach(sg=>{
+    const items=pool.filter(r=>segOf(r)===sg.key).sort((a,b)=>a.concept-b.concept);
+    if(!items.length)return;
+    const head=document.createElement('div'); head.className='cseg';
+    head.innerHTML=`<h3>${sg.name}</h3><span class="csd">${sg.desc}</span><span class="csc">${items.length}</span>`;
+    g.appendChild(head);
+    const grid=document.createElement('div'); grid.className='cgrid-inner';
+    items.forEach(r=>grid.appendChild(conceptCardEl(r)));
+    g.appendChild(grid);
+  });
+}
+
+function renderProduct(){
+  const g=$('#pgrid'); g.innerHTML='';
+  $('#ct-prod').textContent=PSHOOTS.length;
+  if(!PSHOOTS.length){g.innerHTML='<div class="empty">No product shoots yet — tap <b>+ Add product shoot</b>.</div>';return;}
+  PSHOOTS.forEach((p,idx)=>{
+    const c=wc(p);
+    const card=document.createElement('div'); card.className='ccard'; card.onclick=()=>openBrief(p.id);
+    const thumbs=c.shots.slice(0,4).map(s=>{const k=s.location||(s.props&&s.props[0]);return tile((SCENES[k]&&SCENES[k].hue)||0,{cls:''});}).join('');
+    card.innerHTML=`
+      <div class="num" style="color:var(--sage-soft)">P${idx+1}</div>
+      <div class="ceyebrow" style="color:var(--sage)">Product ${idx+1} · ${p.type}</div>
+      <h3>${esc(c.title)}</h3>
+      <div class="meta">${p.id} · ${esc(c.prop)}</div>
+      <div class="thumbs">${thumbs}</div>
+      <div class="row">
+        <span class="badge b-ptype">${p.type}</span>
+        <span class="prio ${c.prio.toLowerCase()}">${c.prio}</span>
+        <span style="font-size:12px;color:var(--ink-60)">${c.shots.length} shots</span>
+      </div>
+      <span class="open" style="color:var(--sage)">Open Shoot Brief →</span>`;
+    g.appendChild(card);
+  });
+}
+
+function openBrief(id){
+  const r=getItem(id); const c=wc(r); const m=$('#briefmount'); const product=isProduct(id);
+  const bb=document.getElementById('briefback'); if(bb)bb.setAttribute('onclick', product?"go('prod')":"go('concepts')");
+  const shotRows=c.shots.map((s,i)=>{
+    const rng=parseRange(s.t);
+    const tileHtml=(!product && r.clip && rng)
+      ? `<div class="media shotvid" title="Play this beat of the reference (${s.t})" onclick="playShot(this,'${r.clip}',${rng.start},${rng.end},'${r.ig}')"><img src="${r.thumb}" loading="lazy"/><div class="play">▶</div><div class="dur">${s.t}</div></div>`
+      : tile((SCENES[s.props&&s.props[0]]&&SCENES[s.props[0]].hue)||0,{cls:'',dur:s.t});
+    const propTags=(s.props||[]).filter(k=>SCENES[k]).map(k=>`<span class="proptag" title="remove tag" onclick="removeShotProp('${id}',${i},'${k}')">📦 ${SCENES[k].name} ✕</span>`).join('');
+    return `<div class="shotrow">
+      ${tileHtml}
+      <div>
+        <div class="sn"><span class="stime">${eshot(id,i,'t',s.t)}</span><b>Shot ${i+1}</b>
+          <button class="xshot" title="remove shot" onclick="removeShot('${id}',${i})">✕</button></div>
+        <div class="sdesc">${eshot(id,i,'desc',s.desc)}</div>
+        <div class="sscript">🎙 ${eshot(id,i,'script',s.script||'')}</div>
+        <div class="propline"><span class="plk">props / products →</span> ${propTags}${addPropSelect(id,i)} ${outSelect(id,i,s.out||'Video')}</div>
+      </div>
+    </div>`;
+  }).join('');
+  m.innerHTML=`
+  <div class="brief">
+    <div class="top">
+      <div class="eyebrow">${product?`${itemLabel(id)} · ${r.id} · ${r.type}`:`Concept ${r.concept} · ${r.id} · recreate from ${r.src}`}</div>
+      <h2>${efield(id,'title',c.title)}</h2>
+      <div class="row">
+        ${product?`<span class="badge b-ptype">${r.type}</span>`:(r._clone?`<span class="badge b-clone">⎘ copy</span>`:`<span class="score ${scoreClass(r.outlier)}">${r.outlier}× outlier</span>`)}
+        <button class="prio ${c.prio.toLowerCase()}" onclick="cyclePrio('${id}')" title="tap to change priority">${c.prio}</button>
+        ${!product?`<select class="evsel" title="which event is this for?" onchange="setEvent('${id}',this.value)"><option value="">📍 — event —</option>${EVENTS.map(e=>`<option ${c.event===e?'selected':''}>${e}</option>`).join('')}</select>`:''}
+        <span style="font-size:13px;color:var(--ink-60)">${c.shots.length} shots</span>
+      </div>
+      <div class="ebanner">✎ Everything here is editable — auto-saves to your browser.
+        <span id="savepill">Saved ✓</span>
+        ${!product?`<a onclick="duplicateConcept('${id}')">⎘ Duplicate for another event</a>`:''}
+        ${r._clone?`<a onclick="deleteConcept('${id}')" style="color:#c0392b">🗑 Delete this copy</a>`:''}
+        <a onclick="resetConcept('${id}')">↺ reset to original</a></div>
+      ${(!product&&r.thumb)?`<div class="refstrip">
+        <a class="refthumb" href="${r.ig}" target="_blank" rel="noopener"><img src="${r.thumb}" alt=""/><span class="play">▶</span></a>
+        <div><div class="rb-hook"><b>Hook:</b> ${esc(r.hook||'')}</div>
+          <div class="rb-cap">“${esc(r.caption||'')}”</div>
+          <div style="font-size:12px;color:var(--ink-60);margin-top:4px">▶ ${fmt(r.views)} · avg ${fmt(r.median)} · ${r.outlier==null?'—':r.outlier+'× outlier'} · <a class="watch" href="${r.ig}" target="_blank" rel="noopener">↗ Watch original</a></div></div>
+      </div>`:''}
+      ${!product?`<div class="capcompare">
+        <div class="capcol"><div class="capk">Current caption <span style="text-transform:none;font-weight:400">(the original)</span></div><div class="capbox muted">${esc(r.caption||'—')}</div></div>
+        <div class="capcol"><div class="capk">Our suggested caption</div><div class="capbox edit" contenteditable="true" data-id="${id}" data-field="copy">${esc(c.copy)}</div></div>
+      </div>`:`<div class="capcompare"><div class="capcol" style="grid-column:1/3"><div class="capk">Suggested caption</div><div class="capbox edit" contenteditable="true" data-id="${id}" data-field="copy">${esc(c.copy)}</div></div></div>`}
+      <div class="fbblk"><div class="capk">💬 Team feedback <span style="text-transform:none;font-weight:400">— leave notes, saves automatically</span></div>
+        <div class="fbbox edit" contenteditable="true" data-id="${id}" data-field="feedback">${esc(c.feedback)}</div></div>
+    </div>
+    <div class="bbody">
+      <div class="bcol">
+        <div class="blk"><h4>Shot list <span class="tag">a clip/photo for every shot — copy the framing exactly</span></h4>
+          ${shotRows}
+          <button class="btn ghost sm addshot" onclick="addShot('${id}')">+ Add shot</button>
+        </div>
+      </div>
+      <div class="bcol">
+        <div class="blk"><h4>On set</h4>
+          <div class="specs">
+            <div class="spec"><div class="k">Videographer</div><div class="v">${efield(id,'vg',c.vg)}</div></div>
+            <div class="spec"><div class="k">Talent</div><div class="v">${efield(id,'talent',c.talent)}</div></div>
+            <div class="spec" style="grid-column:1/3"><div class="k">Prop / station</div><div class="v">${efield(id,'prop',c.prop)}</div></div>
+          </div>
+        </div>
+        <div class="blk"><h4>Edit recipe <span class="tag">travels with the footage</span></h4>
+          <div class="recipe"><b>Editor does exactly this:</b><br/>${efield(id,'recipe',c.recipe)}</div>
+        </div>
+        <div class="blk"><h4>Director note <span class="tag">edit freely</span></h4>
+          <div class="callout">${efield(id,'note',c.note)}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  go('brief');
+}
+
+/* Shoot Schedule = per-hour activity blocks. PLACEHOLDER until the run-of-show is confirmed.
+   Confirmed only: Jun 27 pop-ups, Jun 28 7pm dinner w/ Lottie Moss. */
+const EVENT_DAYS=[
+ {date:'Fri · Jun 27', tag:'Pop-ups', blocks:[
+   {t:'TBC', act:'Pop-ups around the city', note:'locations & times to confirm', status:'confirmed',
+    shots:['Establishing wide of the pop-up','Product hero close-up','Queue / crowd reaction','Host walk-through']},
+ ]},
+ {date:'Sat · Jun 28', tag:'Main day', blocks:[
+   {t:'10:00 – 11:00', act:'Location shooting', status:'placeholder', shots:['Wide establishing','Hero detail','Talent walk-in']},
+   {t:'11:00 – 12:00', act:'Product & demo', status:'placeholder', shots:['Macro close-up','How-it-works','POV hands']},
+   {t:'12:00 – 18:00', act:'(fill once the run-of-show is confirmed)', status:'placeholder', shots:[]},
+   {t:'19:00 → late', act:'Dinner with Lottie Moss', status:'confirmed', celeb:true,
+    shots:['Arrivals moment','Table candids','Toast / speech','Lottie × founder moment','Product on the table']},
+ ]},
+];
+function schot(desc,hue){return `<div class="schot" onclick="toast('A clip attaches here once this scene is shot or linked to a concept.')">
+  <div class="schot-media" style="--h:${hue}"><div class="play">▶</div></div>
+  <div class="schot-d">${esc(desc)}</div></div>`;}
+function renderSched(){
+  const m=$('#schedmount'); m.innerHTML='';
+  const si=document.querySelector('#v-sched .sintro');
+  if(si)si.innerHTML='🗓️ <b>Placeholder.</b> Confirmed so far: <b>Jun 27 — pop-ups</b> (locations TBC) and <b>Jun 28, 7pm — dinner with Lottie Moss</b>. Build the rest hour-by-hour when the run-of-show lands. Each shot becomes a <b>clickable clip</b> once it’s linked to a concept.';
+  EVENT_DAYS.forEach(d=>{
+    const day=document.createElement('div'); day.className='day';
+    day.innerHTML=`<div class="dayh"><h3>${d.date}</h3><span class="daytag">${d.tag}</span></div>`;
+    d.blocks.forEach(b=>{
+      const hue=b.celeb?280:(b.status==='confirmed'?160:42);
+      const hb=document.createElement('div'); hb.className='hourblock'+(b.status==='confirmed'?' conf':'');
+      hb.innerHTML=`
+        <div class="hb-head">
+          <span class="hb-time">${b.t}</span>
+          <span class="hb-act">${b.celeb?'⭐ ':''}${esc(b.act)}${b.note?` <span class="hb-note">· ${esc(b.note)}</span>`:''}</span>
+          <span class="hb-status ${b.status}">${b.status==='confirmed'?'✓ confirmed':'placeholder'}</span>
+        </div>
+        <div class="shotscroll">${b.shots.length?b.shots.map(s=>schot(s,hue)).join(''):'<div class="hb-empty">No shots planned yet — add them when the schedule firms up.</div>'}</div>`;
+      day.appendChild(hb);
+    });
+    m.appendChild(day);
+  });
+}
+
+function renderKan(){
+  const m=$('#kanmount'); m.innerHTML='';
+  const items=activeItems();
+  STAGES.forEach(stage=>{
+    const col=document.createElement('div'); col.className='kcol';
+    const inCol=items.filter(it=>(PIPE[it.id]?PIPE[it.id].stage:'Shot')===stage);
+    col.innerHTML=`<h4><span><span class="dot" style="background:${STAGECLR[stage]}"></span>${stage}</span><span>${inCol.length}</span></h4>`+
+      inCol.map(it=>{const p=PIPE[it.id]||{editor:'—',pub:'—'};return `
+        <div class="kcard" onclick="openBrief('${it.id}')">
+          <div class="kn"><span class="sdot ${it.kind}"></span>${it.label} · ${esc(wc(it.obj).title)}</div>
+          <div class="km">${p.editor} · ${it.kind==='product'?'→':'publish'} ${p.pub}</div>
+        </div>`;}).join('');
+    m.appendChild(col);
+  });
+}
+
+/* ========================= ACTIONS ========================= */
+function pick(id){
+  const r=REFS.find(x=>x.id===id); if(r.selected)return;
+  r.selected=true; r.concept=nextNum(); ed(id).sel=r.concept; saveEdits();
+  if(!PIPE[id]) PIPE[id]={stage:'Shot',editor:'Unassigned',pub:'TBD'};
+  renderRefs(); renderConcepts(); renderSched(); renderKan();
+  toast(`Selected → Concept ${r.concept}. Added to Concepts, Schedule & Pipeline.`);
+}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
+function go(v){$$('.view').forEach(x=>x.classList.remove('on'));$('#v-'+v).classList.add('on');
+  $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===v));window.scrollTo({top:0,behavior:'smooth'});}
+$('#tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(t)go(t.dataset.v);});
+$('#filters').addEventListener('click',e=>{const p=e.target.closest('.fpill');if(!p)return;
+  filter=p.dataset.f;$$('.fpill').forEach(x=>x.classList.toggle('on',x===p));renderRefs();});
+
+/* ---- editing actions ---- */
+function setScene(id,i,v){materializeShots(id)[i].scene=v||null;saveEdits();openBrief(id);refreshDerived();}
+function setShotField(id,i,f,v){materializeShots(id)[i][f]=v;saveEdits();openBrief(id);refreshDerived();}
+function addShotProp(id,i,k){const s=materializeShots(id)[i];s.props=s.props||[];if(!s.props.includes(k))s.props.push(k);saveEdits();openBrief(id);refreshDerived();}
+function removeShotProp(id,i,k){const s=materializeShots(id)[i];s.props=(s.props||[]).filter(x=>x!==k);saveEdits();openBrief(id);refreshDerived();}
+function addShot(id){materializeShots(id).push({t:'0:00',desc:'new shot',scene:null,script:''});saveEdits();openBrief(id);refreshDerived();}
+function removeShot(id,i){if(!confirm('Remove this shot?'))return;const s=materializeShots(id);s.splice(i,1);saveEdits();openBrief(id);refreshDerived();}
+function cyclePrio(id){const order=['Must','Should','Could'];const cur=wc(getItem(id)).prio;
+  ed(id).prio=order[(order.indexOf(cur)+1)%3];saveEdits();openBrief(id);refreshDerived();}
+function resetConcept(id){if(!confirm('Reset this brief to the original? Your edits to it will be cleared.'))return;const e=EDITS[id]||{};const k={};if(e.sel!=null)k.sel=e.sel;if(e.seg)k.seg=e.seg;if(e.tags)k.tags=e.tags;EDITS[id]=k;saveEdits();openBrief(id);refreshDerived();toast('Brief reset (approval kept).');}
+function addProduct(){
+  const n=PSHOOTS.length+1; const id='P-'+String(n).padStart(3,'0');
+  PSHOOTS.push({id,kind:'product',type:'Website asset',title:'New product shoot',prio:'Should',
+    vg:'Assign on set',talent:'—',wardrobe:'—',prop:'(what are we shooting?)',recipe:'(add the edit recipe)',note:'(add a director note)',
+    shots:[['—','new shot','macro','(add the copy / what the shot says)']]});
+  if(!PIPE[id])PIPE[id]={stage:'Shot',editor:'—',pub:'site'};
+  renderProduct(); renderSched(); renderKan(); openBrief(id);
+  toast('Added Product '+n+'. Fill in the brief.');
+}
+// live text edits — save without re-rendering the brief, so your cursor stays put
+document.getElementById('briefmount').addEventListener('input',e=>{
+  const el=e.target.closest('[data-field]'); if(!el)return;
+  const id=el.dataset.id, f=el.dataset.field, si=el.dataset.shot, v=el.textContent;
+  if(si!=null){materializeShots(id)[+si][f]=v;} else {ed(id)[f]=v;}
+  saveEdits(); refreshDerivedDebounced();
+});
+
+/* seed: pre-select Concepts 1–5 so the team sees a populated example */
+// auto-approve every reference that has a detailed concept (the 9 gate-passers) + restore any duplicates, then number
+loadClones();
+REFS.forEach(r=>{if(CONCEPT_DETAILS[r.id])r.selected=true;});
+REFS.forEach(r=>{const e=EDITS[r.id];if(e&&e.sel)r.selected=true;});
+reindexConcepts();
+setupFilters();
+renderRefs(); renderConcepts(); renderProduct(); renderSched(); renderKan();
+
+/* shareable deep-links: #prod, #sched, #concepts, #pipe, or #brief/P-002 */
+(function(){const h=decodeURIComponent(location.hash.slice(1));
+  if(h.startsWith('brief/')){const id=h.split('/')[1];if(getItem(id))openBrief(id);}
+  else if(['refs','concepts','prod','sched','pipe'].includes(h))go(h);})();
+</script>
+</body>
+</html>
