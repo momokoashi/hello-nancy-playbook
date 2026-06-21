@@ -135,6 +135,11 @@ main{padding:28px 0 80px}
 .cflag{font-weight:700;color:var(--pink);text-align:center;padding:7px;background:var(--pink-50);border-radius:10px;font-size:13px}
 
 /* ---------- Concepts board ---------- */
+.cgrid-inner{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:8px}
+.cseg{display:flex;align-items:baseline;gap:12px;margin:22px 0 12px;padding-bottom:7px;border-bottom:2px solid var(--line)}
+.cseg h3{font-size:20px;font-weight:600}
+.cseg .csd{font-size:12.5px;color:var(--ink-60)}
+.cseg .csc{margin-left:auto;font-size:12px;color:var(--ink-60);background:var(--cream-2);border-radius:20px;padding:2px 10px}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .ccard{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s ease,border-color .1s ease;position:relative;overflow:hidden}
 .ccard:hover{transform:translateY(-3px);border-color:var(--pink)}
@@ -375,7 +380,7 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
       </div>
     </div>
     <div class="filters" id="eventfilter"></div>
-    <div class="cgrid" id="cgrid"></div>
+    <div id="cgrid"></div>
   </section>
 
   <!-- ============ VIEW 3 · PRODUCT SHOOT ============ -->
@@ -641,11 +646,10 @@ function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g
 function normShot(s){
   if(Array.isArray(s)) s={t:s[0],desc:s[1],scene:s[2],script:s[3],out:s[4],props:s[5]};
   s=s||{};
-  let location=(s.location!==undefined)?s.location:null;
   let props=Array.isArray(s.props)?s.props.slice():[];
-  if(s.scene){ if(SCENES[s.scene]&&SCENES[s.scene].type==='location'){ if(location==null) location=s.scene; }
-    else if(SCENES[s.scene]){ if(!props.includes(s.scene)) props.push(s.scene); } }
-  return {t:s.t||'',desc:s.desc||'',script:s.script||'',out:s.out||'Video',location:location||null,props};
+  // fold any legacy location / scene into the single props/tags list
+  [s.location,s.scene].forEach(k=>{ if(k&&SCENES[k]&&!props.includes(k)) props.push(k); });
+  return {t:s.t||'',desc:s.desc||'',script:s.script||'',out:s.out||'Video',props};
 }
 function wc(r){const e=EDITS[r.id]||{};
   const shots=(e.shots||r.shots||[]).map(normShot);
@@ -774,7 +778,7 @@ function locationSelect(id,i,cur){return `<select class="escene" onchange="setSh
   ${Object.keys(SCENES).filter(k=>SCENES[k].type==='location').map(k=>`<option value="${k}"${k===cur?' selected':''}>📍 ${SCENES[k].name}</option>`).join('')}
 </select>`;}
 // PROPS / PRODUCTS (+ people) multi-tagger
-function propOptions(){const order=['prop','product','people'];const label={prop:'🎪 Prop',product:'🍋 Products',people:'🧑 People'};
+function propOptions(){const order=['location','prop','product','people'];const label={location:'📍 Location',prop:'🎪 Prop',product:'🍋 Products',people:'🧑 People'};
   return order.filter(t=>Object.values(SCENES).some(s=>s.type===t)).map(t=>{
     const opts=Object.keys(SCENES).filter(k=>SCENES[k].type===t).map(k=>`<option value="${k}">📦 ${SCENES[k].name}</option>`).join('');
     return `<optgroup label="${label[t]}">${opts}</optgroup>`;}).join('');}
@@ -876,32 +880,43 @@ function renderRefs(){
   $('#ct-con').textContent=REFS.filter(r=>r.selected).length;
 }
 
+function conceptCardEl(r){
+  const c=wc(r);
+  const card=document.createElement('div'); card.className='ccard'+(r._clone?' clone':''); card.onclick=()=>openBrief(r.id);
+  const thumbs=c.shots.slice(0,4).map(s=>{const k=s.props&&s.props[0];return tile((SCENES[k]&&SCENES[k].hue)||0,{cls:''});}).join('');
+  card.innerHTML=`
+    <div class="num">${r.concept}</div>
+    <div class="ceyebrow">Concept ${r.concept}${r._clone?' · copy':''}</div>
+    <h3>${esc(c.title)}</h3>
+    <div class="meta">${r._clone?'duplicate of '+r.srcId:r.id+' · from '+r.src}</div>
+    <div class="thumbs">${thumbs}</div>
+    <div class="row">
+      ${r._clone?'<span class="badge b-clone">⎘ copy</span>':`<span class="score ${scoreClass(r.outlier)}">${r.outlier}×</span>`}
+      <span class="prio ${c.prio.toLowerCase()}">${c.prio}</span>
+      ${c.event?`<span class="badge b-event">📍 ${c.event}</span>`:''}
+      <span style="font-size:12px;color:var(--ink-60)">${c.shots.length} shots</span>
+    </div>
+    <span class="open">Open Concept Brief →</span>`;
+  return card;
+}
 function renderConcepts(){
   const g=$('#cgrid'); g.innerHTML='';
-  // event filter pills
+  // event sub-tabs (pick the event, then concepts group by segment under it)
   const ef=$('#eventfilter');
-  if(ef)ef.innerHTML=['all',...EVENTS].map(e=>`<button class="fpill ${eventFilter===e?'on':''}" onclick="eventFilter='${e}';renderConcepts();">${e==='all'?'All events':e}</button>`).join('');
-  let sel=REFS.filter(r=>r.selected).sort((a,b)=>a.concept-b.concept);
-  if(eventFilter!=='all') sel=sel.filter(r=>wc(r).event===eventFilter);
-  if(!sel.length){g.innerHTML='<div class="empty">No concepts'+(eventFilter!=='all'?' tagged "'+eventFilter+'"':' yet — select winners in the Reference Bank')+'.</div>';return;}
-  sel.forEach(r=>{
-    const c=wc(r);
-    const card=document.createElement('div'); card.className='ccard'+(r._clone?' clone':''); card.onclick=()=>openBrief(r.id);
-    const thumbs=c.shots.slice(0,4).map(s=>{const k=s.location||(s.props&&s.props[0]);return tile((SCENES[k]&&SCENES[k].hue)||0,{cls:''});}).join('');
-    card.innerHTML=`
-      <div class="num">${r.concept}</div>
-      <div class="ceyebrow">Concept ${r.concept}${r._clone?' · copy':''}</div>
-      <h3>${esc(c.title)}</h3>
-      <div class="meta">${r._clone?'duplicate of '+r.srcId:r.id+' · from '+r.src}</div>
-      <div class="thumbs">${thumbs}</div>
-      <div class="row">
-        ${r._clone?'<span class="badge b-clone">⎘ copy</span>':`<span class="score ${scoreClass(r.outlier)}">${r.outlier}×</span>`}
-        <span class="prio ${c.prio.toLowerCase()}">${c.prio}</span>
-        ${c.event?`<span class="badge b-event">📍 ${c.event}</span>`:''}
-        <span style="font-size:12px;color:var(--ink-60)">${c.shots.length} shots</span>
-      </div>
-      <span class="open">Open Concept Brief →</span>`;
-    g.appendChild(card);
+  if(ef)ef.innerHTML=['all',...EVENTS].map(e=>`<button class="fpill ${eventFilter===e?'on':''}" onclick="eventFilter='${e}';renderConcepts();">${e==='all'?'All events':(e==='London'?'London (general)':e)}</button>`).join('');
+  let pool=REFS.filter(r=>r.selected);
+  if(eventFilter!=='all') pool=pool.filter(r=>wc(r).event===eventFilter);
+  if(!pool.length){g.innerHTML='<div class="empty">No concepts'+(eventFilter!=='all'?' tagged "'+eventFilter+'" — tick this event on a card in the Reference Bank':' yet — select winners in the Reference Bank')+'.</div>';return;}
+  // group by content segment (Event & Activation · Product · People & Talking · Teaser & BTS)
+  SEGMENTS.forEach(sg=>{
+    const items=pool.filter(r=>segOf(r)===sg.key).sort((a,b)=>a.concept-b.concept);
+    if(!items.length)return;
+    const head=document.createElement('div'); head.className='cseg';
+    head.innerHTML=`<h3>${sg.name}</h3><span class="csd">${sg.desc}</span><span class="csc">${items.length}</span>`;
+    g.appendChild(head);
+    const grid=document.createElement('div'); grid.className='cgrid-inner';
+    items.forEach(r=>grid.appendChild(conceptCardEl(r)));
+    g.appendChild(grid);
   });
 }
 
@@ -936,7 +951,7 @@ function openBrief(id){
     const rng=parseRange(s.t);
     const tileHtml=(!product && r.clip && rng)
       ? `<div class="media shotvid" title="Play this beat of the reference (${s.t})" onclick="playShot(this,'${r.clip}',${rng.start},${rng.end},'${r.ig}')"><img src="${r.thumb}" loading="lazy"/><div class="play">▶</div><div class="dur">${s.t}</div></div>`
-      : tile((SCENES[s.location]&&SCENES[s.location].hue)||0,{cls:'',dur:s.t});
+      : tile((SCENES[s.props&&s.props[0]]&&SCENES[s.props[0]].hue)||0,{cls:'',dur:s.t});
     const propTags=(s.props||[]).filter(k=>SCENES[k]).map(k=>`<span class="proptag" title="remove tag" onclick="removeShotProp('${id}',${i},'${k}')">📦 ${SCENES[k].name} ✕</span>`).join('');
     return `<div class="shotrow">
       ${tileHtml}
@@ -945,8 +960,7 @@ function openBrief(id){
           <button class="xshot" title="remove shot" onclick="removeShot('${id}',${i})">✕</button></div>
         <div class="sdesc">${eshot(id,i,'desc',s.desc)}</div>
         <div class="sscript">🎙 ${eshot(id,i,'script',s.script||'')}</div>
-        <div class="sscene"><span class="plk">📍 location</span> ${locationSelect(id,i,s.location)} ${outSelect(id,i,s.out||'Video')}</div>
-        <div class="propline"><span class="plk">props / products →</span> ${propTags}${addPropSelect(id,i)}</div>
+        <div class="propline"><span class="plk">props / products →</span> ${propTags}${addPropSelect(id,i)} ${outSelect(id,i,s.out||'Video')}</div>
       </div>
     </div>`;
   }).join('');
