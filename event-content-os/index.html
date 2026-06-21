@@ -105,6 +105,9 @@ main{padding:28px 0 80px}
 .score.s0{background:#ECECEC;color:#8A8A8A}
 .badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
 .b-gate{background:#ECE7DE;color:#8A8278}
+.b-ptype{background:var(--sage-soft);color:#1F5A4C}
+.sdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+.sdot.social{background:var(--pink)} .sdot.product{background:var(--sage)}
 .b-scene{background:var(--cream-2);color:var(--ink);font-weight:600}
 .prio{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .prio.must{color:var(--pink)} .prio.should{color:#9A5B00} .prio.could{color:var(--ink-60)}
@@ -181,6 +184,31 @@ h2 .edit{display:inline-block;min-width:60px}
 .xshot:hover{opacity:1;color:var(--pink)}
 button.prio{border:1.5px solid currentColor;background:transparent;border-radius:20px;padding:3px 11px;cursor:pointer;font-family:var(--sans)}
 .addshot{margin-top:14px;width:auto}
+/* reference bank — segments + real thumbnails */
+.seg{margin-bottom:30px}
+.segh{display:flex;align-items:baseline;gap:10px;margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+.segh h3{font-size:22px;font-weight:600}
+.segh .sd{font-size:12.5px;color:var(--ink-60)}
+.segh .sc{margin-left:auto;font-size:12px;color:var(--ink-60)}
+.rthumb{position:relative;aspect-ratio:9/16;border-radius:13px;overflow:hidden;border:1.5px solid rgba(0,0,0,.06);background:var(--cream-2);display:block}
+.rthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.rthumb .play{position:absolute;inset:0;margin:auto;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;color:var(--ink);font-size:15px;padding-left:3px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.rthumb .ov-score{position:absolute;right:8px;top:8px}
+.rthumb .ov-views{position:absolute;left:8px;bottom:8px;background:rgba(33,28,24,.8);color:#fff;font-size:11px;font-weight:600;padding:2px 7px;border-radius:7px}
+.rconcept{font-weight:700;font-size:14px;margin-top:2px}
+.rhook{font-size:12.5px;color:var(--ink);background:var(--yellow-soft);border-radius:8px;padding:5px 8px;margin:1px 0}
+.rhook b{font-weight:700}
+.rcap{font-size:12px;color:var(--ink-60);font-style:italic}
+.rstats{display:flex;gap:6px;flex-wrap:wrap;font-size:11px;color:var(--ink-60);align-items:center}
+.rstats .pill{background:var(--cream-2);border-radius:20px;padding:2px 7px;font-weight:600}
+.watch{font-size:11.5px;color:var(--pink);font-weight:600;text-decoration:none}
+/* reference strip inside the brief */
+.refstrip{display:flex;gap:12px;margin-top:12px;background:rgba(255,255,255,.55);border:1.5px solid var(--line);border-radius:13px;padding:10px}
+.refthumb{position:relative;width:54px;aspect-ratio:9/16;border-radius:9px;overflow:hidden;flex:none}
+.refthumb img{width:100%;height:100%;object-fit:cover}
+.refthumb .play{position:absolute;inset:0;margin:auto;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;font-size:9px}
+.rb-hook{font-size:13px;background:var(--yellow-soft);border-radius:7px;padding:3px 8px;display:inline-block}
+.rb-cap{font-size:12px;color:var(--ink-60);font-style:italic;margin-top:4px}
 
 /* ---------- Schedule (bundled by scene) ---------- */
 .sintro{background:var(--sage-soft);border-radius:14px;padding:13px 17px;font-size:13.5px;margin:16px 0 20px}
@@ -235,8 +263,9 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
     <nav class="tabs" id="tabs">
       <button class="tab on" data-v="refs"><span class="n">1</span> Reference Bank <span class="ct" id="ct-refs">0</span></button>
       <button class="tab" data-v="concepts"><span class="n">2</span> Concepts <span class="ct" id="ct-con">0</span></button>
-      <button class="tab" data-v="sched"><span class="n">3</span> Shoot Schedule</button>
-      <button class="tab" data-v="pipe"><span class="n">4</span> Edit &amp; Publish</button>
+      <button class="tab" data-v="prod"><span class="n">3</span> Product Shoot <span class="ct" id="ct-prod">0</span></button>
+      <button class="tab" data-v="sched"><span class="n">4</span> Shoot Schedule</button>
+      <button class="tab" data-v="pipe"><span class="n">5</span> Edit &amp; Publish</button>
     </nav>
   </div>
 </header>
@@ -247,8 +276,8 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
   <section class="view on" id="v-refs">
     <div class="vhead">
       <div>
-        <h2>Reference Bank</h2>
-        <p>Every viral reference video, embedded so you can watch it. Each one is scored by outlier. <b>Tap “Make this a Concept”</b> on the winners — it becomes Concept 1, 2, 3…</p>
+        <h2>Reference Bank <span style="font-size:14px;color:var(--ink-60);font-family:var(--sans);font-weight:600">· social</span></h2>
+        <p>What’s going viral on social — embedded so you can watch it, scored by outlier. <b>Tap “Make this a Concept”</b> on the winners to duplicate the idea as ours. (Product/website shoots live in the <b>Product Shoot</b> tab.)</p>
       </div>
     </div>
 
@@ -281,21 +310,33 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
     <div class="cgrid" id="cgrid"></div>
   </section>
 
-  <!-- ============ CONCEPT BRIEF ============ -->
+  <!-- ============ VIEW 3 · PRODUCT SHOOT ============ -->
+  <section class="view" id="v-prod">
+    <div class="vhead">
+      <div>
+        <h2>Product Shoot</h2>
+        <p>Our own production list — <b>website assets, how-to-use videos, and new launches</b>. Not from social; these are the things we always wish we’d shot. Same shot-list brief as Concepts, so the team knows exactly what to capture.</p>
+      </div>
+      <div class="right"><button class="btn pink" onclick="addProduct()">+ Add product shoot</button></div>
+    </div>
+    <div class="cgrid" id="pgrid"></div>
+  </section>
+
+  <!-- ============ CONCEPT / PRODUCT BRIEF ============ -->
   <section class="view" id="v-brief">
-    <div class="vhead"><button class="btn ghost" onclick="go('concepts')">← Back to Concepts</button></div>
+    <div class="vhead"><button class="btn ghost" id="briefback" onclick="go('concepts')">← Back</button></div>
     <div id="briefmount"></div>
   </section>
 
-  <!-- ============ VIEW 3 · SCHEDULE ============ -->
+  <!-- ============ VIEW 4 · SCHEDULE ============ -->
   <section class="view" id="v-sched">
     <div class="vhead">
       <div>
         <h2>Shoot Schedule</h2>
-        <p>Bundled by <b>scene</b>, not by concept. Every video that needs the same shot — e.g. “giant inflatable falling” — is grouped together, so you set it up <b>once</b> and capture it for all of them.</p>
+        <p>Bundled by <b>prop / location</b>, pulling from <b>both</b> Concepts (social) and Product Shoots. Everything that needs the same setup — e.g. the giant inflatable — is grouped so you rig it <b>once</b> and capture it all in one block.</p>
       </div>
     </div>
-    <div class="sintro">🎬 Read it as: <b>this location → this scene → shoot it once → it feeds these concepts.</b> Numbers in the corner show how many videos each scene serves.</div>
+    <div class="sintro">🎬 Read it as: <b>this hour → this location & prop → shoot it once → it feeds these items.</b> The corner number shows how many videos each setup serves. Pink = social concept · green = product shoot.</div>
     <div id="schedmount"></div>
   </section>
 
@@ -304,13 +345,13 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
     <div class="vhead">
       <div>
         <h2>Edit &amp; Publish</h2>
-        <p>The “upload every 1–2 hours” engine. Each concept moves left → right; an editor owns it end to end. New selections land in <b>Shot</b>.</p>
+        <p>The “upload every 1–2 hours” engine — <b>both</b> social concepts and product shoots. As each block wraps, footage lands in <b>Shot</b>; an editor owns each item to <b>Published</b>. Pink = social · green = product.</p>
       </div>
     </div>
     <div class="kan" id="kanmount"></div>
   </section>
 
-  <div class="foot">Hello Nancy · Event Content OS — mockup v1.1 · plugs into the nancy-hub Content Guide</div>
+  <div class="foot">Hello Nancy · Event Content OS — mockup v1.3 · social + product, one shoot schedule · plugs into the nancy-hub Content Guide</div>
 </main>
 
 <div class="toast" id="toast"></div>
@@ -323,8 +364,12 @@ const SCENES = {
   inIn:   {name:'Giant inflatable — zoom IN',         loc:'Main stage',    props:'Giant inflatable · wide lens',    hue:330},
   inFall: {name:'Giant inflatable — FALLING',         loc:'Main stage',    props:'Giant inflatable · rigging · 3 takes', hue:350},
   macro:  {name:'Product macro close-up',             loc:'Product table', props:'Product · macro lens · droplets', hue:160},
+  tank:   {name:'Waterproof tank dunk',               loc:'Product table', props:'Water tank · towels',             hue:185},
+  applic: {name:'Application close-up (skin)',         loc:'Product table', props:'Skin/forearm · macro lens',       hue:30},
   talk:   {name:'Talking head',                       loc:'Bright wall',   props:'Stool · key light · lower-third', hue:42},
   pov:    {name:'POV — hands holding product',        loc:'Bedroom set',   props:'Product · soft bedding · warm lamp', hue:20},
+  demoSet:{name:'How-to-use bedside set',             loc:'Bedroom set',   props:'Bedside styling · soft lamp',     hue:340},
+  unbox:  {name:'Unboxing / vanity',                  loc:'Bedroom set',   props:'Mailer · vanity',                 hue:260},
   street: {name:'Street walk-up reaction',            loc:'Outdoor',       props:'Product · shotgun mic',           hue:200},
 };
 const LOC_ORDER=['Main stage','Product table','Bright wall','Bedroom set','Outdoor'];
@@ -394,6 +439,33 @@ const STAGES=['Shot','Ingested','Assigned','Editing','Review','Approved','Publis
 const STAGECLR={Shot:'#C9BBA6',Ingested:'#FFCF4A',Assigned:'#7AA7FF',Editing:'#FF4E9B',Review:'#B98BFF',Approved:'#3F8E7D',Published:'#1F5A4C'};
 const PIPE={'R-001':{stage:'Editing',editor:'Editor 1',pub:'11:00'},'R-002':{stage:'Assigned',editor:'Editor 2',pub:'12:30'},'R-003':{stage:'Ingested',editor:'—',pub:'14:00'},'R-004':{stage:'Shot',editor:'Editor 3',pub:'13:30'},'R-006':{stage:'Shot',editor:'—',pub:'TBD'}};
 
+/* ========================= PRODUCT SHOOTS (our own production: website / how-to-use / launches) ========================= */
+// Same brief shape as a social concept — these are just sourced from our own needs, not from social.
+const PSHOOTS = [
+ {id:'P-001', kind:'product', type:'Website asset', title:'Massage Oil — PDP hero + texture', prio:'Must',
+   vg:'Videographer B', talent:'Hands / forearm', wardrobe:'—', prop:'Massage Oil bottle · skin · seamless backdrop',
+   recipe:'Slow macro · warm soft light · 4 stills + 1 pour loop · export 1:1, 4:5 & 16:9 for PDP + banner',
+   note:'Evergreen website asset — quality over virality. Capture stills AND a short loop in the same setup.',
+   shots:[['—','bottle hero on backdrop','macro','(still) clean front label'],['—','oil pour / drip macro','macro','(loop) glossy texture'],['—','hands warming the oil','applic','"a few drops is all you need"'],['—','applied to skin (forearm)','applic','"sinks in, never greasy"']]},
+ {id:'P-002', kind:'product', type:'How-to-use', title:'Snack Pack — how to use (lube + oil)', prio:'Must',
+   vg:'Videographer A', talent:'Maya (hands + VO)', wardrobe:'Neutral', prop:'Snack Pack box · both bottles · bedside set',
+   recipe:'Step captions 1·2·3 · calm VO · soft set · 30–45s · vertical + square for site',
+   note:'Website + organic. Health-framed, never explicit (Meta-safe). Show the 2-bottle “why”.',
+   shots:[['0:00','open the Snack Pack box','demoSet','(text) "how to use your Snack Pack"'],['0:05','oil for the build-up','demoSet','"oil for everything leading up"'],['0:10','water-based lube for play','demoSet','"water-based = toy + condom safe"'],['0:15','reseal / on the nightstand','demoSet','"keep it close 🤍"']]},
+ {id:'P-003', kind:'product', type:'New launch', title:'Jelly Balm — unboxing + first impression', prio:'Should',
+   vg:'Videographer A', talent:'Maya', wardrobe:'Casual', prop:'Jelly Balm · mailer · vanity',
+   recipe:'ASMR open · first-swipe macro · honest reaction · trending audio · vertical',
+   note:'Launch asset that doubles as social. Capture the very first reveal — it only happens once.',
+   shots:[['0:00','mailer reveal','unbox','(text) "the Jelly Balm is finally here"'],['0:04','first swipe / texture','macro','"this texture though…"'],['0:08','on lips / glow','applic','"glassy, not sticky"']]},
+ {id:'P-004', kind:'product', type:'How-to-use', title:'Lem — 3-speed demo (how it works)', prio:'Should',
+   vg:'Videographer B', talent:'Hands only', wardrobe:'—', prop:'Lem · water tank · seamless backdrop',
+   recipe:'Macro · button-press inserts · waterproof tank dunk · seamless loop · 1:1 + 16:9 banner',
+   note:'Evergreen demo for PDP + ads. The waterproof tank dunk is the iconic share-trigger — get 3 takes.',
+   shots:[['0:00','product hero','macro','(text) "how it works"'],['0:03','press through 3 speeds','macro','"3 speeds"'],['0:06','waterproof tank dunk','tank','"fully waterproof"'],['0:09','logo end',null,'"hellonancy.com"']]},
+];
+const PPIPE={'P-001':{stage:'Ingested',editor:'Editor 2',pub:'site'},'P-002':{stage:'Shot',editor:'—',pub:'site'},'P-003':{stage:'Assigned',editor:'Editor 1',pub:'15:00'},'P-004':{stage:'Shot',editor:'Editor 3',pub:'site'}};
+Object.assign(PIPE,PPIPE);
+
 let conceptSeq=0;
 function nextNum(){return ++conceptSeq;}
 
@@ -422,10 +494,21 @@ function wc(r){const e=EDITS[r.id]||{};
   const shots=e.shots?e.shots:(r.shots||[]).map(s=>({t:s[0],desc:s[1],scene:s[2],script:s[3]}));
   return {title:e.title??r.title,vg:e.vg??r.vg,talent:e.talent??r.talent,wardrobe:e.wardrobe??r.wardrobe,
     prop:e.prop??r.prop,recipe:e.recipe??r.recipe,note:e.note??r.note,prio:e.prio??r.prio,shots};}
-function materializeShots(id){const r=REFS.find(x=>x.id===id);const e=ed(id);
+function materializeShots(id){const r=getItem(id);const e=ed(id);
   if(!e.shots)e.shots=(r.shots||[]).map(s=>({t:s[0],desc:s[1],scene:s[2],script:s[3]}));return e.shots;}
+// unified item access across social (REFS) + product (PSHOOTS)
+function getItem(id){return REFS.find(x=>x.id===id) || PSHOOTS.find(x=>x.id===id);}
+function itemLabel(id){const r=REFS.find(x=>x.id===id); if(r&&r.concept)return 'Concept '+r.concept;
+  const pi=PSHOOTS.findIndex(x=>x.id===id); if(pi>=0)return 'Product '+(pi+1); return id;}
+function isProduct(id){return !!PSHOOTS.find(x=>x.id===id);}
+// every shootable thing for the schedule + pipeline (social concepts that are selected, + all product shoots)
+function activeItems(){
+  const social=REFS.filter(r=>r.selected).map(r=>({id:r.id,kind:'social',label:'Concept '+r.concept,obj:r}));
+  const product=PSHOOTS.map((p,i)=>({id:p.id,kind:'product',label:'Product '+(i+1),obj:p}));
+  return social.concat(product);
+}
 function flashSaved(){const p=document.getElementById('savepill');if(p){p.classList.add('on');clearTimeout(p._t);p._t=setTimeout(()=>p.classList.remove('on'),1200);}}
-let _rt; function refreshDerived(){renderConcepts();renderSched();renderKan();}
+let _rt; function refreshDerived(){renderConcepts();renderProduct();renderSched();renderKan();}
 function refreshDerivedDebounced(){clearTimeout(_rt);_rt=setTimeout(refreshDerived,400);}
 function efield(id,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-field="${field}">${esc(val)}</span>`;}
 function eshot(id,i,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-shot="${i}" data-field="${field}">${esc(val)}</span>`;}
@@ -487,8 +570,33 @@ function renderConcepts(){
   });
 }
 
+function renderProduct(){
+  const g=$('#pgrid'); g.innerHTML='';
+  $('#ct-prod').textContent=PSHOOTS.length;
+  if(!PSHOOTS.length){g.innerHTML='<div class="empty">No product shoots yet — tap <b>+ Add product shoot</b>.</div>';return;}
+  PSHOOTS.forEach((p,idx)=>{
+    const c=wc(p);
+    const card=document.createElement('div'); card.className='ccard'; card.onclick=()=>openBrief(p.id);
+    const thumbs=c.shots.slice(0,4).map(s=>tile(s.scene?SCENES[s.scene].hue:0,{cls:''})).join('');
+    card.innerHTML=`
+      <div class="num" style="color:var(--sage-soft)">P${idx+1}</div>
+      <div class="ceyebrow" style="color:var(--sage)">Product ${idx+1} · ${p.type}</div>
+      <h3>${esc(c.title)}</h3>
+      <div class="meta">${p.id} · ${esc(c.prop)}</div>
+      <div class="thumbs">${thumbs}</div>
+      <div class="row">
+        <span class="badge b-ptype">${p.type}</span>
+        <span class="prio ${c.prio.toLowerCase()}">${c.prio}</span>
+        <span style="font-size:12px;color:var(--ink-60)">${c.shots.length} shots</span>
+      </div>
+      <span class="open" style="color:var(--sage)">Open Shoot Brief →</span>`;
+    g.appendChild(card);
+  });
+}
+
 function openBrief(id){
-  const r=REFS.find(x=>x.id===id); const c=wc(r); const m=$('#briefmount');
+  const r=getItem(id); const c=wc(r); const m=$('#briefmount'); const product=isProduct(id);
+  const bb=document.getElementById('briefback'); if(bb)bb.setAttribute('onclick', product?"go('prod')":"go('concepts')");
   const shotRows=c.shots.map((s,i)=>{
     const sc=s.scene?SCENES[s.scene]:null;
     return `<div class="shotrow">
@@ -505,10 +613,10 @@ function openBrief(id){
   m.innerHTML=`
   <div class="brief">
     <div class="top">
-      <div class="eyebrow">Concept ${r.concept} · ${r.id} · recreate from ${r.src}</div>
+      <div class="eyebrow">${product?`${itemLabel(id)} · ${r.id} · ${r.type}`:`Concept ${r.concept} · ${r.id} · recreate from ${r.src}`}</div>
       <h2>${efield(id,'title',c.title)}</h2>
       <div class="row">
-        <span class="score ${scoreClass(r.outlier)}">${r.outlier}× outlier</span>
+        ${product?`<span class="badge b-ptype">${r.type}</span>`:`<span class="score ${scoreClass(r.outlier)}">${r.outlier}× outlier</span>`}
         <button class="prio ${c.prio.toLowerCase()}" onclick="cyclePrio('${id}')" title="tap to change priority">${c.prio}</button>
         <span style="font-size:13px;color:var(--ink-60)">${c.shots.length} shots</span>
       </div>
@@ -548,8 +656,8 @@ function renderSched(){
   const m=$('#schedmount'); m.innerHTML='';
   // map scene -> [{concept, shotIndex}]
   const use={};
-  REFS.filter(r=>r.selected).forEach(r=>{const c=wc(r);c.shots.forEach((s,i)=>{
-    if(!s.scene||!SCENES[s.scene])return; (use[s.scene]=use[s.scene]||[]).push({c:r.concept,t:c.title,i:i+1,id:r.id});
+  activeItems().forEach(it=>{const c=wc(it.obj);c.shots.forEach((s,i)=>{
+    if(!s.scene||!SCENES[s.scene])return; (use[s.scene]=use[s.scene]||[]).push({label:it.label,kind:it.kind,t:c.title,i:i+1,id:it.id});
   });});
   let any=false;
   LOC_ORDER.forEach(loc=>{
@@ -560,15 +668,15 @@ function renderSched(){
     locEl.innerHTML=`<div class="loch"><h3>${loc}</h3><span class="ltime">${LOC_TIME[loc]||''}</span>
       <span class="lct">${scenesHere.length} scene${scenesHere.length>1?'s':''} · ${totalFeeds} shot${totalFeeds>1?'s':''} to capture</span></div>`;
     scenesHere.forEach(k=>{
-      const sc=SCENES[k]; const u=use[k]; const distinct=new Set(u.map(x=>x.c)).size; const multi=distinct>1;
+      const sc=SCENES[k]; const u=use[k]; const distinct=new Set(u.map(x=>x.label)).size; const multi=distinct>1;
       const sceneEl=document.createElement('div'); sceneEl.className='scene';
       sceneEl.innerHTML=`
         <div class="sh">${tile(sc.hue,{cls:'thumb'})}
-          <div><div class="sname">${sc.name}</div><div class="sprops">${sc.props}</div></div>
-          <div class="feeds ${multi?'multi':''}">${multi?'▶ shoot once → '+u.length+' clips for '+distinct+' concepts':u.length+' clip'+(u.length>1?'s':'')+' · 1 concept'}</div>
+          <div><div class="sname">${sc.name}</div><div class="sprops">📦 ${sc.props}</div></div>
+          <div class="feeds ${multi?'multi':''}">${multi?'▶ shoot once → '+u.length+' clips for '+distinct+' items':u.length+' clip'+(u.length>1?'s':'')+' · 1 item'}</div>
         </div>
         <div class="needs">${u.map(x=>`<div class="needchip" onclick="openBrief('${x.id}')">
-          <div class="nq">Concept ${x.c} · shot ${x.i}</div><div class="nt">${x.t}</div></div>`).join('')}</div>`;
+          <div class="nq"><span class="sdot ${x.kind}"></span>${x.label} · shot ${x.i}</div><div class="nt">${esc(x.t)}</div></div>`).join('')}</div>`;
       locEl.appendChild(sceneEl);
     });
     m.appendChild(locEl);
@@ -578,15 +686,15 @@ function renderSched(){
 
 function renderKan(){
   const m=$('#kanmount'); m.innerHTML='';
-  const sel=REFS.filter(r=>r.selected);
+  const items=activeItems();
   STAGES.forEach(stage=>{
     const col=document.createElement('div'); col.className='kcol';
-    const inCol=sel.filter(r=>(PIPE[r.id]?PIPE[r.id].stage:'Shot')===stage);
+    const inCol=items.filter(it=>(PIPE[it.id]?PIPE[it.id].stage:'Shot')===stage);
     col.innerHTML=`<h4><span><span class="dot" style="background:${STAGECLR[stage]}"></span>${stage}</span><span>${inCol.length}</span></h4>`+
-      inCol.map(r=>{const p=PIPE[r.id]||{editor:'—',pub:'—'};return `
-        <div class="kcard" onclick="openBrief('${r.id}')">
-          <div class="kn">Concept ${r.concept} · ${esc(wc(r).title)}</div>
-          <div class="km">${p.editor} · publish ${p.pub}</div>
+      inCol.map(it=>{const p=PIPE[it.id]||{editor:'—',pub:'—'};return `
+        <div class="kcard" onclick="openBrief('${it.id}')">
+          <div class="kn"><span class="sdot ${it.kind}"></span>${it.label} · ${esc(wc(it.obj).title)}</div>
+          <div class="km">${p.editor} · ${it.kind==='product'?'→':'publish'} ${p.pub}</div>
         </div>`;}).join('');
     m.appendChild(col);
   });
@@ -613,7 +721,16 @@ function addShot(id){materializeShots(id).push({t:'0:00',desc:'new shot',scene:n
 function removeShot(id,i){const s=materializeShots(id);s.splice(i,1);saveEdits();openBrief(id);refreshDerived();}
 function cyclePrio(id){const order=['Must','Should','Could'];const cur=wc(REFS.find(r=>r.id===id)).prio;
   ed(id).prio=order[(order.indexOf(cur)+1)%3];saveEdits();openBrief(id);refreshDerived();}
-function resetConcept(id){delete EDITS[id];saveEdits();openBrief(id);refreshDerived();toast('Concept reset to original.');}
+function resetConcept(id){delete EDITS[id];saveEdits();openBrief(id);refreshDerived();toast('Reset to original.');}
+function addProduct(){
+  const n=PSHOOTS.length+1; const id='P-'+String(n).padStart(3,'0');
+  PSHOOTS.push({id,kind:'product',type:'Website asset',title:'New product shoot',prio:'Should',
+    vg:'Assign on set',talent:'—',wardrobe:'—',prop:'(what are we shooting?)',recipe:'(add the edit recipe)',note:'(add a director note)',
+    shots:[['—','new shot','macro','(add the copy / what the shot says)']]});
+  if(!PIPE[id])PIPE[id]={stage:'Shot',editor:'—',pub:'site'};
+  renderProduct(); renderSched(); renderKan(); openBrief(id);
+  toast('Added Product '+n+'. Fill in the brief.');
+}
 // live text edits — save without re-rendering the brief, so your cursor stays put
 document.getElementById('briefmount').addEventListener('input',e=>{
   const el=e.target.closest('[data-field]'); if(!el)return;
@@ -624,12 +741,12 @@ document.getElementById('briefmount').addEventListener('input',e=>{
 
 /* seed: pre-select Concepts 1–5 so the team sees a populated example */
 ['R-001','R-002','R-003','R-004','R-006'].forEach(id=>{const r=REFS.find(x=>x.id===id);r.selected=true;r.concept=nextNum();});
-renderRefs(); renderConcepts(); renderSched(); renderKan();
+renderRefs(); renderConcepts(); renderProduct(); renderSched(); renderKan();
 
-/* shareable deep-links: #sched, #concepts, #pipe, or #brief/R-004 */
+/* shareable deep-links: #prod, #sched, #concepts, #pipe, or #brief/P-002 */
 (function(){const h=decodeURIComponent(location.hash.slice(1));
-  if(h.startsWith('brief/')){const id=h.split('/')[1];if(REFS.find(r=>r.id===id))openBrief(id);}
-  else if(['refs','concepts','sched','pipe'].includes(h))go(h);})();
+  if(h.startsWith('brief/')){const id=h.split('/')[1];if(getItem(id))openBrief(id);}
+  else if(['refs','concepts','prod','sched','pipe'].includes(h))go(h);})();
 </script>
 </body>
 </html>
