@@ -295,7 +295,7 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
       <span class="hint">Gate = Outlier ≥ 3 · clear hook in 2s · we can recreate it</span>
     </div>
 
-    <div class="rgrid" id="refgrid"></div>
+    <div id="refgrid"></div>
   </section>
 
   <!-- ============ VIEW 2 · CONCEPTS ============ -->
@@ -375,69 +375,59 @@ const SCENES = {
 const LOC_ORDER=['Main stage','Product table','Bright wall','Bedroom set','Outdoor'];
 const LOC_TIME={'Main stage':'9:00 – 11:00','Product table':'11:00 – 12:30','Bright wall':'13:00 – 14:00','Bedroom set':'14:00 – 14:45','Outdoor':'15:00 – 15:45'};
 
-/* ========================= REFERENCES + BRIEFS ========================= */
-// Each ref carries its full brief (shots tagged with a scene). Selecting it = a numbered concept.
-const REFS = [
- {id:'R-001', src:'@thesoftlife', hue:20, median:11000, views:99000, fmt:'POV product reveal', why:'text hook + reveal', dur:'0:11',
-   title:'POV: you finally found the one', prio:'Must', mins:12, talent:'Maya', wardrobe:'Neutral loungewear · no logos',
-   recipe:'Trending audio "soft girl pt.4" · auto-captions (berry) · 6 fast cuts on beat · warm glow LUT · CTA end card',
-   note:'Hook must land in frame 1 — the text overlay is the whole reason this hit 9×. Match the original’s first 2 seconds exactly.',
-   shots:[['0:00','hands hold product','pov','"POV: you finally found the one 🌹"'],['0:04','face — soft reaction','pov','"the one that just… gets it"'],['0:06','product macro insert','macro',''],['0:09','CTA end card',null,'"link in bio, bestie"']]},
- {id:'R-002', src:'Dr. Lane (OB-GYN)', hue:42, median:18000, views:126000, fmt:'"Things I wish I knew at 30"', why:'credential + listicle', dur:'0:18',
-   title:'3 things I wish I knew at 30', prio:'Must', mins:9, talent:'Dr. Lane (or Maya host)', wardrobe:'Smart-casual · credible',
-   recipe:'No music under VO · big bold captions · numbered text plates · slow zoom · save-CTA end',
-   note:'Education is our proven viral engine. Keep it health-framed, never pleasure-framed (Meta-safe & travels further).',
-   shots:[['0:00','talking head, direct','talk','"3 things no one told me at 30…"'],['0:05','on-screen "#1" + cutaway','talk','"one: your body changes — that’s normal"'],['0:09','product in frame','macro',''],['0:13','soft save-CTA',null,'"save this for later"']]},
- {id:'R-003', src:'@studio.macro', hue:160, median:9000, views:31000, fmt:'"How it actually works" demo', why:'satisfying macro loop', dur:'0:12',
-   title:'How it actually works', prio:'Should', mins:18, talent:'Hands only', wardrobe:'—',
-   recipe:'No talent · ASMR product sound up · seamless loop · soft studio light · also export 1:1 + 16:9 for web banner',
-   note:'Asset-bank shot — doesn’t need to go viral; it lives forever on the PDP, banners & ads.',
-   shots:[['0:00','product on clean surface','macro','(text) "how it actually works ✨"'],['0:03','macro detail glide','macro',''],['0:06','in-use motion (hands)','macro','"3 speeds. fully waterproof."'],['0:10','logo end frame',null,'"hellonancy.com"']]},
- {id:'R-004', src:'@bigdrop', hue:330, median:22000, views:140000, fmt:'Giant-prop reveal', why:'scale shock + "wait for it"', dur:'0:10',
-   title:'It’s THIS big 😳 (inflatable reveal)', prio:'Must', mins:25, talent:'Crowd + host', wardrobe:'Brand tee',
-   recipe:'Trending "wait for it" audio · big bold caption · hard cut on the fall · crowd-gasp SFX · product CTA',
-   note:'The FALL is the moneymaker — rig it, get 3 takes from 2 angles. This single scene also feeds Concept 5.',
-   shots:[['0:00','giant inflatable — zoom OUT','inOut','"wait for it…"'],['0:03','crowd reacts, zoom IN','inIn',''],['0:06','inflatable FALLS','inFall','"IT’S THIS BIG 😳"'],['0:09','cut to real product','macro','"now in your size"']]},
- {id:'R-006', src:'@morningsofmine', hue:350, median:15000, views:78000, fmt:'"When it finally drops"', why:'anticipation + payoff', dur:'0:08',
-   title:'When the drop finally hits', prio:'Should', mins:8, talent:'Maya', wardrobe:'Casual',
-   recipe:'Trending audio · reaction zoom on the fall · captions · product CTA',
-   note:'Shoot alongside Concept 4 — it reuses the inflatable FALL scene, so it costs almost no extra setup.',
-   shots:[['0:00','build-up tease','street','"when the drop finally hits…"'],['0:03','inflatable falls — reaction','inFall',''],['0:06','product CTA',null,'"it’s here, bestie"']]},
- {id:'R-005', src:'Maya PT (pelvic floor)', hue:280, median:40000, views:320000, fmt:'Expert myth-bust explainer', why:'expert myth-bust', dur:'0:15',
-   title:'Myth: dryness means something’s wrong', prio:'Should', mins:10, talent:'Maya PT', wardrobe:'Clinical-casual',
-   recipe:'Credential lower-third · no music · captions · save-CTA',
-   note:'Keep clinical & health-framed — this is our highest-reach format historically.',
-   shots:[['0:00','talking head, myth on screen','talk','"myth: dryness means something’s wrong"'],['0:05','expert explains','talk','"totally normal — here’s why"'],['0:10','product soft mention','macro','']]},
- {id:'R-007', src:'@unbox.asmr', hue:190, median:12000, views:50000, fmt:'ASMR unboxing', why:'tactile sound + reveal', dur:'0:14',
-   title:'ASMR unboxing 🤍', prio:'Could', mins:12, talent:'Hands only', wardrobe:'—',
-   recipe:'ASMR sound up · no music · slow · seamless loop',
-   note:'Doubles as a clean PDP clip — bank it.',
-   shots:[['0:00','hands open box','macro','(text) "asmr unboxing 🤍"'],['0:04','tactile product reveal','macro',''],['0:08','product glamour','macro','"hellonancy.com"']]},
- {id:'R-008', src:'@gadgetrated', hue:210, median:20000, views:70000, fmt:'"Rating viral gadgets"', why:'rank + verdict', dur:'0:20',
-   title:'Rating viral wellness gadgets', prio:'Could', mins:14, talent:'Host', wardrobe:'Casual',
-   recipe:'Ranking text plates · upbeat bed · captions · verdict reveal',
-   note:'Ours is the verdict — frame it as earned, not an ad.',
-   shots:[['0:00','host with lineup','talk','"rating viral wellness gadgets"'],['0:04','pick ours, verdict','talk','"this one’s the winner"'],['0:07','macro of winner','macro','']]},
- {id:'R-009', src:'@reactqueen', hue:250, median:30000, views:48000, fmt:'Duet / reaction overlay', why:'reaction overlay', dur:'0:22', gated:true, shots:[]},
- {id:'R-010', src:'@trenddancer', hue:120, median:25000, views:30000, fmt:'Trend dance w/ product', why:'trend audio only', dur:'0:16', gated:true, shots:[]},
+/* ========================= SEGMENTS ========================= */
+const SEGMENTS=[
+ {key:'product',  name:'Product',       desc:'Launches & product-focus'},
+ {key:'event',    name:'Event',         desc:'Pop-ups, activations, public moments'},
+ {key:'store',    name:'Store opening',  desc:'New store / shop openings'},
+ {key:'people',   name:'People',        desc:'Street interview, talking head, human moments'},
+ {key:'celebrity',name:'Celebrity',     desc:'Celebrity-led (e.g. Nick)'},
+ {key:'founder',  name:'Founder',       desc:'Founder-fronted / BTS'},
 ];
-REFS.forEach(r=>{r.outlier=+(r.views/r.median).toFixed(1); r.selected=false; r.concept=null;});
-// Default crew + prop per concept (all editable in the brief)
-const EXTRA={
- 'R-001':{vg:'Videographer A',prop:'The product · soft bedding · warm lamp'},
- 'R-002':{vg:'Videographer A',prop:'The product · notebook'},
- 'R-003':{vg:'Videographer B',prop:'The product · water droplets · seamless backdrop'},
- 'R-004':{vg:'Videographer A + B',prop:'Giant inflatable · the product'},
- 'R-006':{vg:'Videographer B',prop:'Giant inflatable · the product'},
- 'R-005':{vg:'Videographer A',prop:'The product'},
- 'R-007':{vg:'Videographer B',prop:'The product · box'},
- 'R-008':{vg:'Videographer A',prop:'The product lineup'},
-};
-REFS.forEach(r=>{const x=EXTRA[r.id]; r.vg=x?x.vg:'Assign on set'; r.prop=x?x.prop:'—';});
+
+/* ========================= REFERENCES (14 real IG posts, Apify-scraped) =========================
+   outlier = this video's views / that account's median reel views (last 24 reels). */
+const REFS = [
+ {id:'DXuN52TDGD2', owner:'londonlivingdisneydreaming', seg:'event', cname:'Giant-prop pop-up reveal',
+   hook:'Coach pop up Oxford street', caption:'We love a fun pop up - Selfridges corner shop, Oxford street', views:114852, accMedian:2273, outlier:50.5},
+ {id:'DWjgY1hiCF8', owner:'somethingsomethingbeauty', seg:'event', cname:'Free public activation reveal',
+   hook:'FREE outdoor cinema in Covent Garden', caption:'Big Screen on the Piazza! Covent Garden Piazza, London', views:204950, accMedian:5589, outlier:36.7},
+ {id:'DXXG2t8ASid', owner:'ilovesainthonore', seg:'product', cname:'Product tasting + launch tease (talking head)',
+   hook:'MIAMI we are coming for you - May 3rd, 11AM', caption:'MIAMI we are coming for you on May 3rd at 11AM! First time leaving home...', views:289730, accMedian:22372, outlier:13},
+ {id:'DZQCDBpNlP8', owner:'vippopups', seg:'event', cname:'Branded truck pop-up + freebie',
+   hook:'Coach Cherry NYC Free Pop Up - free cherry Matcha', caption:'Coach Cherry Truck New York Free Pop Up', views:326245, accMedian:33231, outlier:9.8},
+ {id:'DWbeVCQjLig', owner:'anotr.music', seg:'event', cname:'Crowd-energy activation reveal',
+   hook:'(visual) Wall of speakers + roaring crowd', caption:'miami music week pop up #TTY', views:6465348, accMedian:775981, outlier:8.3},
+ {id:'DIefmFwoRoL', owner:'gisou', seg:'event', cname:'BTS building the activation + teaser',
+   hook:'The rumors are true... See you soon Miami', caption:'The rumors are true... Miami, we are coming in hot', views:2210742, accMedian:297769, outlier:7.4},
+ {id:'DZmt8ivM-Wj', owner:'digitaldiarylondon', seg:'product', cname:'Product hero POV (hands holding)',
+   hook:'your new summer obsession in london', caption:'your new summer obsession in london: snow peach gelato', views:133083, accMedian:25942, outlier:5.1},
+ {id:'DZVbXg2MP8Y', owner:'russogioacchino', seg:'event', cname:'Venue rundown (listicle)',
+   hook:'12 places in London you must visit - 1. Sky Garden', caption:'12 Places in London you should visit at least once', views:504505, accMedian:130950, outlier:3.9},
+ {id:'DZSlWcqCzcM', owner:'chloewlp_p_', seg:'people', cname:'Relatable candid moment',
+   hook:'(no on-screen text - pure visual moment)', caption:'very awkward situation', views:97970124, accMedian:472061, outlier:207.5,
+   flag:'Mega-viral but a viral mechanic, not a recreatable format'},
+ {id:'DZMLCuru6h6', owner:'fitnessproductfinder', seg:'store', cname:'New store opening POV',
+   hook:'DAVID SCOOP SHOP - 109 Leroy St, West Village', caption:'Now open in the West Village @davidprotein', views:133381, accMedian:59065, outlier:2.3},
+ {id:'DZawe1VMiYl', owner:'londonforless', seg:'event', cname:'Freebie drop',
+   hook:'London newest freebie on Oxford Street', caption:'London newest freebie just landed on Oxford Street - free tote', views:84515, accMedian:52289, outlier:1.6},
+ {id:'DYZF5mEhZGQ', owner:'jw_londonexplore', seg:'event', cname:'Cute pop-up walkthrough',
+   hook:'another cute London pop-up', caption:'Found another cute London pop-up - full European', views:20228, accMedian:22090, outlier:0.9},
+ {id:'DZUwTMqMbPG', owner:'londonforless', seg:'people', cname:'POV lifestyle ad',
+   hook:'POV: celebrating every World Cup goal', caption:'ad - POV: you are celebrating every World Cup goal with a margarita...', views:23104, accMedian:52289, outlier:0.4},
+ {id:'DZnswOrCHiy', owner:'somethingsomethingbeauty', seg:'event', cname:'Pop-up roundup (carousel)',
+   hook:'London Pop Ups happening 15-26 June', caption:'London Pop Ups happening 15th-26th June...', views:0, accMedian:5589, outlier:null},
+];
+REFS.forEach(r=>{
+  r.median=r.accMedian; r.src='@'+r.owner; r.title=r.cname;
+  r.thumb='assets/thumb_'+r.id+'.jpg'; r.ig='https://www.instagram.com/p/'+r.id+'/';
+  r.selected=false; r.concept=null; r.prio='Should'; r.shots=[];
+  r.vg=undefined; r.talent=undefined; r.wardrobe=undefined; r.prop=undefined; r.recipe=''; r.note='';
+});
 
 const STAGES=['Shot','Ingested','Assigned','Editing','Review','Approved','Published'];
 const STAGECLR={Shot:'#C9BBA6',Ingested:'#FFCF4A',Assigned:'#7AA7FF',Editing:'#FF4E9B',Review:'#B98BFF',Approved:'#3F8E7D',Published:'#1F5A4C'};
-const PIPE={'R-001':{stage:'Editing',editor:'Editor 1',pub:'11:00'},'R-002':{stage:'Assigned',editor:'Editor 2',pub:'12:30'},'R-003':{stage:'Ingested',editor:'—',pub:'14:00'},'R-004':{stage:'Shot',editor:'Editor 3',pub:'13:30'},'R-006':{stage:'Shot',editor:'—',pub:'TBD'}};
+const PIPE={};
 
 /* ========================= PRODUCT SHOOTS (our own production: website / how-to-use / launches) ========================= */
 // Same brief shape as a social concept — these are just sourced from our own needs, not from social.
@@ -518,26 +508,53 @@ function sceneSelect(id,i,cur){return `<select class="escene" onchange="setScene
 </select>`;}
 
 /* ========================= RENDER ========================= */
+function fmt(n){n=+n||0;return n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,'')+'M':n>=1e3?Math.round(n/1e3)+'k':String(n);}
+function setupFilters(){
+  const f=$('#filters');
+  f.innerHTML=`<button class="fpill on" data-f="all">All</button>`+
+    `<button class="fpill" data-f="gate">Passes the gate (≥3×)</button>`+
+    SEGMENTS.map(s=>`<button class="fpill" data-f="${s.key}">${s.name}</button>`).join('')+
+    `<span class="hint">Outlier = video views ÷ that account’s average · gate at 3×</span>`;
+}
+function refCard(r){
+  const gated=!gatePass(r);
+  const scoreChip=`<span class="score ${scoreClass(r.outlier)}">${r.outlier==null?'—':r.outlier+'×'}</span>`;
+  const card=document.createElement('div');
+  card.className='rcard'+(r.selected?' picked':'')+(gated?' gated':'');
+  card.innerHTML=`
+    <a class="rthumb" href="${r.ig}" target="_blank" rel="noopener" title="Watch on Instagram">
+      <img src="${r.thumb}" alt="" loading="lazy"/>
+      <div class="play">▶</div>
+      <span class="ov-score">${scoreChip}</span>
+      <span class="ov-views">▶ ${fmt(r.views)}</span>
+    </a>
+    <div class="rconcept">${esc(r.cname)}</div>
+    <div class="rhook"><b>Hook:</b> ${esc(r.hook)}</div>
+    <div class="rcap">“${esc((r.caption||'').slice(0,84))}${(r.caption||'').length>84?'…':''}”</div>
+    <div class="rstats"><span class="pill">▶ ${fmt(r.views)}</span><span class="pill">avg ${fmt(r.median)}</span><span class="pill">${r.outlier==null?'—':r.outlier+'×'}</span><a class="watch" href="${r.ig}" target="_blank" rel="noopener">↗ IG</a></div>
+    ${ r.selected ? `<div class="cflag">★ Concept ${r.concept}</div>`
+      : gated ? `<button class="btn ghost sm" disabled>Below gate${r.outlier==null?'':' ('+r.outlier+'×)'}</button>`
+      : `<button class="btn pink sm" onclick="pick('${r.id}')">+ Make this a Concept</button>` }
+    ${r.flag?`<div style="font-size:11px;color:#9A5B00;margin-top:6px">⚠ ${esc(r.flag)}</div>`:''}`;
+  return card;
+}
 function renderRefs(){
-  const g=$('#refgrid'); g.innerHTML='';
-  REFS.filter(r=>{
+  const wrap=$('#refgrid'); wrap.innerHTML='';
+  const sel=REFS.filter(r=>{
     if(filter==='gate')return gatePass(r);
-    if(filter==='open')return gatePass(r)&&!r.selected;
+    if(filter!=='all')return r.seg===filter;
     return true;
-  }).forEach(r=>{
-    const gated=!gatePass(r);
-    const card=document.createElement('div');
-    card.className='rcard'+(r.selected?' picked':'')+(gated?' gated':'');
-    const scoreChip=`<span class="score ${scoreClass(r.outlier)}">${r.outlier}×</span>`;
-    card.innerHTML=`
-      ${tile(r.hue,{dur:r.dur, score:scoreChip, handle:r.src+' · '+(r.views/1000)+'k views'})}
-      <div class="rmeta"><div class="src">${r.src}</div><div class="fmt">${r.id} · ${r.fmt}</div></div>
-      <div class="why">“${r.why}”</div>
-      <div class="stats">${scoreChip}<span>outlier · their median ${(r.median/1000)}k</span></div>
-      ${ r.selected ? `<div class="cflag">★ Concept ${r.concept}</div>`
-        : gated ? `<button class="btn ghost sm" disabled>Below gate (${r.outlier}×)</button>`
-        : `<button class="btn pink sm" onclick="pick('${r.id}')">+ Make this a Concept</button>` }`;
-    g.appendChild(card);
+  });
+  SEGMENTS.forEach(s=>{
+    if(filter!=='all'&&filter!=='gate'&&filter!==s.key)return;
+    const items=sel.filter(r=>r.seg===s.key);
+    if(!items.length&&filter==='gate')return;
+    const sec=document.createElement('div'); sec.className='seg';
+    sec.innerHTML=`<div class="segh"><h3>${s.name}</h3><span class="sd">${s.desc}</span><span class="sc">${items.length} ref${items.length!==1?'s':''}</span></div>`;
+    const grid=document.createElement('div'); grid.className='rgrid';
+    if(items.length){items.sort((a,b)=>(b.outlier||0)-(a.outlier||0)).forEach(r=>grid.appendChild(refCard(r)));}
+    else{const e=document.createElement('div'); e.className='empty'; e.style.gridColumn='1/-1'; e.textContent='No references in this segment yet.'; grid.appendChild(e);}
+    sec.appendChild(grid); wrap.appendChild(sec);
   });
   $('#f-all').textContent=REFS.length;
   $('#f-gate').textContent=REFS.filter(gatePass).length;
@@ -623,6 +640,12 @@ function openBrief(id){
       <div class="ebanner">✎ Everything here is editable — tap any field, type, and it saves automatically.
         <span id="savepill">Saved ✓</span>
         <a onclick="resetConcept('${id}')">↺ reset to original</a></div>
+      ${(!product&&r.thumb)?`<div class="refstrip">
+        <a class="refthumb" href="${r.ig}" target="_blank" rel="noopener"><img src="${r.thumb}" alt=""/><span class="play">▶</span></a>
+        <div><div class="rb-hook"><b>Hook:</b> ${esc(r.hook||'')}</div>
+          <div class="rb-cap">“${esc(r.caption||'')}”</div>
+          <div style="font-size:12px;color:var(--ink-60);margin-top:4px">▶ ${fmt(r.views)} · avg ${fmt(r.median)} · ${r.outlier==null?'—':r.outlier+'× outlier'} · <a class="watch" href="${r.ig}" target="_blank" rel="noopener">↗ Watch original</a></div></div>
+      </div>`:''}
     </div>
     <div class="bbody">
       <div class="bcol">
@@ -719,7 +742,7 @@ $('#filters').addEventListener('click',e=>{const p=e.target.closest('.fpill');if
 function setScene(id,i,v){materializeShots(id)[i].scene=v||null;saveEdits();openBrief(id);refreshDerived();}
 function addShot(id){materializeShots(id).push({t:'0:00',desc:'new shot',scene:null,script:''});saveEdits();openBrief(id);refreshDerived();}
 function removeShot(id,i){const s=materializeShots(id);s.splice(i,1);saveEdits();openBrief(id);refreshDerived();}
-function cyclePrio(id){const order=['Must','Should','Could'];const cur=wc(REFS.find(r=>r.id===id)).prio;
+function cyclePrio(id){const order=['Must','Should','Could'];const cur=wc(getItem(id)).prio;
   ed(id).prio=order[(order.indexOf(cur)+1)%3];saveEdits();openBrief(id);refreshDerived();}
 function resetConcept(id){delete EDITS[id];saveEdits();openBrief(id);refreshDerived();toast('Reset to original.');}
 function addProduct(){
@@ -740,7 +763,7 @@ document.getElementById('briefmount').addEventListener('input',e=>{
 });
 
 /* seed: pre-select Concepts 1–5 so the team sees a populated example */
-['R-001','R-002','R-003','R-004','R-006'].forEach(id=>{const r=REFS.find(x=>x.id===id);r.selected=true;r.concept=nextNum();});
+setupFilters();
 renderRefs(); renderConcepts(); renderProduct(); renderSched(); renderKan();
 
 /* shareable deep-links: #prod, #sched, #concepts, #pipe, or #brief/P-002 */
