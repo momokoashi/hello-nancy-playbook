@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
 <style>
+/* ES Rebond Grotesque — brand body font, self-hosted on Shopify CDN (CORS *) */
 @font-face{font-family:'ES Rebond Grotesque';src:url('https://cdn.shopify.com/s/files/1/0726/3764/5121/files/ESRebondGrotesque-Regular.woff') format('woff');font-weight:400;font-display:swap;}
 @font-face{font-family:'ES Rebond Grotesque';src:url('https://cdn.shopify.com/s/files/1/0726/3764/5121/files/ESRebondGrotesque-Semibold.woff') format('woff');font-weight:600;font-display:swap;}
 @font-face{font-family:'ES Rebond Grotesque';src:url('https://cdn.shopify.com/s/files/1/0726/3764/5121/files/ESRebondGrotesque-Bold.woff') format('woff');font-weight:700;font-display:swap;}
@@ -25,6 +26,7 @@ body{font-family:var(--sans);background:var(--cream);color:var(--ink);line-heigh
 h1,h2,h3,.serif{font-family:var(--serif)}
 .wrap{max-width:1180px;margin:0 auto;padding:0 26px}
 
+/* ---------- Header ---------- */
 header{background:var(--cream);border-bottom:1.5px solid var(--line);position:sticky;top:0;z-index:40}
 .bar{display:flex;align-items:center;gap:18px;padding:16px 0 14px}
 .logo{font-family:var(--serif);font-weight:600;font-size:21px;letter-spacing:-.01em}
@@ -38,6 +40,7 @@ header{background:var(--cream);border-bottom:1.5px solid var(--line);position:st
 .mchip.hot{background:var(--pink);border-color:var(--pink)}
 .mchip.hot .k,.mchip.hot .v{color:#fff}
 
+/* ---------- Tabs ---------- */
 nav.tabs{display:flex;gap:6px;padding:4px 0 0;overflow-x:auto}
 .tab{appearance:none;border:none;background:transparent;font-family:var(--sans);font-weight:600;font-size:14px;color:var(--ink-60);
   padding:11px 16px 14px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:8px}
@@ -47,15 +50,17 @@ nav.tabs{display:flex;gap:6px;padding:4px 0 0;overflow-x:auto}
 .tab.on .n{background:var(--pink);color:#fff}
 .tab .ct{font-size:11px;background:var(--ink);color:#fff;border-radius:20px;padding:1px 7px;margin-left:2px}
 
+/* ---------- Views ---------- */
 main{padding:28px 0 80px}
 .view{display:none;animation:fade .25s ease}
 .view.on{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .vhead{display:flex;align-items:flex-end;gap:16px;margin-bottom:6px;flex-wrap:wrap}
 .vhead h2{font-size:30px;font-weight:600;letter-spacing:-.015em}
-.vhead p{color:var(--ink-60);font-size:14px;max-width:640px;margin-top:4px}
+.vhead p{color:var(--ink-60);font-size:14px;max-width:620px;margin-top:4px}
 .vhead .right{margin-left:auto;display:flex;gap:10px;align-items:center}
 
+/* ---------- Funnel strip ---------- */
 .funnel{display:flex;gap:0;align-items:stretch;background:var(--card);border:1.5px solid var(--line);border-radius:16px;overflow:hidden;margin:18px 0 22px;box-shadow:var(--shadow)}
 .fstep{flex:1;padding:14px 16px;border-right:1.5px solid var(--line)}
 .fstep:last-child{border-right:none}
@@ -64,12 +69,13 @@ main{padding:28px 0 80px}
 .fstep .fd{font-size:12px;color:var(--ink-60)}
 .fstep.act{background:var(--pink-50)}
 
+/* ---------- Filters ---------- */
 .filters{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
 .fpill{appearance:none;border:1.5px solid var(--line);background:var(--card);border-radius:20px;padding:7px 14px;font-family:var(--sans);font-weight:600;font-size:13px;color:var(--ink-60);cursor:pointer}
 .fpill.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .hint{font-size:12.5px;color:var(--ink-60);margin-left:auto}
 
-/* media tile = stand-in for the real clip/photo */
+/* ---------- Media tile (stands in for the real video/clip) ---------- */
 .media{position:relative;aspect-ratio:9/16;border-radius:13px;overflow:hidden;border:1.5px solid rgba(0,0,0,.06);
   background:linear-gradient(165deg,hsl(var(--h,330) 75% 90%),hsl(var(--h,330) 62% 74%));cursor:pointer}
 .media .play{position:absolute;inset:0;margin:auto;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.82);
@@ -78,7 +84,10 @@ main{padding:28px 0 80px}
 .media .score-ov{position:absolute;right:8px;top:8px}
 .media .handle{position:absolute;left:0;right:0;bottom:0;padding:18px 8px 7px;font-size:11.5px;font-weight:600;color:#fff;
   background:linear-gradient(0deg,rgba(33,28,24,.6),transparent)}
+.media.sm{border-radius:10px}
+.media.sm .play{width:26px;height:26px;font-size:10px}
 
+/* ---------- Reference grid ---------- */
 .rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:18px}
 .rcard{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:11px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px}
 .rcard.picked{border-color:var(--pink);box-shadow:0 0 0 2px var(--pink-soft),var(--shadow)}
@@ -88,6 +97,7 @@ main{padding:28px 0 80px}
 .rcard .why{font-size:12.5px;color:var(--ink-60);font-style:italic;min-height:32px}
 .rcard .stats{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--ink-60)}
 
+/* chips */
 .score{display:inline-grid;place-items:center;min-width:42px;height:28px;border-radius:8px;font-family:var(--serif);font-weight:600;font-size:15px;padding:0 7px}
 .score.s9{background:#FFD3E6;color:#B3055B}
 .score.s6{background:#FFE2B8;color:#9A5B00}
@@ -98,9 +108,11 @@ main{padding:28px 0 80px}
 .b-ptype{background:var(--sage-soft);color:#1F5A4C}
 .sdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
 .sdot.social{background:var(--pink)} .sdot.product{background:var(--sage)}
+.b-scene{background:var(--cream-2);color:var(--ink);font-weight:600}
 .prio{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .prio.must{color:var(--pink)} .prio.should{color:#9A5B00} .prio.could{color:var(--ink-60)}
 
+/* buttons */
 .btn{appearance:none;font-family:var(--sans);font-weight:600;font-size:13px;border-radius:11px;padding:9px 15px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;transition:transform .08s ease}
 .btn:hover{transform:translateY(-1px)}
 .btn:active{transform:none}
@@ -110,6 +122,7 @@ main{padding:28px 0 80px}
 .btn[disabled]{opacity:.5;cursor:not-allowed;transform:none;border-color:var(--line)}
 .cflag{font-weight:700;color:var(--pink);text-align:center;padding:7px;background:var(--pink-50);border-radius:10px;font-size:13px}
 
+/* ---------- Concepts board ---------- */
 .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .ccard{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .1s ease,border-color .1s ease;position:relative;overflow:hidden}
 .ccard:hover{transform:translateY(-3px);border-color:var(--pink)}
@@ -128,114 +141,108 @@ main{padding:28px 0 80px}
 /* ---------- Brief ---------- */
 .brief{background:var(--card);border:1.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
 .brief .top{padding:22px 26px;background:linear-gradient(180deg,var(--pink-50),var(--card));border-bottom:1.5px solid var(--line)}
-.brief .top.prod{background:linear-gradient(180deg,var(--sage-soft),var(--card))}
 .brief .top .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--pink);font-weight:700}
-.brief .top.prod .eyebrow{color:var(--sage)}
 .brief .top h2{font-size:30px;font-weight:600;margin:4px 0 8px}
 .brief .top .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.ebanner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-60);background:rgba(255,255,255,.6);border:1.5px solid var(--line);padding:8px 13px;border-radius:11px;margin-top:12px}
-.ebanner a{color:var(--pink);cursor:pointer;font-weight:600}
-#savepill{background:var(--sage);color:#fff;font-weight:600;padding:2px 9px;border-radius:20px;font-size:11px;opacity:0;transition:opacity .2s}
-#savepill.on{opacity:1}
-
-/* reference video + suggested copy band */
-.refband{display:grid;grid-template-columns:172px 1fr;gap:18px;padding:20px 26px;border-bottom:1.5px solid var(--line);background:var(--cream)}
-@media(max-width:680px){.refband{grid-template-columns:1fr}}
-.refvid .media{width:172px}
-.refcap{font-size:12px;color:var(--ink-60);margin-top:8px;line-height:1.4}
-.refcap b{color:var(--ink)}
-.refcopy h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);margin-bottom:9px;display:flex;gap:8px;align-items:center}
-.copybox{background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:13px 15px;font-size:15px;font-family:var(--serif);min-height:72px;line-height:1.5}
-.copybox.muted{background:var(--cream-2);color:var(--ink-60)}
-.copycompare{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:680px){.copycompare{grid-template-columns:1fr}}
-.copycol h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);margin-bottom:9px;display:flex;gap:8px;align-items:center}
-.fbstrip{padding:16px 26px;border-bottom:1.5px solid var(--line);background:var(--cream)}
-.fbstrip h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);margin-bottom:9px;display:flex;gap:8px;align-items:center}
-.feedbox{background:var(--yellow-soft);border:1.5px dashed var(--yellow);border-radius:13px;padding:12px 15px;font-size:13.5px;min-height:54px;line-height:1.5}
-.ourctrls{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.eout{min-width:auto}
-ul.vglegend{list-style:none;font-size:12px;color:var(--ink-60);line-height:1.6;background:var(--cream-2);border-radius:9px;padding:9px 12px 9px 12px;margin-top:8px}
-ul.vglegend li{position:relative;padding-left:14px;margin-bottom:2px}
-ul.vglegend li:before{content:'•';position:absolute;left:2px;color:var(--pink)}
-ul.vglegend b{color:var(--ink)}
-
-.bbody{display:grid;grid-template-columns:1.45fr .55fr;gap:0}
+.bbody{display:grid;grid-template-columns:1.25fr .75fr;gap:0}
 @media(max-width:880px){.bbody{grid-template-columns:1fr}}
 .bcol{padding:22px 26px}
 .bcol+.bcol{border-left:1.5px solid var(--line)}
 @media(max-width:880px){.bcol+.bcol{border-left:none;border-top:1.5px solid var(--line)}}
 .blk{margin-bottom:24px}
-.blk h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.blk h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .blk h4 .tag{background:var(--yellow);color:var(--ink);font-size:10px;padding:2px 7px;border-radius:20px;letter-spacing:0;text-transform:none}
-
-/* two-column shot row: reference -> our version */
-.shotrow2{display:grid;grid-template-columns:1fr 22px 1fr;gap:10px;align-items:stretch;padding:13px 0;border-bottom:1px dashed var(--line)}
-.shotrow2:last-of-type{border-bottom:none}
-.refcol,.ourcol{display:flex;flex-direction:column;gap:8px}
-.refcol{display:grid;grid-template-columns:64px 1fr;gap:11px;align-content:start}
-.refcol .media{width:64px}
-.sn{display:flex;align-items:center;gap:8px}
-.sn b{font-family:var(--serif);font-weight:600;font-size:15px}
-.stime{font-family:var(--serif);color:var(--pink);font-weight:600;font-size:13px}
-.reftxt{font-size:13.5px}
-.lbl{font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--ink-60);background:var(--cream-2);padding:1px 6px;border-radius:5px;margin-right:5px}
-.lbl.our{background:var(--pink-50);color:var(--pink)}
-.arrow{align-self:center;text-align:center;color:var(--ink-60);font-size:16px}
-.ourcol{background:var(--pink-50);border:1.5px solid var(--pink-soft);border-radius:13px;padding:11px}
-.ourcol.prodv{background:var(--sage-soft);border-color:#BEDFD6}
-.ourtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.ourbody{display:grid;grid-template-columns:50px 1fr;gap:10px;margin-top:9px}
-.ourmedia{aspect-ratio:9/16;width:50px;border:1.5px dashed var(--pink);border-radius:9px;display:grid;place-content:center;text-align:center;font-size:9px;color:var(--pink);font-weight:600;cursor:pointer;line-height:1.2;background:rgba(255,255,255,.5)}
-.ourcol.prodv .ourmedia{border-color:var(--sage);color:var(--sage)}
-.ourtxt{font-size:13.5px}
-.xshot{margin-left:auto;border:none;background:transparent;color:var(--ink-60);cursor:pointer;font-size:13px;opacity:.45;line-height:1}
-.xshot:hover{opacity:1;color:var(--pink)}
-.addshot{margin-top:14px;width:auto}
-
-/* editable fields */
-.edit{outline:none;border-radius:5px;padding:0 3px;cursor:text;transition:background .12s,box-shadow .12s}
-.edit:hover{background:#fff}
-.edit:focus{background:#fff;box-shadow:0 0 0 2px var(--pink-soft)}
-.edit:empty:before{content:'tap to add…';color:#B9AE9E}
-h2 .edit{display:inline-block;min-width:60px}
-
-.estation,.evg{font-family:var(--sans);font-size:11.5px;color:var(--ink);border:1.5px solid var(--line);border-radius:8px;padding:4px 7px;background:var(--card);cursor:pointer;max-width:100%}
-.estation:hover,.evg:hover{border-color:var(--pink)}
-.specrow{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-.specrow .k{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-60);min-width:96px}
-.vglegend{font-size:11.5px;color:var(--ink-60);line-height:1.5;background:var(--cream-2);border-radius:9px;padding:8px 11px;margin-top:8px}
-.talentchips{display:flex;gap:6px;flex-wrap:wrap}
-.tchip{appearance:none;border:1.5px solid var(--line);background:var(--card);border-radius:20px;padding:5px 11px;font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--ink-60);cursor:pointer}
-.tchip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.statline{font-size:13.5px;font-weight:600}
-button.prio{border:1.5px solid currentColor;background:transparent;border-radius:20px;padding:3px 11px;cursor:pointer;font-family:var(--sans)}
+/* shot rows: each shot = a clip/image + how-to */
+.shotrow{display:grid;grid-template-columns:78px 1fr;gap:14px;padding:13px 0;border-bottom:1px dashed var(--line)}
+.shotrow:last-child{border-bottom:none}
+.shotrow .media{width:78px}
+.shotrow .sn{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.shotrow .sn b{font-family:var(--serif);font-weight:600;font-size:15px}
+.shotrow .stime{font-family:var(--serif);color:var(--pink);font-weight:600;font-size:13px}
+.shotrow .sdesc{font-size:15px;font-weight:600}
+.shotrow .sscript{font-size:13px;color:var(--sage);margin-top:3px}
+.shotrow .sscene{font-size:11.5px;color:var(--ink-60);margin-top:5px;display:inline-flex;align-items:center;gap:5px}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.spec .k{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-60)}
+.spec .v{font-size:13.5px;font-weight:600}
 .recipe{background:var(--sage-soft);border-radius:13px;padding:14px 16px;font-size:13.5px}
 .recipe b{color:var(--sage)}
 .callout{background:var(--yellow-soft);border:1.5px solid var(--yellow);border-radius:13px;padding:12px 15px;font-size:13px}
+/* editable fields (everything in the brief is editable + auto-saves) */
+.edit{outline:none;border-radius:5px;padding:0 3px;cursor:text;transition:background .12s,box-shadow .12s}
+.edit:hover{background:var(--pink-50)}
+.edit:focus{background:#fff;box-shadow:0 0 0 2px var(--pink-soft)}
+.edit:empty:before{content:'tap to add…';color:#B9AE9E}
+h2 .edit{display:inline-block;min-width:60px}
+.escene{font-family:var(--sans);font-size:11.5px;color:var(--ink-60);border:1.5px solid var(--line);border-radius:8px;padding:4px 7px;background:var(--card);cursor:pointer;max-width:100%}
+.escene:hover{border-color:var(--pink)}
+.ebanner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-60);background:rgba(255,255,255,.6);border:1.5px solid var(--line);padding:8px 13px;border-radius:11px;margin-top:12px}
+.ebanner a{color:var(--pink);cursor:pointer;font-weight:600}
+#savepill{background:var(--sage);color:#fff;font-weight:600;padding:2px 9px;border-radius:20px;font-size:11px;opacity:0;transition:opacity .2s}
+#savepill.on{opacity:1}
+.xshot{margin-left:auto;border:none;background:transparent;color:var(--ink-60);cursor:pointer;font-size:13px;opacity:.45;line-height:1}
+.xshot:hover{opacity:1;color:var(--pink)}
+button.prio{border:1.5px solid currentColor;background:transparent;border-radius:20px;padding:3px 11px;cursor:pointer;font-family:var(--sans)}
+.addshot{margin-top:14px;width:auto}
+/* reference bank — segments + real thumbnails */
+.seg{margin-bottom:30px}
+.segh{display:flex;align-items:baseline;gap:10px;margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+.segh h3{font-size:22px;font-weight:600}
+.segh .sd{font-size:12.5px;color:var(--ink-60)}
+.segh .sc{margin-left:auto;font-size:12px;color:var(--ink-60)}
+.rthumb{position:relative;aspect-ratio:9/16;border-radius:13px;overflow:hidden;border:1.5px solid rgba(0,0,0,.06);background:var(--cream-2);display:block}
+.rthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.rthumb .play{position:absolute;inset:0;margin:auto;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;color:var(--ink);font-size:15px;padding-left:3px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.rthumb .ov-score{position:absolute;right:8px;top:8px}
+.rthumb .ov-views{position:absolute;left:8px;bottom:8px;background:rgba(33,28,24,.8);color:#fff;font-size:11px;font-weight:600;padding:2px 7px;border-radius:7px}
+.rconcept{font-weight:700;font-size:14px;margin-top:2px}
+.rhook{font-size:12.5px;color:var(--ink);background:var(--yellow-soft);border-radius:8px;padding:5px 8px;margin:1px 0}
+.rhook b{font-weight:700}
+.rcap{font-size:12px;color:var(--ink-60);font-style:italic}
+.rstats{display:flex;gap:6px;flex-wrap:wrap;font-size:11px;color:var(--ink-60);align-items:center}
+.rstats .pill{background:var(--cream-2);border-radius:20px;padding:2px 7px;font-weight:600}
+.watch{font-size:11.5px;color:var(--pink);font-weight:600;text-decoration:none}
+.tagrow{display:flex;gap:6px;flex-wrap:wrap;width:100%;margin-top:8px}
+.tagpill{font-size:11px;padding:5px 10px;border-radius:20px;border:1.5px dashed var(--line);background:transparent;color:var(--ink-60);cursor:pointer;font-family:var(--sans);font-weight:600}
+.tagpill.on{background:var(--ink);color:#fff;border-style:solid;border-color:var(--ink)}
+.tagchips{display:flex;gap:5px;flex-wrap:wrap;margin:1px 0}
+.tag-chip{font-size:10.5px;font-weight:600;color:var(--sage);background:var(--sage-soft);border-radius:20px;padding:2px 8px}
+.tag-chip.muted{color:var(--ink-60);background:var(--cream-2);font-weight:400}
+.moverow{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-60);margin-top:4px}
+.emove{font-family:var(--sans);font-size:11px;border:1.5px solid var(--line);border-radius:7px;padding:3px 6px;background:var(--card);cursor:pointer;color:var(--ink)}
+.emove:hover{border-color:var(--pink)}
+.rthumb{cursor:pointer}
+.ph{display:grid;place-items:center;height:100%;font-size:11px;color:var(--ink-60);padding:10px;text-align:center}
+/* reference strip inside the brief */
+.refstrip{display:flex;gap:12px;margin-top:12px;background:rgba(255,255,255,.55);border:1.5px solid var(--line);border-radius:13px;padding:10px}
+.refthumb{position:relative;width:54px;aspect-ratio:9/16;border-radius:9px;overflow:hidden;flex:none}
+.refthumb img{width:100%;height:100%;object-fit:cover}
+.refthumb .play{position:absolute;inset:0;margin:auto;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;font-size:9px}
+.rb-hook{font-size:13px;background:var(--yellow-soft);border-radius:7px;padding:3px 8px;display:inline-block}
+.rb-cap{font-size:12px;color:var(--ink-60);font-style:italic;margin-top:4px}
 
-/* schedule */
-.sintro{background:var(--sage-soft);border-radius:14px;padding:13px 17px;font-size:13.5px;margin:16px 0 12px}
-.crewlegend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
-.crewcard{flex:1;min-width:210px;background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:11px 14px;box-shadow:var(--shadow)}
-.crewcard .cn{font-weight:700}
-.crewcard .cf{font-size:12px;color:var(--ink-60)}
+/* ---------- Schedule (bundled by scene) ---------- */
+.sintro{background:var(--sage-soft);border-radius:14px;padding:13px 17px;font-size:13.5px;margin:16px 0 20px}
+.loc{margin-bottom:26px}
+.loch{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+.loch h3{font-size:21px;font-weight:600}
+.loch .ltime{font-family:var(--serif);font-weight:600;color:var(--pink);font-size:15px}
+.loch .lct{margin-left:auto;font-size:12px;color:var(--ink-60)}
 .scene{background:var(--card);border:1.5px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}
-.scene .sh{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1.5px solid var(--line);background:var(--cream-2);flex-wrap:wrap}
+.scene .sh{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1.5px solid var(--line);background:var(--cream-2)}
 .scene .sh .thumb{width:30px;aspect-ratio:9/16;border-radius:6px}
 .scene .sh .thumb .play,.scene .sh .thumb .dur,.scene .sh .thumb .handle{display:none}
 .scene .sname{font-weight:600;font-size:16px}
 .scene .sprops{font-size:12.5px;color:var(--ink-60)}
-.scene .slottime{font-family:var(--serif);font-weight:600;color:var(--pink);font-size:15px}
-.scene .vgsel{font-size:12.5px;color:var(--ink-60)}
 .scene .feeds{margin-left:auto;font-weight:700;font-size:12.5px;color:var(--sage);white-space:nowrap}
 .scene .feeds.multi{color:var(--pink)}
 .scene .needs{display:flex;gap:9px;padding:14px 18px;flex-wrap:wrap}
-.needchip{border:1.5px solid var(--line);border-radius:11px;padding:9px 12px;cursor:pointer;font-size:13px;min-width:190px;max-width:260px}
+.needchip{border:1.5px solid var(--line);border-radius:11px;padding:9px 12px;cursor:pointer;font-size:13px;min-width:170px}
 .needchip:hover{border-color:var(--pink)}
 .needchip .nq{font-size:11px;color:var(--ink-60)}
-.needchip .nt{font-weight:600;margin-top:2px;font-size:12.5px}
+.needchip .nt{font-weight:600;margin-top:1px}
 
+/* ---------- Kanban ---------- */
 .kan{display:grid;grid-template-columns:repeat(7,minmax(140px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
 .kcol{background:var(--cream-2);border-radius:14px;padding:10px;min-height:140px}
 .kcol h4{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-60);margin-bottom:9px;display:flex;justify-content:space-between}
@@ -256,7 +263,7 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
   <div class="wrap">
     <div class="bar">
       <div class="logo">Hello <b>Nancy</b></div>
-      <div class="sub">Event Content OS<br/>“first come, first served”</div>
+      <div class="sub">Event Content OS<br/>reference → concept → scene → publish</div>
       <div class="math">
         <div class="mchip"><div class="k">Cost</div><div class="v">$20<small>k</small></div></div>
         <div class="mchip"><div class="k">Views need</div><div class="v">20<small>M</small></div></div>
@@ -276,297 +283,304 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
 
 <main class="wrap">
 
-  <!-- VIEW 1 · REFERENCE BANK -->
+  <!-- ============ VIEW 1 · REFERENCE BANK ============ -->
   <section class="view on" id="v-refs">
-    <div class="vhead"><div>
-      <h2>Reference Bank <span style="font-size:14px;color:var(--ink-60);font-family:var(--sans);font-weight:600">· social</span></h2>
-      <p>What’s going viral on social — embedded so you can watch it, scored by outlier. <b>Tap “Make this a Concept”</b> to duplicate the idea as ours. (Product/website shoots live in the <b>Product Shoot</b> tab.)</p>
-    </div></div>
+    <div class="vhead">
+      <div>
+        <h2>Reference Bank <span style="font-size:14px;color:var(--ink-60);font-family:var(--sans);font-weight:600">· social</span></h2>
+        <p>What’s going viral on social — embedded so you can watch it, scored by outlier. <b>Tap “Make this a Concept”</b> on the winners to duplicate the idea as ours. (Product/website shoots live in the <b>Product Shoot</b> tab.)</p>
+      </div>
+    </div>
+
     <div class="funnel">
       <div class="fstep act"><div class="fn">Collected</div><div class="fv" id="f-all">10</div><div class="fd">references, scored</div></div>
       <div class="fstep"><div class="fn">Pass the gate</div><div class="fv" id="f-gate">8</div><div class="fd">outlier ≥3</div></div>
       <div class="fstep"><div class="fn">Made concepts</div><div class="fv" id="f-sel">5</div><div class="fd">selected so far</div></div>
       <div class="fstep"><div class="fn">Target</div><div class="fv">~25</div><div class="fd">to staff for $1 CPM</div></div>
     </div>
+
     <div class="filters" id="filters">
       <button class="fpill on" data-f="all">All</button>
       <button class="fpill" data-f="gate">Passes the gate</button>
       <button class="fpill" data-f="open">Not yet selected</button>
       <span class="hint">Gate = Outlier ≥ 3 · clear hook in 2s · we can recreate it</span>
     </div>
-    <div class="rgrid" id="refgrid"></div>
+
+    <div id="refgrid"></div>
   </section>
 
-  <!-- VIEW 2 · CONCEPTS -->
+  <!-- ============ VIEW 2 · CONCEPTS ============ -->
   <section class="view" id="v-concepts">
-    <div class="vhead"><div>
-      <h2>Concepts</h2>
-      <p>Everything you selected, numbered 1 → N. Click a card to open its <b>Concept Brief</b> — reference video + suggested copy on top, then the shot list (reference clip → our version) so the team recreates it exactly.</p>
-    </div><div class="right"><button class="btn ghost" onclick="go('refs')">← Add more from Reference Bank</button></div></div>
+    <div class="vhead">
+      <div>
+        <h2>Concepts</h2>
+        <p>Everything you selected, numbered 1 → N. Click a card to open its <b>Concept Brief</b> — the shot list, with the clip/photo for every single shot so the team knows exactly how to frame it.</p>
+      </div>
+      <div class="right"><button class="btn ghost" onclick="go('refs')">← Add more from Reference Bank</button></div>
+    </div>
     <div class="cgrid" id="cgrid"></div>
   </section>
 
-  <!-- VIEW 3 · PRODUCT SHOOT -->
+  <!-- ============ VIEW 3 · PRODUCT SHOOT ============ -->
   <section class="view" id="v-prod">
-    <div class="vhead"><div>
-      <h2>Product Shoot</h2>
-      <p>Our own production list — <b>website assets, how-to-use videos, and new launches</b>. Same brief as Concepts. These feed the same schedule, so the videographer captures them in the same blocks as social.</p>
-    </div><div class="right"><button class="btn pink" onclick="addProduct()">+ Add product shoot</button></div></div>
+    <div class="vhead">
+      <div>
+        <h2>Product Shoot</h2>
+        <p>Our own production list — <b>website assets, how-to-use videos, and new launches</b>. Not from social; these are the things we always wish we’d shot. Same shot-list brief as Concepts, so the team knows exactly what to capture.</p>
+      </div>
+      <div class="right"><button class="btn pink" onclick="addProduct()">+ Add product shoot</button></div>
+    </div>
     <div class="cgrid" id="pgrid"></div>
   </section>
 
-  <!-- BRIEF -->
+  <!-- ============ CONCEPT / PRODUCT BRIEF ============ -->
   <section class="view" id="v-brief">
     <div class="vhead"><button class="btn ghost" id="briefback" onclick="go('concepts')">← Back</button></div>
     <div id="briefmount"></div>
   </section>
 
-  <!-- VIEW 4 · SCHEDULE -->
+  <!-- ============ VIEW 4 · SCHEDULE ============ -->
   <section class="view" id="v-sched">
-    <div class="vhead"><div>
-      <h2>Shoot Schedule</h2>
-      <p>Segmented by <b>prop / station</b> — one time block per prop, each with an owner. Everything (social + product) that needs the giant Lem inflatable is captured in that one block, then we move to the next prop.</p>
-    </div></div>
-    <div class="crewlegend" id="crewlegend"></div>
-    <div class="sintro">🎬 Read it as: <b>this hour → this prop/station → its videographer shoots everything that needs it → next prop.</b> Pink dot = social concept · green = product shoot. Change a prop’s shooter or a shot’s prop anytime — the plan re-bundles.</div>
+    <div class="vhead">
+      <div>
+        <h2>Shoot Schedule</h2>
+        <p>Bundled by <b>prop / location</b>, pulling from <b>both</b> Concepts (social) and Product Shoots. Everything that needs the same setup — e.g. the giant inflatable — is grouped so you rig it <b>once</b> and capture it all in one block.</p>
+      </div>
+    </div>
+    <div class="sintro">🎬 Read it as: <b>this hour → this location & prop → shoot it once → it feeds these items.</b> The corner number shows how many videos each setup serves. Pink = social concept · green = product shoot.</div>
     <div id="schedmount"></div>
   </section>
 
-  <!-- VIEW 5 · PIPELINE -->
+  <!-- ============ VIEW 4 · PIPELINE ============ -->
   <section class="view" id="v-pipe">
-    <div class="vhead"><div>
-      <h2>Edit &amp; Publish</h2>
-      <p>The “upload every 1–2 hours” engine — both social and product. As each prop block wraps, footage lands in <b>Shot</b>; an editor owns each item to <b>Published</b>. Pink = social · green = product.</p>
-    </div></div>
+    <div class="vhead">
+      <div>
+        <h2>Edit &amp; Publish</h2>
+        <p>The “upload every 1–2 hours” engine — <b>both</b> social concepts and product shoots. As each block wraps, footage lands in <b>Shot</b>; an editor owns each item to <b>Published</b>. Pink = social · green = product.</p>
+      </div>
+    </div>
     <div class="kan" id="kanmount"></div>
   </section>
 
-  <div class="foot">Hello Nancy · Event Content OS — mockup v1.4 · paddle-court event build · plugs into the nancy-hub Content Guide</div>
+  <div class="foot">Hello Nancy · Event Content OS — mockup v1.3 · social + product, one shoot schedule · plugs into the nancy-hub Content Guide</div>
 </main>
 
 <div class="toast" id="toast"></div>
 
 <script>
-/* ===================== EVENT PROPS / STATIONS (the segmentation unit) ===================== */
-// Each prop is a physical thing in one spot → its own time block, owned by one videographer.
-const STATIONS={
- court:    {name:'Paddle court (hero)',        area:'Center court', vg:'Corrine', hue:330},
- product:  {name:'Product close-up',           area:'Product table',vg:'Corrine', hue:160},
- watertank:{name:'Big water tank',             area:'Court / demo', vg:'Corrine', hue:188},
- nick:     {name:'Shot with Nick (celeb)',     area:'Roaming',      vg:'Corrine', hue:300},
- founder:  {name:'Founder (Momo)',             area:'Roaming',      vg:'Corrine', hue:18},
- lem:      {name:'Big Lem inflatable',         area:'Court corner', vg:'Jackie',  hue:48},
- berri:    {name:'Big Berri inflatable',       area:'Court edge',   vg:'Jackie',  hue:338},
- tennis:   {name:'Big tennis-ball inflatable', area:'On court',     vg:'Jackie',  hue:62},
- truck:    {name:'Nancy truck',                area:'Truck',        vg:'Jackie',  hue:45},
- crowd:    {name:'Bleachers / cheer squad',    area:'Stands',       vg:'Jackie',  hue:280},
- london:   {name:'London scene (city b-roll)', area:'Around London',vg:'Jackie',  hue:222},
- street:   {name:'Street / walk-up',           area:'Outside',      vg:'Susan',   hue:200},
- food:     {name:'Ice-cream giveaway',         area:'Food station', vg:'Susan',   hue:25},
+/* ========================= SCENES (the bundling unit) ========================= */
+// A scene = one physical setup/action you light & rig once, then capture for every concept that needs it.
+const SCENES = {
+  inOut:  {name:'Giant inflatable — zoom OUT reveal', loc:'Main stage',    props:'Giant inflatable · gimbal/crane', hue:300},
+  inIn:   {name:'Giant inflatable — zoom IN',         loc:'Main stage',    props:'Giant inflatable · wide lens',    hue:330},
+  inFall: {name:'Giant inflatable — FALLING',         loc:'Main stage',    props:'Giant inflatable · rigging · 3 takes', hue:350},
+  macro:  {name:'Product macro close-up',             loc:'Product table', props:'Product · macro lens · droplets', hue:160},
+  tank:   {name:'Waterproof tank dunk',               loc:'Product table', props:'Water tank · towels',             hue:185},
+  applic: {name:'Application close-up (skin)',         loc:'Product table', props:'Skin/forearm · macro lens',       hue:30},
+  talk:   {name:'Talking head',                       loc:'Bright wall',   props:'Stool · key light · lower-third', hue:42},
+  pov:    {name:'POV — hands holding product',        loc:'Bedroom set',   props:'Product · soft bedding · warm lamp', hue:20},
+  demoSet:{name:'How-to-use bedside set',             loc:'Bedroom set',   props:'Bedside styling · soft lamp',     hue:340},
+  unbox:  {name:'Unboxing / vanity',                  loc:'Bedroom set',   props:'Mailer · vanity',                 hue:260},
+  street: {name:'Street walk-up reaction',            loc:'Outdoor',       props:'Product · shotgun mic',           hue:200},
 };
-const STATION_ORDER=['court','product','watertank','nick','founder','lem','berri','tennis','truck','crowd','london','street','food'];
-const VIDEOGRAPHERS=[
- {name:'Corrine', focus:'Main — celeb & proper / product shots'},
- {name:'Jackie',  focus:'Event & lifestyle (shoots on phone)'},
- {name:'Susan',   focus:'People, street interviews (shoots on phone)'},
-];
-const TALENT_OPTS=['Nick (celeb)','Momo (founder)','Rachina','Susan','Jackie','Random — street'];
+const LOC_ORDER=['Main stage','Product table','Bright wall','Bedroom set','Outdoor'];
+const LOC_TIME={'Main stage':'9:00 – 11:00','Product table':'11:00 – 12:30','Bright wall':'13:00 – 14:00','Bedroom set':'14:00 – 14:45','Outdoor':'15:00 – 15:45'};
 
-/* ===================== REFERENCES (social) — each carries its full brief ===================== */
-// shot = {t, ref (what the reference shows), st (prop/station key), our (our version / copy)}
-const REFS=[
- {id:'R-001', src:'@thesoftlife', hue:20, median:11000, views:99000, fmt:'POV product reveal', why:'text hook + reveal', dur:'0:11',
-   title:'POV: you finally found the one', prio:'Must', vg:'Corrine', talent:['Nick (celeb)','Momo (founder)'],
-   copy:'POV: you finally found the one 🍋 first come, first served. #hellonancy',
-   recipe:'Trending audio "soft girl pt.4" · auto-captions (berry) · 6 fast cuts on beat · warm glow · CTA end card',
-   note:'Hook must land in frame 1 — the text overlay is why this hit 9×. Match the first 2 seconds exactly.',
-   shots:[{t:'0:00',ref:'hands hold product, text hook',st:'product',our:'hands hold Lem on the pink court line · text “POV: you finally found the one 🍋”'},
-          {t:'0:04',ref:'face — soft reaction',st:'nick',our:'Nick reacts to camera · “the one that just… gets it”'},
-          {t:'0:06',ref:'product macro insert',st:'product',our:'macro of Lem on the court'},
-          {t:'0:09',ref:'CTA end card',st:null,our:'end card · “she comes first · link in bio”'}]},
- {id:'R-002', src:'Dr. Lane (OB-GYN)', hue:42, median:18000, views:126000, fmt:'"Things I wish I knew at 30"', why:'credential + listicle', dur:'0:18',
-   title:'3 things I wish I knew at 30', prio:'Must', vg:'Corrine', talent:['Momo (founder)'],
-   copy:'3 things I wish I knew… 🍋 first come, first served #hellonancy',
-   recipe:'No music under VO · big bold captions · numbered text plates · slow zoom · save-CTA end',
-   note:'Education is our proven viral engine. Keep it health-framed, never pleasure-framed.',
-   shots:[{t:'0:00',ref:'talking head, direct',st:'founder',our:'Momo to camera courtside · “3 things no one told me…”'},
-          {t:'0:05',ref:'#1 + cutaway',st:'court',our:'cut to a rally on court · “one: it should feel fun”'},
-          {t:'0:09',ref:'product in frame',st:'product',our:'Lem in hand'},
-          {t:'0:13',ref:'soft save-CTA',st:null,our:'“save this 🤍”'}]},
- {id:'R-003', src:'@studio.macro', hue:160, median:9000, views:31000, fmt:'"How it actually works" demo', why:'satisfying macro loop', dur:'0:12',
-   title:'How it actually works', prio:'Should', vg:'Corrine', talent:['Random — street'],
-   copy:'how it actually works ✨ #hellonancy',
-   recipe:'No talent · ASMR product sound up · seamless loop · soft light · export 1:1 + 16:9 for web banner',
-   note:'Asset-bank shot — lives forever on the PDP, banners & ads.',
-   shots:[{t:'0:00',ref:'product on clean surface',st:'product',our:'(text) “how it actually works ✨” Lem on court line'},
-          {t:'0:03',ref:'macro detail glide',st:'product',our:'macro glide along the product'},
-          {t:'0:06',ref:'in-use motion',st:'product',our:'“3 speeds. fully waterproof.”'},
-          {t:'0:10',ref:'logo end frame',st:null,our:'hellonancy.com'}]},
- {id:'R-004', src:'@bigdrop', hue:48, median:22000, views:140000, fmt:'Giant-prop reveal', why:'scale shock + "wait for it"', dur:'0:10',
-   title:'This is NOT a lemon 😳', prio:'Must', vg:'Jackie', talent:['Random — street'],
-   copy:'this is NOT a lemon 🍋😳 first come, first served #hellonancy',
-   recipe:'Trending "wait for it" audio · big bold caption · hard cut on the reveal · crowd-gasp SFX · product CTA',
-   note:'The reveal is the moneymaker — shoot the big Lem inflatable from 2 angles, 3 takes. Also feeds Concept 5.',
-   shots:[{t:'0:00',ref:'tiny → zoom out reveal',st:'lem',our:'start tight on a real Lem → whip to the BIG Lem inflatable · “wait for it…”'},
-          {t:'0:03',ref:'crowd reacts, zoom in',st:'crowd',our:'cheer squad in the bleachers gasps'},
-          {t:'0:06',ref:'big reveal beat',st:'lem',our:'“this is not a lemon 😳”'},
-          {t:'0:09',ref:'cut to real product',st:'product',our:'“now in your size”'}]},
- {id:'R-006', src:'@morningsofmine', hue:338, median:15000, views:78000, fmt:'"When it finally drops"', why:'anticipation + payoff', dur:'0:08',
-   title:'When the drop finally hits', prio:'Should', vg:'Susan', talent:['Random — street','Jackie'],
-   copy:'when the drop finally hits 🍓 first come, first served #hellonancy',
-   recipe:'Trending audio · reaction zoom on the bounce · captions · product CTA',
-   note:'Reuses the big-inflatable area — shoot right after Concept 4 while it’s rigged.',
-   shots:[{t:'0:00',ref:'build-up tease',st:'street',our:'the line forming outside · “when the drop finally hits…”'},
-          {t:'0:03',ref:'reaction on the drop',st:'tennis',our:'big tennis-ball inflatable bounces into frame'},
-          {t:'0:06',ref:'product CTA',st:null,our:'“it’s here, bestie 🍓”'}]},
- {id:'R-005', src:'Maya PT (pelvic floor)', hue:280, median:40000, views:320000, fmt:'Expert myth-bust explainer', why:'expert myth-bust', dur:'0:15',
-   title:'Myth: dryness means something’s wrong', prio:'Should', vg:'Corrine', talent:['Rachina'],
-   copy:'myth-busting at the Nancy court 🍋 #hellonancy',
-   recipe:'Credential lower-third · no music · captions · save-CTA',
-   note:'Highest-reach format historically — keep clinical & health-framed.',
-   shots:[{t:'0:00',ref:'talking head, myth on screen',st:'founder',our:'“myth: dryness means something’s wrong”'},
-          {t:'0:05',ref:'expert explains',st:'founder',our:'“totally normal — here’s why”'},
-          {t:'0:10',ref:'product soft mention',st:'product',our:'Lem in frame'}]},
- {id:'R-007', src:'@unbox.asmr', hue:190, median:12000, views:50000, fmt:'ASMR unboxing', why:'tactile sound + reveal', dur:'0:14',
-   title:'ASMR unboxing 🤍', prio:'Could', vg:'Corrine', talent:['Random — street'],
-   copy:'asmr unboxing 🤍 #hellonancy',
-   recipe:'ASMR sound up · no music · slow · seamless loop',
-   note:'Doubles as a clean PDP clip — bank it.',
-   shots:[{t:'0:00',ref:'hands open box',st:'product',our:'(text) “asmr unboxing 🤍”'},
-          {t:'0:04',ref:'tactile product reveal',st:'product',our:'slow reveal'},
-          {t:'0:08',ref:'product glamour',st:'product',our:'hellonancy.com'}]},
- {id:'R-008', src:'@gadgetrated', hue:210, median:20000, views:70000, fmt:'"Rating viral gadgets"', why:'rank + verdict', dur:'0:20',
-   title:'Rating viral wellness gadgets', prio:'Could', vg:'Susan', talent:['Random — street'],
-   copy:'rating the gadgets at the Nancy event 🍋 #hellonancy',
-   recipe:'Ranking text plates · upbeat bed · captions · verdict reveal',
-   note:'Ours is the verdict — frame it as earned, not an ad.',
-   shots:[{t:'0:00',ref:'host with lineup',st:'street',our:'“rating viral wellness gadgets”'},
-          {t:'0:04',ref:'pick ours, verdict',st:'product',our:'“this one’s the winner”'},
-          {t:'0:07',ref:'macro of winner',st:'product',our:'macro'}]},
- {id:'R-009', src:'@reactqueen', hue:250, median:30000, views:48000, fmt:'Duet / reaction overlay', why:'reaction overlay', dur:'0:22', gated:true, talent:[], shots:[]},
- {id:'R-010', src:'@trenddancer', hue:120, median:25000, views:30000, fmt:'Trend dance w/ product', why:'trend audio only', dur:'0:16', gated:true, talent:[], shots:[]},
+/* ========================= SEGMENTS (moment-based) + TAGS ========================= */
+const SEGMENTS=[
+ {key:'event',   name:'Event & Activation', desc:'Pop-ups, store openings, activations, crowd & public moments'},
+ {key:'product', name:'Product',            desc:'Product as hero — demo, tasting, launch reveal'},
+ {key:'people',  name:'People & Talking',   desc:'Street interview, talking head, reactions, candid'},
+ {key:'teaser',  name:'Teaser & BTS',       desc:'Pre-event hype & behind-the-scenes'},
 ];
-REFS.forEach(r=>{r.outlier=+(r.views/r.median).toFixed(1); r.selected=false; r.concept=null;});
-// the reference video's CURRENT caption (what the original used) — shown next to our suggestion
-const REFCAPTIONS={
- 'R-001':'POV: you finally found the one 🤌 #fyp #foryou',
- 'R-002':'3 things i wish someone told me at 30 🥲 #womenshealth',
- 'R-003':'how it actually works ✨ (you asked) #satisfying',
- 'R-004':'wait for it… 😳 #waitforit #fyp',
- 'R-005':'pelvic floor PT here — let me bust this myth 🩺',
- 'R-006':'when the drop finally hits 🥹 #restock',
- 'R-007':'asmr unboxing 🤍 turn your sound on #asmr',
- 'R-008':'rating viral wellness gadgets so you don’t have to',
-};
-REFS.forEach(r=>{r.refcaption=REFCAPTIONS[r.id]||'';});
+const ALL_TAGS=['founder','celebrity','creator','meme','educational','freebie','giant-prop','store-opening','pov','crowd','rundown','brand-teaser'];
 
-/* ===================== PRODUCT SHOOTS (our own production) ===================== */
-const PSHOOTS=[
- {id:'P-001', kind:'product', type:'Website asset', title:'Massage Oil — PDP hero + texture', prio:'Must', vg:'Corrine', talent:['Random — street'],
-   copy:'(no caption — website asset)',
-   recipe:'Slow macro · warm soft light · 4 stills + 1 pour loop · export 1:1, 4:5 & 16:9 for PDP + banner',
-   note:'Evergreen website asset. Capture stills AND a short loop in the same product block.',
-   shots:[{t:'—',ref:'bottle hero',st:'product',our:'(still) clean front label on backdrop'},
-          {t:'—',ref:'oil pour / drip macro',st:'product',our:'(loop) glossy texture'},
-          {t:'—',ref:'hands warming oil',st:'product',our:'“a few drops is all you need”'},
-          {t:'—',ref:'applied to skin',st:'product',our:'“sinks in, never greasy”'}]},
- {id:'P-002', kind:'product', type:'How-to-use', title:'Snack Pack — how to use (lube + oil)', prio:'Must', vg:'Corrine', talent:['Momo (founder)'],
-   copy:'how to use your Snack Pack 🤍 #hellonancy',
-   recipe:'Step captions 1·2·3 · calm VO · soft set · 30–45s · vertical + square',
-   note:'Website + organic. Health-framed, never explicit. Show the 2-bottle “why”.',
-   shots:[{t:'0:00',ref:'open the box',st:'product',our:'(text) “how to use your Snack Pack”'},
-          {t:'0:05',ref:'oil for the build-up',st:'product',our:'“oil for everything leading up”'},
-          {t:'0:10',ref:'water-based lube',st:'product',our:'“water-based = toy + condom safe”'},
-          {t:'0:15',ref:'reseal / nightstand',st:'product',our:'“keep it close 🤍”'}]},
- {id:'P-003', kind:'product', type:'New launch', title:'Jelly Balm — unboxing + first impression', prio:'Should', vg:'Jackie', talent:['Momo (founder)'],
-   copy:'the Jelly Balm is finally here 🍓 #hellonancy',
-   recipe:'ASMR open · first-swipe macro · honest reaction · trending audio · vertical',
-   note:'Launch asset that doubles as social. Capture the very first reveal — it only happens once.',
-   shots:[{t:'0:00',ref:'mailer reveal',st:'truck',our:'open it at the Nancy truck · (text) “the Jelly Balm is finally here”'},
-          {t:'0:04',ref:'first swipe / texture',st:'product',our:'“this texture though…”'},
-          {t:'0:08',ref:'on lips / glow',st:'founder',our:'“glassy, not sticky”'}]},
- {id:'P-004', kind:'product', type:'How-to-use', title:'Lem — 3-speed demo (how it works)', prio:'Should', vg:'Corrine', talent:['Random — street'],
-   copy:'(no caption — PDP + ads)',
-   recipe:'Macro · button-press inserts · waterproof loop · seamless · 1:1 + 16:9 banner',
-   note:'Evergreen demo for PDP + ads.',
-   shots:[{t:'0:00',ref:'product hero',st:'product',our:'(text) “how it works”'},
-          {t:'0:03',ref:'press through 3 speeds',st:'product',our:'“3 speeds”'},
-          {t:'0:06',ref:'waterproof beat',st:'product',our:'“fully waterproof”'},
-          {t:'0:09',ref:'logo end',st:null,our:'hellonancy.com'}]},
+/* ========================= REFERENCES (real, Apify; outlier<2 removed) =========================
+   outlier = views / account median (last 24 reels). clip = local mp4 for lazy inline <video>. */
+const REFS = [
+ {id:'DXuN52TDGD2', owner:'londonlivingdisneydreaming', seg:'event', tags:['giant-prop'], cname:'Giant-prop pop-up reveal',
+   hook:'Coach pop up Oxford street', caption:'We love a fun pop up - Selfridges corner shop, Oxford street', views:114852, accMedian:2273, outlier:50.5},
+ {id:'DWjgY1hiCF8', owner:'somethingsomethingbeauty', seg:'event', tags:['freebie'], cname:'Free public activation reveal',
+   hook:'FREE outdoor cinema in Covent Garden', caption:'Big Screen on the Piazza! Covent Garden Piazza, London', views:204950, accMedian:5589, outlier:36.7},
+ {id:'DXXG2t8ASid', owner:'ilovesainthonore', seg:'product', tags:['founder','creator'], cname:'Product tasting + launch tease (talking head)',
+   hook:'MIAMI we are coming for you - May 3rd, 11AM', caption:'MIAMI we are coming for you on May 3rd at 11AM! First time leaving home...', views:289730, accMedian:22372, outlier:13},
+ {id:'DZQCDBpNlP8', owner:'vippopups', seg:'event', tags:['freebie','giant-prop'], cname:'Branded truck pop-up + freebie',
+   hook:'Coach Cherry NYC Free Pop Up - free cherry Matcha', caption:'Coach Cherry Truck New York Free Pop Up', views:326245, accMedian:33231, outlier:9.8},
+ {id:'DWbeVCQjLig', owner:'anotr.music', seg:'event', tags:['crowd'], cname:'Crowd-energy activation reveal',
+   hook:'(visual) Wall of speakers + roaring crowd', caption:'miami music week pop up #TTY', views:6465348, accMedian:775981, outlier:8.3},
+ {id:'DIefmFwoRoL', owner:'gisou', seg:'teaser', tags:['brand-teaser'], cname:'BTS building the activation + teaser',
+   hook:'The rumors are true... See you soon Miami', caption:'The rumors are true... Miami, we are coming in hot', views:2210742, accMedian:297769, outlier:7.4},
+ {id:'DZmt8ivM-Wj', owner:'digitaldiarylondon', seg:'product', tags:['pov'], cname:'Product hero POV (hands holding)',
+   hook:'your new summer obsession in london', caption:'your new summer obsession in london: snow peach gelato', views:133083, accMedian:25942, outlier:5.1},
+ {id:'DZVbXg2MP8Y', owner:'russogioacchino', seg:'event', tags:['rundown'], cname:'Venue rundown (listicle)',
+   hook:'12 places in London you must visit - 1. Sky Garden', caption:'12 Places in London you should visit at least once', views:504505, accMedian:130950, outlier:3.9},
+ {id:'DZSlWcqCzcM', owner:'chloewlp_p_', seg:'people', tags:['meme'], cname:'Relatable candid moment',
+   hook:'(no on-screen text - pure visual moment)', caption:'very awkward situation', views:97970124, accMedian:472061, outlier:207.5,
+   flag:'Mega-viral but a meme moment, not a recreatable format'},
+ {id:'DZMLCuru6h6', owner:'fitnessproductfinder', seg:'event', tags:['store-opening'], cname:'New store opening POV',
+   hook:'DAVID SCOOP SHOP - 109 Leroy St, West Village', caption:'Now open in the West Village @davidprotein', views:133381, accMedian:59065, outlier:2.3},
 ];
+REFS.forEach(r=>{
+  r.median=r.accMedian; r.src='@'+r.owner; r.title=r.cname;
+  r.thumb='assets/thumb_'+r.id+'.jpg'; r.clip='assets/clips/'+r.id+'.mp4'; r.ig='https://www.instagram.com/p/'+r.id+'/';
+  r.selected=false; r.concept=null; r.prio='Should'; r.shots=[];
+  r.vg=undefined; r.talent=undefined; r.wardrobe=undefined; r.prop=undefined; r.recipe=''; r.note='';
+});
+// effective segment honours a user "Move to" override; tags are editable too
+function segOf(r){const e=EDITS[r.id];return (e&&e.seg)||r.seg;}
+function tagsOf(r){const e=EDITS[r.id];return (e&&e.tags)||r.tags||[];}
+
 
 const STAGES=['Shot','Ingested','Assigned','Editing','Review','Approved','Published'];
 const STAGECLR={Shot:'#C9BBA6',Ingested:'#FFCF4A',Assigned:'#7AA7FF',Editing:'#FF4E9B',Review:'#B98BFF',Approved:'#3F8E7D',Published:'#1F5A4C'};
-const PIPE={'R-001':{stage:'Editing',editor:'Editor 1',pub:'11:00'},'R-002':{stage:'Assigned',editor:'Editor 2',pub:'12:30'},'R-003':{stage:'Ingested',editor:'—',pub:'14:00'},'R-004':{stage:'Shot',editor:'Editor 3',pub:'13:30'},'R-006':{stage:'Shot',editor:'—',pub:'TBD'},
- 'P-001':{stage:'Ingested',editor:'Editor 2',pub:'site'},'P-002':{stage:'Shot',editor:'—',pub:'site'},'P-003':{stage:'Assigned',editor:'Editor 1',pub:'15:00'},'P-004':{stage:'Shot',editor:'Editor 3',pub:'site'}};
+const PIPE={};
 
-let conceptSeq=0; function nextNum(){return ++conceptSeq;}
+/* ========================= PRODUCT SHOOTS (our own production: website / how-to-use / launches) ========================= */
+// Same brief shape as a social concept — these are just sourced from our own needs, not from social.
+const PSHOOTS = [
+ {id:'P-001', kind:'product', type:'Website asset', title:'Massage Oil — PDP hero + texture', prio:'Must',
+   vg:'Videographer B', talent:'Hands / forearm', wardrobe:'—', prop:'Massage Oil bottle · skin · seamless backdrop',
+   recipe:'Slow macro · warm soft light · 4 stills + 1 pour loop · export 1:1, 4:5 & 16:9 for PDP + banner',
+   note:'Evergreen website asset — quality over virality. Capture stills AND a short loop in the same setup.',
+   shots:[['—','bottle hero on backdrop','macro','(still) clean front label'],['—','oil pour / drip macro','macro','(loop) glossy texture'],['—','hands warming the oil','applic','"a few drops is all you need"'],['—','applied to skin (forearm)','applic','"sinks in, never greasy"']]},
+ {id:'P-002', kind:'product', type:'How-to-use', title:'Snack Pack — how to use (lube + oil)', prio:'Must',
+   vg:'Videographer A', talent:'Maya (hands + VO)', wardrobe:'Neutral', prop:'Snack Pack box · both bottles · bedside set',
+   recipe:'Step captions 1·2·3 · calm VO · soft set · 30–45s · vertical + square for site',
+   note:'Website + organic. Health-framed, never explicit (Meta-safe). Show the 2-bottle “why”.',
+   shots:[['0:00','open the Snack Pack box','demoSet','(text) "how to use your Snack Pack"'],['0:05','oil for the build-up','demoSet','"oil for everything leading up"'],['0:10','water-based lube for play','demoSet','"water-based = toy + condom safe"'],['0:15','reseal / on the nightstand','demoSet','"keep it close 🤍"']]},
+ {id:'P-003', kind:'product', type:'New launch', title:'Jelly Balm — unboxing + first impression', prio:'Should',
+   vg:'Videographer A', talent:'Maya', wardrobe:'Casual', prop:'Jelly Balm · mailer · vanity',
+   recipe:'ASMR open · first-swipe macro · honest reaction · trending audio · vertical',
+   note:'Launch asset that doubles as social. Capture the very first reveal — it only happens once.',
+   shots:[['0:00','mailer reveal','unbox','(text) "the Jelly Balm is finally here"'],['0:04','first swipe / texture','macro','"this texture though…"'],['0:08','on lips / glow','applic','"glassy, not sticky"']]},
+ {id:'P-004', kind:'product', type:'How-to-use', title:'Lem — 3-speed demo (how it works)', prio:'Should',
+   vg:'Videographer B', talent:'Hands only', wardrobe:'—', prop:'Lem · water tank · seamless backdrop',
+   recipe:'Macro · button-press inserts · waterproof tank dunk · seamless loop · 1:1 + 16:9 banner',
+   note:'Evergreen demo for PDP + ads. The waterproof tank dunk is the iconic share-trigger — get 3 takes.',
+   shots:[['0:00','product hero','macro','(text) "how it works"'],['0:03','press through 3 speeds','macro','"3 speeds"'],['0:06','waterproof tank dunk','tank','"fully waterproof"'],['0:09','logo end',null,'"hellonancy.com"']]},
+];
+const PPIPE={'P-001':{stage:'Ingested',editor:'Editor 2',pub:'site'},'P-002':{stage:'Shot',editor:'—',pub:'site'},'P-003':{stage:'Assigned',editor:'Editor 1',pub:'15:00'},'P-004':{stage:'Shot',editor:'Editor 3',pub:'site'}};
+Object.assign(PIPE,PPIPE);
 
-/* ===================== EDIT STATE (everything editable + auto-saves) ===================== */
-const LS='eos_edits_v2'; let EDITS={};
+let conceptSeq=0;
+function nextNum(){return ++conceptSeq;}
+
+/* ========================= HELPERS ========================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let filter='all';
+function scoreClass(o){return o>=8?'s9':o>=5?'s6':o>=3?'s3':'s0';}
+function gatePass(r){return !r.gated && r.outlier>=3;}
+function tile(hue,opts={}){ // stand-in for the real clip/photo
+  return `<div class="media ${opts.cls||''}" style="--h:${hue}">
+    <div class="play">▶</div>
+    ${opts.dur?`<div class="dur">${opts.dur}</div>`:''}
+    ${opts.score?`<span class="score-ov">${opts.score}</span>`:''}
+    ${opts.handle?`<div class="handle">${opts.handle}</div>`:''}
+  </div>`;
+}
+
+/* ========================= EDIT STATE (everything is editable + auto-saves) ========================= */
+const LS='eos_edits_v1'; let EDITS={};
 try{EDITS=JSON.parse(localStorage.getItem(LS)||'{}')||{};}catch(e){EDITS={};}
-const LSV='eos_stationvg_v1';
-try{const sv=JSON.parse(localStorage.getItem(LSV)||'{}');Object.keys(sv).forEach(k=>{if(STATIONS[k])STATIONS[k].vg=sv[k];});}catch(e){}
 function ed(id){return EDITS[id]||(EDITS[id]={});}
 function saveEdits(){try{localStorage.setItem(LS,JSON.stringify(EDITS));}catch(e){} flashSaved();}
 function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-
+// working (merged) concept = defaults overlaid with the user's saved edits
+function wc(r){const e=EDITS[r.id]||{};
+  const shots=e.shots?e.shots:(r.shots||[]).map(s=>({t:s[0],desc:s[1],scene:s[2],script:s[3]}));
+  return {title:e.title??r.title,vg:e.vg??r.vg,talent:e.talent??r.talent,wardrobe:e.wardrobe??r.wardrobe,
+    prop:e.prop??r.prop,recipe:e.recipe??r.recipe,note:e.note??r.note,prio:e.prio??r.prio,shots};}
+function materializeShots(id){const r=getItem(id);const e=ed(id);
+  if(!e.shots)e.shots=(r.shots||[]).map(s=>({t:s[0],desc:s[1],scene:s[2],script:s[3]}));return e.shots;}
+// unified item access across social (REFS) + product (PSHOOTS)
 function getItem(id){return REFS.find(x=>x.id===id) || PSHOOTS.find(x=>x.id===id);}
-function isProduct(id){return !!PSHOOTS.find(x=>x.id===id);}
 function itemLabel(id){const r=REFS.find(x=>x.id===id); if(r&&r.concept)return 'Concept '+r.concept;
   const pi=PSHOOTS.findIndex(x=>x.id===id); if(pi>=0)return 'Product '+(pi+1); return id;}
+function isProduct(id){return !!PSHOOTS.find(x=>x.id===id);}
+// every shootable thing for the schedule + pipeline (social concepts that are selected, + all product shoots)
 function activeItems(){
   const social=REFS.filter(r=>r.selected).map(r=>({id:r.id,kind:'social',label:'Concept '+r.concept,obj:r}));
   const product=PSHOOTS.map((p,i)=>({id:p.id,kind:'product',label:'Product '+(i+1),obj:p}));
   return social.concat(product);
 }
-function wc(r){const e=EDITS[r.id]||{};
-  return {title:e.title??r.title, copy:e.copy??r.copy, feedback:e.feedback??(r.feedback||''), vg:e.vg??r.vg, talent:e.talent??(r.talent||[]),
-    recipe:e.recipe??r.recipe, note:e.note??r.note, prio:e.prio??r.prio,
-    shots: e.shots? e.shots : (r.shots||[]).map(s=>({...s}))};}
-function materializeShots(id){const r=getItem(id);const e=ed(id);
-  if(!e.shots)e.shots=(r.shots||[]).map(s=>({...s}));return e.shots;}
 function flashSaved(){const p=document.getElementById('savepill');if(p){p.classList.add('on');clearTimeout(p._t);p._t=setTimeout(()=>p.classList.remove('on'),1200);}}
 let _rt; function refreshDerived(){renderConcepts();renderProduct();renderSched();renderKan();}
 function refreshDerivedDebounced(){clearTimeout(_rt);_rt=setTimeout(refreshDerived,400);}
 function efield(id,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-field="${field}">${esc(val)}</span>`;}
 function eshot(id,i,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-shot="${i}" data-field="${field}">${esc(val)}</span>`;}
-function stationSelect(id,i,cur){return `<select class="estation" onchange="setShot('${id}',${i},'st',this.value)">
-  <option value="">✦ no prop (graphic / end card)</option>
-  ${STATION_ORDER.map(k=>`<option value="${k}"${k===cur?' selected':''}>📦 ${STATIONS[k].name}</option>`).join('')}
+function sceneSelect(id,i,cur){return `<select class="escene" onchange="setScene('${id}',${i},this.value)">
+  <option value="">✦ Graphic / end card — no shoot</option>
+  ${Object.keys(SCENES).map(k=>`<option value="${k}"${k===cur?' selected':''}>🎬 ${SCENES[k].name} · ${SCENES[k].loc}</option>`).join('')}
 </select>`;}
-function outSelect(id,i,cur){const o=[['Video','🎬 Video'],['Photo','📷 Photo'],['Both','📷🎬 Both']];
-  return `<select class="estation eout" onchange="setShot('${id}',${i},'out',this.value)" title="capture as photo, video, or both">
-    ${o.map(([v,l])=>`<option value="${v}"${v===cur?' selected':''}>${l}</option>`).join('')}</select>`;}
-function outIcon(o){return o==='Photo'?'📷':o==='Both'?'📷🎬':'🎬';}
-function tile(hue,opts={}){return `<div class="media ${opts.cls||''}" style="--h:${hue}">
-    <div class="play">▶</div>
-    ${opts.dur?`<div class="dur">${opts.dur}</div>`:''}
-    ${opts.score?`<span class="score-ov">${opts.score}</span>`:''}
-    ${opts.handle?`<div class="handle">${opts.handle}</div>`:''}
-  </div>`;}
-function scoreClass(o){return o>=8?'s9':o>=5?'s6':o>=3?'s3':'s0';}
-function gatePass(r){return !r.gated && r.outlier>=3;}
 
-/* ===================== RENDER ===================== */
-let filter='all';
+/* ========================= RENDER ========================= */
+function fmt(n){n=+n||0;return n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,'')+'M':n>=1e3?Math.round(n/1e3)+'k':String(n);}
+// lazy inline playback: click cover -> play the local clip; if missing (public build) fall back to IG
+function playClip(el,src,ig){
+  if(el.dataset.on)return; el.dataset.on='1';
+  const v=document.createElement('video');
+  v.src=src; v.controls=true; v.autoplay=true; v.playsInline=true; v.muted=true;
+  v.style.cssText='width:100%;height:100%;object-fit:cover;background:#000';
+  v.onerror=()=>{ el.dataset.on=''; el.innerHTML='<div class="ph">Clip is on the private build — opening Instagram…</div>'; window.open(ig,'_blank'); };
+  el.innerHTML=''; el.appendChild(v);
+}
+function setupFilters(){
+  const f=$('#filters');
+  f.innerHTML=`<button class="fpill on" data-f="all">All</button>`+
+    `<button class="fpill" data-f="gate">Passes gate (≥3×)</button>`+
+    SEGMENTS.map(s=>`<button class="fpill" data-f="${s.key}">${s.name}</button>`).join('')+
+    `<span class="hint">filter by who/tone ↓</span>`+
+    `<div class="tagrow">`+ALL_TAGS.map(t=>`<button class="fpill tagpill" data-f="tag:${t}">#${t}</button>`).join('')+`</div>`;
+}
+function moveSeg(id,seg){ed(id).seg=seg;saveEdits();renderRefs();const s=SEGMENTS.find(x=>x.key===seg);toast('Moved to '+(s?s.name:seg));}
+function refCard(r){
+  const gated=!gatePass(r);
+  const scoreChip=`<span class="score ${scoreClass(r.outlier)}">${r.outlier==null?'—':r.outlier+'×'}</span>`;
+  const tags=tagsOf(r).map(t=>`<span class="tag-chip">#${t}</span>`).join('');
+  const card=document.createElement('div');
+  card.className='rcard'+(r.selected?' picked':'')+(gated?' gated':'');
+  card.innerHTML=`
+    <div class="rthumb" title="Click to play" onclick="playClip(this,'${r.clip}','${r.ig}')">
+      <img src="${r.thumb}" alt="" loading="lazy"/>
+      <div class="play">▶</div>
+      <span class="ov-score">${scoreChip}</span>
+      <span class="ov-views">▶ ${fmt(r.views)}</span>
+    </div>
+    <div class="rconcept">${esc(r.cname)}</div>
+    <div class="rhook"><b>Hook:</b> ${esc(r.hook)}</div>
+    <div class="rcap">“${esc((r.caption||'').slice(0,84))}${(r.caption||'').length>84?'…':''}”</div>
+    <div class="tagchips">${tags||'<span class="tag-chip muted">no tags</span>'}</div>
+    <div class="rstats"><span class="pill">▶ ${fmt(r.views)}</span><span class="pill">avg ${fmt(r.median)}</span><span class="pill">${r.outlier==null?'—':r.outlier+'×'}</span><a class="watch" href="${r.ig}" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ IG</a></div>
+    <div class="moverow">↔ Move to:
+      <select class="emove" onchange="moveSeg('${r.id}',this.value)">
+        ${SEGMENTS.map(sg=>`<option value="${sg.key}"${segOf(r)===sg.key?' selected':''}>${sg.name}</option>`).join('')}
+      </select></div>
+    ${ r.selected ? `<div class="cflag">★ Concept ${r.concept}</div>`
+      : gated ? `<button class="btn ghost sm" disabled>Below gate${r.outlier==null?'':' ('+r.outlier+'×)'}</button>`
+      : `<button class="btn pink sm" onclick="pick('${r.id}')">+ Make this a Concept</button>` }
+    ${r.flag?`<div style="font-size:11px;color:#9A5B00;margin-top:6px">⚠ ${esc(r.flag)}</div>`:''}`;
+  return card;
+}
+function refMatches(r){
+  if(filter==='all')return true;
+  if(filter==='gate')return gatePass(r);
+  if(filter.indexOf('tag:')===0)return tagsOf(r).includes(filter.slice(4));
+  return segOf(r)===filter;
+}
 function renderRefs(){
-  const g=$('#refgrid'); g.innerHTML='';
-  REFS.filter(r=>{if(filter==='gate')return gatePass(r);if(filter==='open')return gatePass(r)&&!r.selected;return true;})
-   .forEach(r=>{
-    const gated=!gatePass(r);
-    const card=document.createElement('div'); card.className='rcard'+(r.selected?' picked':'')+(gated?' gated':'');
-    const scoreChip=`<span class="score ${scoreClass(r.outlier)}">${r.outlier}×</span>`;
-    card.innerHTML=`
-      ${tile(r.hue,{dur:r.dur, score:scoreChip, handle:r.src+' · '+(r.views/1000)+'k views'})}
-      <div class="rmeta"><div class="src">${r.src}</div><div class="fmt">${r.id} · ${r.fmt}</div></div>
-      <div class="why">“${r.why}”</div>
-      <div class="stats">${scoreChip}<span>outlier · their median ${(r.median/1000)}k</span></div>
-      ${ r.selected ? `<div class="cflag">★ Concept ${r.concept}</div>`
-        : gated ? `<button class="btn ghost sm" disabled>Below gate (${r.outlier}×)</button>`
-        : `<button class="btn pink sm" onclick="pick('${r.id}')">+ Make this a Concept</button>` }`;
-    g.appendChild(card);
+  const wrap=$('#refgrid'); wrap.innerHTML='';
+  const sel=REFS.filter(refMatches);
+  const onlySeg=(filter==='all'||filter==='gate'||filter.indexOf('tag:')===0)?null:filter;
+  SEGMENTS.forEach(s=>{
+    if(onlySeg&&onlySeg!==s.key)return;
+    const items=sel.filter(r=>segOf(r)===s.key);
+    if(!items.length&&(filter==='gate'||filter.indexOf('tag:')===0))return;
+    const sec=document.createElement('div'); sec.className='seg';
+    sec.innerHTML=`<div class="segh"><h3>${s.name}</h3><span class="sd">${s.desc}</span><span class="sc">${items.length} ref${items.length!==1?'s':''}</span></div>`;
+    const grid=document.createElement('div'); grid.className='rgrid';
+    if(items.length){items.sort((a,b)=>(b.outlier||0)-(a.outlier||0)).forEach(r=>grid.appendChild(refCard(r)));}
+    else{const e=document.createElement('div'); e.className='empty'; e.style.gridColumn='1/-1'; e.textContent='No references here yet.'; grid.appendChild(e);}
+    sec.appendChild(grid); wrap.appendChild(sec);
   });
   $('#f-all').textContent=REFS.length;
   $('#f-gate').textContent=REFS.filter(gatePass).length;
@@ -574,64 +588,74 @@ function renderRefs(){
   $('#ct-refs').textContent=REFS.filter(gatePass).length;
   $('#ct-con').textContent=REFS.filter(r=>r.selected).length;
 }
-function conceptCard(item,num,eyebrow,accent,openLabel){
-  const c=wc(item.obj);
-  const thumbs=c.shots.slice(0,4).map(s=>tile(s.st?STATIONS[s.st].hue:0,{})).join('');
-  const score=item.kind==='social'?`<span class="score ${scoreClass(item.obj.outlier)}">${item.obj.outlier}×</span>`:`<span class="badge b-ptype">${item.obj.type}</span>`;
-  return `<div class="num" style="${accent?('color:'+accent):''}">${num}</div>
-      <div class="ceyebrow"${accent?(' style="color:'+accent+'"'):''}>${eyebrow}</div>
-      <h3>${esc(c.title)}</h3>
-      <div class="meta">${item.obj.id} · ${item.kind==='social'?('from '+item.obj.src):item.obj.type}</div>
-      <div class="thumbs">${thumbs}</div>
-      <div class="row">${score}<span class="prio ${c.prio.toLowerCase()}">${c.prio}</span>
-        <span style="font-size:12px;color:var(--ink-60)">${c.shots.length} shots</span></div>
-      <span class="open"${accent?(' style="color:'+accent+'"'):''}>${openLabel} →</span>`;
-}
+
 function renderConcepts(){
   const g=$('#cgrid'); g.innerHTML='';
   const sel=REFS.filter(r=>r.selected).sort((a,b)=>a.concept-b.concept);
   if(!sel.length){g.innerHTML='<div class="empty">No concepts yet — go to the <b>Reference Bank</b> and select a few winners.</div>';return;}
-  sel.forEach(r=>{const card=document.createElement('div');card.className='ccard';card.onclick=()=>openBrief(r.id);
-    card.innerHTML=conceptCard({obj:r,kind:'social'}, r.concept, 'Concept '+r.concept, '', 'Open Concept Brief');
-    g.appendChild(card);});
+  sel.forEach(r=>{
+    const c=wc(r);
+    const card=document.createElement('div'); card.className='ccard'; card.onclick=()=>openBrief(r.id);
+    const thumbs=c.shots.slice(0,4).map(s=>tile(s.scene?SCENES[s.scene].hue:0,{cls:''})).join('');
+    card.innerHTML=`
+      <div class="num">${r.concept}</div>
+      <div class="ceyebrow">Concept ${r.concept}</div>
+      <h3>${esc(c.title)}</h3>
+      <div class="meta">${r.id} · from ${r.src}</div>
+      <div class="thumbs">${thumbs}</div>
+      <div class="row">
+        <span class="score ${scoreClass(r.outlier)}">${r.outlier}×</span>
+        <span class="prio ${c.prio.toLowerCase()}">${c.prio}</span>
+        <span style="font-size:12px;color:var(--ink-60)">${c.shots.length} shots</span>
+      </div>
+      <span class="open">Open Concept Brief →</span>`;
+    g.appendChild(card);
+  });
 }
+
 function renderProduct(){
-  const g=$('#pgrid'); g.innerHTML=''; $('#ct-prod').textContent=PSHOOTS.length;
+  const g=$('#pgrid'); g.innerHTML='';
+  $('#ct-prod').textContent=PSHOOTS.length;
   if(!PSHOOTS.length){g.innerHTML='<div class="empty">No product shoots yet — tap <b>+ Add product shoot</b>.</div>';return;}
-  PSHOOTS.forEach((p,idx)=>{const card=document.createElement('div');card.className='ccard';card.onclick=()=>openBrief(p.id);
-    card.innerHTML=conceptCard({obj:p,kind:'product'}, 'P'+(idx+1), 'Product '+(idx+1)+' · '+p.type, 'var(--sage)', 'Open Shoot Brief');
-    g.appendChild(card);});
+  PSHOOTS.forEach((p,idx)=>{
+    const c=wc(p);
+    const card=document.createElement('div'); card.className='ccard'; card.onclick=()=>openBrief(p.id);
+    const thumbs=c.shots.slice(0,4).map(s=>tile(s.scene?SCENES[s.scene].hue:0,{cls:''})).join('');
+    card.innerHTML=`
+      <div class="num" style="color:var(--sage-soft)">P${idx+1}</div>
+      <div class="ceyebrow" style="color:var(--sage)">Product ${idx+1} · ${p.type}</div>
+      <h3>${esc(c.title)}</h3>
+      <div class="meta">${p.id} · ${esc(c.prop)}</div>
+      <div class="thumbs">${thumbs}</div>
+      <div class="row">
+        <span class="badge b-ptype">${p.type}</span>
+        <span class="prio ${c.prio.toLowerCase()}">${c.prio}</span>
+        <span style="font-size:12px;color:var(--ink-60)">${c.shots.length} shots</span>
+      </div>
+      <span class="open" style="color:var(--sage)">Open Shoot Brief →</span>`;
+    g.appendChild(card);
+  });
 }
 
 function openBrief(id){
   const r=getItem(id); const c=wc(r); const m=$('#briefmount'); const product=isProduct(id);
   const bb=document.getElementById('briefback'); if(bb)bb.setAttribute('onclick', product?"go('prod')":"go('concepts')");
   const shotRows=c.shots.map((s,i)=>{
-    const sc=s.st?STATIONS[s.st]:null;
-    return `<div class="shotrow2">
-      <div class="refcol">
-        ${tile(r.hue,{dur:s.t})}
-        <div>
-          <div class="sn"><span class="stime">${eshot(id,i,'t',s.t)}</span><b>Shot ${i+1}</b>
-            <button class="xshot" title="remove shot" onclick="removeShot('${id}',${i})">✕</button></div>
-          <div class="reftxt"><span class="lbl">REF</span>${eshot(id,i,'ref',s.ref)}</div>
-        </div>
-      </div>
-      <div class="arrow">→</div>
-      <div class="ourcol ${product?'prodv':''}">
-        <div class="ourtop"><span class="lbl our">OUR VERSION</span>
-          <div class="ourctrls">${outSelect(id,i,s.out||(product?'Both':'Video'))}${stationSelect(id,i,s.st)}</div></div>
-        <div class="ourbody">
-          <div class="ourmedia" title="in the real build: drop our reference image or clip here">＋ our<br/>ref</div>
-          <div class="ourtxt">${eshot(id,i,'our',s.our||'')}</div>
-        </div>
+    const sc=s.scene?SCENES[s.scene]:null;
+    return `<div class="shotrow">
+      ${tile(sc?sc.hue:0,{cls:'',dur:s.t})}
+      <div>
+        <div class="sn"><span class="stime">${eshot(id,i,'t',s.t)}</span><b>Shot ${i+1}</b>
+          <button class="xshot" title="remove shot" onclick="removeShot('${id}',${i})">✕</button></div>
+        <div class="sdesc">${eshot(id,i,'desc',s.desc)}</div>
+        <div class="sscript">🎙 ${eshot(id,i,'script',s.script||'')}</div>
+        <div class="sscene">${sceneSelect(id,i,s.scene)}</div>
       </div>
     </div>`;
   }).join('');
-  const stations=[...new Set(c.shots.filter(s=>s.st).map(s=>STATIONS[s.st].name))].join(' · ')||'—';
   m.innerHTML=`
   <div class="brief">
-    <div class="top ${product?'prod':''}">
+    <div class="top">
       <div class="eyebrow">${product?`${itemLabel(id)} · ${r.id} · ${r.type}`:`Concept ${r.concept} · ${r.id} · recreate from ${r.src}`}</div>
       <h2>${efield(id,'title',c.title)}</h2>
       <div class="row">
@@ -639,58 +663,38 @@ function openBrief(id){
         <button class="prio ${c.prio.toLowerCase()}" onclick="cyclePrio('${id}')" title="tap to change priority">${c.prio}</button>
         <span style="font-size:13px;color:var(--ink-60)">${c.shots.length} shots</span>
       </div>
-      <div class="ebanner">✎ Everything here is editable — tap any field, type, it saves. <span id="savepill">Saved ✓</span>
-        <a onclick="resetItem('${id}')">↺ reset to original</a></div>
+      <div class="ebanner">✎ Everything here is editable — tap any field, type, and it saves automatically.
+        <span id="savepill">Saved ✓</span>
+        <a onclick="resetConcept('${id}')">↺ reset to original</a></div>
+      ${(!product&&r.thumb)?`<div class="refstrip">
+        <a class="refthumb" href="${r.ig}" target="_blank" rel="noopener"><img src="${r.thumb}" alt=""/><span class="play">▶</span></a>
+        <div><div class="rb-hook"><b>Hook:</b> ${esc(r.hook||'')}</div>
+          <div class="rb-cap">“${esc(r.caption||'')}”</div>
+          <div style="font-size:12px;color:var(--ink-60);margin-top:4px">▶ ${fmt(r.views)} · avg ${fmt(r.median)} · ${r.outlier==null?'—':r.outlier+'× outlier'} · <a class="watch" href="${r.ig}" target="_blank" rel="noopener">↗ Watch original</a></div></div>
+      </div>`:''}
     </div>
-
-    <div class="refband">
-      <div class="refvid">${tile(r.hue,{dur:r.dur,handle:product?'our moodboard':r.src})}
-        <div class="refcap">${product?`<b>Reference / moodboard</b> (optional)`:`<b>Full reference</b> · ${r.src} · ${esc(r.fmt)}`}<br/>
-          ${product?'drop a look-and-feel ref here in the real build.':`“${esc(r.why)}” — watch it, then recreate beat-for-beat.`}</div>
-      </div>
-      <div class="copycompare">
-        <div class="copycol">
-          <h4>${product?'Reference note':'Current caption'} <span class="tag" style="background:var(--cream-2);color:var(--ink-60)">${product?'optional':'the original'}</span></h4>
-          <div class="copybox muted">${product?'— (product asset)':esc(r.refcaption||'—')}</div>
-        </div>
-        <div class="copycol">
-          <h4>Our suggested caption <span class="tag">adjustable</span></h4>
-          <div class="copybox edit" contenteditable="true" data-id="${id}" data-field="copy">${esc(c.copy)}</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="fbstrip">
-      <h4>💬 Team feedback <span class="tag">leave notes for this concept — saves automatically</span></h4>
-      <div class="feedbox edit" contenteditable="true" data-id="${id}" data-field="feedback">${esc(c.feedback)}</div>
-    </div>
-
     <div class="bbody">
       <div class="bcol">
-        <div class="blk"><h4>Shot list <span class="tag">left = reference clip (chopped per shot) · right = our version + copy</span></h4>
+        <div class="blk"><h4>Shot list <span class="tag">a clip/photo for every shot — copy the framing exactly</span></h4>
           ${shotRows}
           <button class="btn ghost sm addshot" onclick="addShot('${id}')">+ Add shot</button>
         </div>
       </div>
       <div class="bcol">
-        <div class="blk"><h4>Crew</h4>
-          <div class="specrow"><span class="k">Videographer</span>
-            <select class="evg" onchange="setField('${id}','vg',this.value)">${VIDEOGRAPHERS.map(g=>`<option ${g.name===c.vg?'selected':''}>${g.name}</option>`).join('')}</select></div>
-          <ul class="vglegend">
-            <li><b>Corrine</b> — main, celeb &amp; proper / product shots</li>
-            <li><b>Jackie</b> — event &amp; lifestyle (phone)</li>
-            <li><b>Susan</b> — street &amp; people (phone)</li>
-          </ul>
+        <div class="blk"><h4>On set</h4>
+          <div class="specs">
+            <div class="spec"><div class="k">Videographer</div><div class="v">${efield(id,'vg',c.vg)}</div></div>
+            <div class="spec"><div class="k">Talent</div><div class="v">${efield(id,'talent',c.talent)}</div></div>
+            <div class="spec"><div class="k">Wardrobe <span style="text-transform:none;font-weight:400">(if needed)</span></div><div class="v">${efield(id,'wardrobe',c.wardrobe)}</div></div>
+            <div class="spec"><div class="k">Prop</div><div class="v">${efield(id,'prop',c.prop)}</div></div>
+          </div>
         </div>
-        <div class="blk"><h4>Talent <span class="tag">who’s in it</span></h4>
-          <div class="talentchips">${TALENT_OPTS.map((n,j)=>`<button class="tchip ${c.talent.includes(n)?'on':''}" onclick="toggleTalent('${id}',${j})">${n}</button>`).join('')}</div>
-        </div>
-        <div class="blk"><h4>Props / stations <span class="tag">drives the schedule</span></h4>
-          <div class="statline">${stations}</div></div>
         <div class="blk"><h4>Edit recipe <span class="tag">travels with the footage</span></h4>
-          <div class="recipe"><b>Editor does exactly this:</b><br/>${efield(id,'recipe',c.recipe)}</div></div>
+          <div class="recipe"><b>Editor does exactly this:</b><br/>${efield(id,'recipe',c.recipe)}</div>
+        </div>
         <div class="blk"><h4>Director note <span class="tag">edit freely</span></h4>
-          <div class="callout">${efield(id,'note',c.note)}</div></div>
+          <div class="callout">${efield(id,'note',c.note)}</div>
+        </div>
       </div>
     </div>
   </div>`;
@@ -699,32 +703,35 @@ function openBrief(id){
 
 function renderSched(){
   const m=$('#schedmount'); m.innerHTML='';
-  const cl=$('#crewlegend'); if(cl)cl.innerHTML=VIDEOGRAPHERS.map(g=>`<div class="crewcard"><div class="cn">🎥 ${g.name}</div><div class="cf">${g.focus}</div></div>`).join('');
+  // map scene -> [{concept, shotIndex}]
   const use={};
   activeItems().forEach(it=>{const c=wc(it.obj);c.shots.forEach((s,i)=>{
-    if(!s.st||!STATIONS[s.st])return; (use[s.st]=use[s.st]||[]).push({label:it.label,kind:it.kind,our:s.our,t:c.title,i:i+1,id:it.id,out:s.out||(it.kind==='product'?'Both':'Video')});
+    if(!s.scene||!SCENES[s.scene])return; (use[s.scene]=use[s.scene]||[]).push({label:it.label,kind:it.kind,t:c.title,i:i+1,id:it.id});
   });});
-  const usedKeys=STATION_ORDER.filter(k=>use[k]);
-  if(!usedKeys.length){m.innerHTML='<div class="empty">Pick a prop/station on each shot to build the schedule.</div>';return;}
-  let mins=9*60; const slot=45;
-  usedKeys.forEach(k=>{
-    const st=STATIONS[k]; const u=use[k]; const distinct=new Set(u.map(x=>x.label)).size; const multi=distinct>1;
-    const t1=fmtTime(mins), t2=fmtTime(mins+slot); mins+=slot;
-    const el=document.createElement('div'); el.className='scene';
-    el.innerHTML=`
-      <div class="sh">${tile(st.hue,{cls:'thumb'})}
-        <div><div class="sname">${st.name}</div><div class="sprops">📍 ${st.area}</div></div>
-        <div class="slottime">${t1} – ${t2}</div>
-        <div class="vgsel">🎥 <select class="evg" onchange="setStationVG('${k}',this.value)">${VIDEOGRAPHERS.map(g=>`<option ${g.name===st.vg?'selected':''}>${g.name}</option>`).join('')}</select></div>
-        <div class="feeds ${multi?'multi':''}">${multi?'▶ '+u.length+' clips · '+distinct+' videos':u.length+' clip'+(u.length>1?'s':'')}</div>
-      </div>
-      <div class="needs">${u.map(x=>`<div class="needchip" onclick="openBrief('${x.id}')">
-        <div class="nq"><span class="sdot ${x.kind}"></span>${x.label} · shot ${x.i} · ${outIcon(x.out)} ${x.out}</div>
-        <div class="nt">${esc(x.our||x.t)}</div></div>`).join('')}</div>`;
-    m.appendChild(el);
+  let any=false;
+  LOC_ORDER.forEach(loc=>{
+    const scenesHere=Object.keys(SCENES).filter(k=>SCENES[k].loc===loc && use[k]);
+    if(!scenesHere.length)return; any=true;
+    const locEl=document.createElement('div'); locEl.className='loc';
+    const totalFeeds=scenesHere.reduce((a,k)=>a+use[k].length,0);
+    locEl.innerHTML=`<div class="loch"><h3>${loc}</h3><span class="ltime">${LOC_TIME[loc]||''}</span>
+      <span class="lct">${scenesHere.length} scene${scenesHere.length>1?'s':''} · ${totalFeeds} shot${totalFeeds>1?'s':''} to capture</span></div>`;
+    scenesHere.forEach(k=>{
+      const sc=SCENES[k]; const u=use[k]; const distinct=new Set(u.map(x=>x.label)).size; const multi=distinct>1;
+      const sceneEl=document.createElement('div'); sceneEl.className='scene';
+      sceneEl.innerHTML=`
+        <div class="sh">${tile(sc.hue,{cls:'thumb'})}
+          <div><div class="sname">${sc.name}</div><div class="sprops">📦 ${sc.props}</div></div>
+          <div class="feeds ${multi?'multi':''}">${multi?'▶ shoot once → '+u.length+' clips for '+distinct+' items':u.length+' clip'+(u.length>1?'s':'')+' · 1 item'}</div>
+        </div>
+        <div class="needs">${u.map(x=>`<div class="needchip" onclick="openBrief('${x.id}')">
+          <div class="nq"><span class="sdot ${x.kind}"></span>${x.label} · shot ${x.i}</div><div class="nt">${esc(x.t)}</div></div>`).join('')}</div>`;
+      locEl.appendChild(sceneEl);
+    });
+    m.appendChild(locEl);
   });
+  if(!any)m.innerHTML='<div class="empty">Select concepts to build the schedule.</div>';
 }
-function fmtTime(mins){let h=Math.floor(mins/60),m=mins%60;const ap=h>=12?'pm':'am';let hh=h%12;if(hh===0)hh=12;return hh+':'+String(m).padStart(2,'0')+ap;}
 
 function renderKan(){
   const m=$('#kanmount'); m.innerHTML='';
@@ -742,42 +749,50 @@ function renderKan(){
   });
 }
 
-/* ===================== ACTIONS ===================== */
-function pick(id){const r=REFS.find(x=>x.id===id); if(r.selected)return;
+/* ========================= ACTIONS ========================= */
+function pick(id){
+  const r=REFS.find(x=>x.id===id); if(r.selected)return;
   r.selected=true; r.concept=nextNum();
   if(!PIPE[id]) PIPE[id]={stage:'Shot',editor:'Unassigned',pub:'TBD'};
   renderRefs(); renderConcepts(); renderSched(); renderKan();
-  toast(`Selected → Concept ${r.concept}.`);}
-function setField(id,f,v){ed(id)[f]=v;saveEdits();refreshDerivedDebounced();}
-function setShot(id,i,f,v){materializeShots(id)[i][f]=(f==='st'?(v||null):v);saveEdits();openBrief(id);refreshDerived();}
-function toggleTalent(id,j){const name=TALENT_OPTS[j];const cur=(EDITS[id]&&EDITS[id].talent)?EDITS[id].talent.slice():((getItem(id).talent||[]).slice());
-  const k=cur.indexOf(name); if(k>=0)cur.splice(k,1); else cur.push(name); ed(id).talent=cur; saveEdits(); openBrief(id);}
-function addShot(id){materializeShots(id).push({t:'0:00',ref:'new shot',st:'product',our:'(our version + copy)'});saveEdits();openBrief(id);refreshDerived();}
-function removeShot(id,i){materializeShots(id).splice(i,1);saveEdits();openBrief(id);refreshDerived();}
-function cyclePrio(id){const order=['Must','Should','Could'];const cur=wc(getItem(id)).prio;ed(id).prio=order[(order.indexOf(cur)+1)%3];saveEdits();openBrief(id);refreshDerived();}
-function resetItem(id){delete EDITS[id];saveEdits();openBrief(id);refreshDerived();toast('Reset to original.');}
-function setStationVG(k,v){STATIONS[k].vg=v;try{const sv=JSON.parse(localStorage.getItem(LSV)||'{}');sv[k]=v;localStorage.setItem(LSV,JSON.stringify(sv));}catch(e){}renderSched();toast(STATIONS[k].name+' → '+v);}
-function addProduct(){const n=PSHOOTS.length+1; const id='P-'+String(n).padStart(3,'0');
-  PSHOOTS.push({id,kind:'product',type:'Website asset',title:'New product shoot',prio:'Should',vg:'Corrine',talent:[],
-    copy:'(add caption)',recipe:'(add the edit recipe)',note:'(add a director note)',
-    shots:[{t:'—',ref:'new shot',st:'product',our:'(our version + copy)'}]});
-  if(!PIPE[id])PIPE[id]={stage:'Shot',editor:'—',pub:'site'};
-  renderProduct();renderSched();renderKan();openBrief(id);toast('Added Product '+n+'.');}
-function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);}
+  toast(`Selected → Concept ${r.concept}. Added to Concepts, Schedule & Pipeline.`);
+}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
 function go(v){$$('.view').forEach(x=>x.classList.remove('on'));$('#v-'+v).classList.add('on');
   $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===v));window.scrollTo({top:0,behavior:'smooth'});}
 $('#tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(t)go(t.dataset.v);});
-$('#filters').addEventListener('click',e=>{const p=e.target.closest('.fpill');if(!p)return;filter=p.dataset.f;$$('.fpill').forEach(x=>x.classList.toggle('on',x===p));renderRefs();});
-// live text edits — save without re-rendering the brief, so the cursor stays put
-$('#briefmount').addEventListener('input',e=>{const el=e.target.closest('[data-field]'); if(!el)return;
+$('#filters').addEventListener('click',e=>{const p=e.target.closest('.fpill');if(!p)return;
+  filter=p.dataset.f;$$('.fpill').forEach(x=>x.classList.toggle('on',x===p));renderRefs();});
+
+/* ---- editing actions ---- */
+function setScene(id,i,v){materializeShots(id)[i].scene=v||null;saveEdits();openBrief(id);refreshDerived();}
+function addShot(id){materializeShots(id).push({t:'0:00',desc:'new shot',scene:null,script:''});saveEdits();openBrief(id);refreshDerived();}
+function removeShot(id,i){const s=materializeShots(id);s.splice(i,1);saveEdits();openBrief(id);refreshDerived();}
+function cyclePrio(id){const order=['Must','Should','Could'];const cur=wc(getItem(id)).prio;
+  ed(id).prio=order[(order.indexOf(cur)+1)%3];saveEdits();openBrief(id);refreshDerived();}
+function resetConcept(id){delete EDITS[id];saveEdits();openBrief(id);refreshDerived();toast('Reset to original.');}
+function addProduct(){
+  const n=PSHOOTS.length+1; const id='P-'+String(n).padStart(3,'0');
+  PSHOOTS.push({id,kind:'product',type:'Website asset',title:'New product shoot',prio:'Should',
+    vg:'Assign on set',talent:'—',wardrobe:'—',prop:'(what are we shooting?)',recipe:'(add the edit recipe)',note:'(add a director note)',
+    shots:[['—','new shot','macro','(add the copy / what the shot says)']]});
+  if(!PIPE[id])PIPE[id]={stage:'Shot',editor:'—',pub:'site'};
+  renderProduct(); renderSched(); renderKan(); openBrief(id);
+  toast('Added Product '+n+'. Fill in the brief.');
+}
+// live text edits — save without re-rendering the brief, so your cursor stays put
+document.getElementById('briefmount').addEventListener('input',e=>{
+  const el=e.target.closest('[data-field]'); if(!el)return;
   const id=el.dataset.id, f=el.dataset.field, si=el.dataset.shot, v=el.textContent;
   if(si!=null){materializeShots(id)[+si][f]=v;} else {ed(id)[f]=v;}
-  saveEdits(); refreshDerivedDebounced();});
+  saveEdits(); refreshDerivedDebounced();
+});
 
-/* seed */
-['R-001','R-002','R-003','R-004','R-006'].forEach(id=>{const r=REFS.find(x=>x.id===id);r.selected=true;r.concept=nextNum();});
+/* seed: pre-select Concepts 1–5 so the team sees a populated example */
+setupFilters();
 renderRefs(); renderConcepts(); renderProduct(); renderSched(); renderKan();
-/* deep-links: #prod, #sched, #pipe, #brief/R-004 */
+
+/* shareable deep-links: #prod, #sched, #concepts, #pipe, or #brief/P-002 */
 (function(){const h=decodeURIComponent(location.hash.slice(1));
   if(h.startsWith('brief/')){const id=h.split('/')[1];if(getItem(id))openBrief(id);}
   else if(['refs','concepts','prod','sched','pipe'].includes(h))go(h);})();
