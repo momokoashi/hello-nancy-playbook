@@ -105,6 +105,13 @@ main{padding:28px 0 80px}
 .score.s0{background:#ECECEC;color:#8A8A8A}
 .badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
 .b-gate{background:#ECE7DE;color:#8A8278}
+.b-event{background:var(--pink-50);color:var(--pink)}
+.b-clone{background:#E7E0F5;color:#6B4FB0}
+.ccard.clone{border-style:dashed;border-color:#C9B8EE}
+.evsel{font-family:var(--sans);font-size:12px;color:var(--ink);border:1.5px solid var(--line);border-radius:20px;padding:4px 9px;background:var(--card);cursor:pointer}
+.evsel:hover{border-color:var(--pink)}
+.saveind{font-size:12.5px;color:var(--sage);font-weight:600;align-self:center;margin-right:4px}
+.ebanner a{margin-left:2px}
 .b-ptype{background:var(--sage-soft);color:#1F5A4C}
 .sdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
 .sdot.social{background:var(--pink)} .sdot.product{background:var(--sage)}
@@ -334,10 +341,16 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
     <div class="vhead">
       <div>
         <h2>Concepts</h2>
-        <p>Everything you selected, numbered 1 → N. Click a card to open its <b>Concept Brief</b> — the shot list, with the clip/photo for every single shot so the team knows exactly how to frame it.</p>
+        <p>Click a card to open its <b>Concept Brief</b>. Tag each by <b>event</b>, and <b>duplicate</b> one to reuse the same style for another event. Everything auto-saves — use <b>Backup</b> to keep a copy you can never lose.</p>
       </div>
-      <div class="right"><button class="btn ghost" onclick="go('refs')">← Add more from Reference Bank</button></div>
+      <div class="right">
+        <span class="saveind">✓ Auto-saved</span>
+        <button class="btn ghost" onclick="exportBackup()">⬇ Backup</button>
+        <label class="btn ghost" style="cursor:pointer">⬆ Restore<input type="file" accept="application/json" onchange="importBackup(this)" style="display:none"></label>
+        <button class="btn ghost" onclick="go('refs')">← Reference Bank</button>
+      </div>
     </div>
+    <div class="filters" id="eventfilter"></div>
     <div class="cgrid" id="cgrid"></div>
   </section>
 
@@ -612,7 +625,7 @@ function normShot(s){
 }
 function wc(r){const e=EDITS[r.id]||{};
   const shots=(e.shots||r.shots||[]).map(normShot);
-  return {title:e.title??r.title,copy:e.copy??(r.copy||''),feedback:e.feedback??(r.feedback||''),
+  return {title:e.title??r.title,copy:e.copy??(r.copy||''),feedback:e.feedback??(r.feedback||''),event:e.event??(r.event||''),
     vg:e.vg??r.vg,talent:e.talent??r.talent,wardrobe:e.wardrobe??r.wardrobe,
     prop:e.prop??r.prop,recipe:e.recipe??r.recipe,note:e.note??r.note,prio:e.prio??r.prio,shots};}
 function materializeShots(id){const r=getItem(id);const e=ed(id);
@@ -628,6 +641,60 @@ function activeItems(){
   const product=PSHOOTS.map((p,i)=>({id:p.id,kind:'product',label:'Product '+(i+1),obj:p}));
   return social.concat(product);
 }
+
+/* ===================== EVENTS · DUPLICATE (clones) · BACKUP ===================== */
+const EVENTS=['Popup','Dinner','Wimbledon','London'];
+const LSC='eos_clones_v1';
+let eventFilter='all';
+// number concepts: seeded refs first (REFS order), then duplicates — stable + includes clones
+function reindexConcepts(){let n=0;
+  const ordered=REFS.filter(r=>r.selected&&!r._clone).concat(REFS.filter(r=>r._clone));
+  ordered.forEach(r=>{r.concept=++n; if(!PIPE[r.id])PIPE[r.id]={stage:'Shot',editor:'Unassigned',pub:'TBD'};});
+  conceptSeq=n;}
+function getClonesRaw(){try{return JSON.parse(localStorage.getItem(LSC)||'[]');}catch(e){return [];}}
+function saveClones(){try{localStorage.setItem(LSC,JSON.stringify(REFS.filter(r=>r._clone)));}catch(e){} flashSaved();}
+function loadClones(){getClonesRaw().forEach(c=>{if(!REFS.find(x=>x.id===c.id)){c.selected=true;REFS.push(c);}});}
+// duplicate a concept (keeps the original untouched) so you can adapt the same style for another event
+function duplicateConcept(srcId){
+  const src=getItem(srcId); if(!src)return;
+  const cur=wc(src);
+  const n=REFS.filter(r=>r._clone&&r.srcId===(src.srcId||srcId)).length+1;
+  const baseId=src.srcId||srcId; const newId=baseId+'__copy'+n+'_'+(REFS.filter(r=>r._clone).length+1);
+  const clone=Object.assign({},src,{id:newId,_clone:true,srcId:baseId,selected:true,concept:null,
+    title:(cur.title||src.title||'')+' (copy)',prio:cur.prio,vg:cur.vg,talent:cur.talent,prop:cur.prop,
+    copy:cur.copy,recipe:cur.recipe,note:cur.note,feedback:'',event:cur.event,
+    shots:cur.shots.map(s=>({t:s.t,desc:s.desc,location:s.location,script:s.script,out:s.out,props:(s.props||[]).slice()}))});
+  delete EDITS[newId];
+  REFS.push(clone); reindexConcepts(); saveClones();
+  renderConcepts();renderSched();renderKan(); openBrief(newId);
+  toast('Duplicated → set its Event and tweak. Original is untouched.');
+}
+function deleteConcept(id){
+  const r=getItem(id);
+  if(!r||!r._clone){toast('Only duplicated copies can be deleted (originals stay).');return;}
+  if(!confirm('Delete this duplicated copy? The original concept is NOT affected.'))return;
+  const idx=REFS.findIndex(x=>x.id===id); if(idx>=0)REFS.splice(idx,1);
+  delete EDITS[id]; reindexConcepts(); saveClones(); saveEdits();
+  renderConcepts();renderSched();renderKan(); go('concepts'); toast('Copy deleted.');
+}
+function setEvent(id,v){ed(id).event=v||'';saveEdits();renderConcepts();openBrief(id);}
+// —— backup / restore (so nothing is ever lost, even if the browser is cleared) ——
+function exportBackup(){
+  const data={v:1,when:new Date().toISOString(),edits:EDITS,clones:REFS.filter(r=>r._clone)};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='nancy-event-content-backup.json'; document.body.appendChild(a); a.click(); a.remove();
+  toast('⬇ Backup downloaded — keep it safe.');
+}
+function importBackup(input){const f=input.files&&input.files[0]; if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{const d=JSON.parse(rd.result);
+    if(!confirm('Restore this backup? It replaces your current edits in this browser.'))return;
+    if(d.edits)localStorage.setItem(LS,JSON.stringify(d.edits));
+    if(d.clones)localStorage.setItem(LSC,JSON.stringify(d.clones));
+    location.reload();
+  }catch(e){alert('Could not read that backup file.');}};
+  rd.readAsText(f);}
 function flashSaved(){const p=document.getElementById('savepill');if(p){p.classList.add('on');clearTimeout(p._t);p._t=setTimeout(()=>p.classList.remove('on'),1200);}}
 let _rt; function refreshDerived(){renderConcepts();renderProduct();renderSched();renderKan();}
 function refreshDerivedDebounced(){clearTimeout(_rt);_rt=setTimeout(refreshDerived,400);}
@@ -738,7 +805,7 @@ function refMatches(r){
 }
 function renderRefs(){
   const wrap=$('#refgrid'); wrap.innerHTML='';
-  const sel=REFS.filter(refMatches);
+  const sel=REFS.filter(r=>!r._clone&&refMatches(r));
   const onlySeg=(filter==='all'||filter==='gate'||filter.indexOf('tag:')===0)?null:filter;
   SEGMENTS.forEach(s=>{
     if(onlySeg&&onlySeg!==s.key)return;
@@ -751,30 +818,36 @@ function renderRefs(){
     else{const e=document.createElement('div'); e.className='empty'; e.style.gridColumn='1/-1'; e.textContent='No references here yet.'; grid.appendChild(e);}
     sec.appendChild(grid); wrap.appendChild(sec);
   });
-  $('#f-all').textContent=REFS.length;
-  $('#f-gate').textContent=REFS.filter(gatePass).length;
-  $('#f-sel').textContent=REFS.filter(r=>r.selected).length;
-  $('#ct-refs').textContent=REFS.filter(gatePass).length;
+  const reals=REFS.filter(r=>!r._clone);
+  $('#f-all').textContent=reals.length;
+  $('#f-gate').textContent=reals.filter(gatePass).length;
+  $('#f-sel').textContent=reals.filter(r=>r.selected).length;
+  $('#ct-refs').textContent=reals.filter(gatePass).length;
   $('#ct-con').textContent=REFS.filter(r=>r.selected).length;
 }
 
 function renderConcepts(){
   const g=$('#cgrid'); g.innerHTML='';
-  const sel=REFS.filter(r=>r.selected).sort((a,b)=>a.concept-b.concept);
-  if(!sel.length){g.innerHTML='<div class="empty">No concepts yet — go to the <b>Reference Bank</b> and select a few winners.</div>';return;}
+  // event filter pills
+  const ef=$('#eventfilter');
+  if(ef)ef.innerHTML=['all',...EVENTS].map(e=>`<button class="fpill ${eventFilter===e?'on':''}" onclick="eventFilter='${e}';renderConcepts();">${e==='all'?'All events':e}</button>`).join('');
+  let sel=REFS.filter(r=>r.selected).sort((a,b)=>a.concept-b.concept);
+  if(eventFilter!=='all') sel=sel.filter(r=>wc(r).event===eventFilter);
+  if(!sel.length){g.innerHTML='<div class="empty">No concepts'+(eventFilter!=='all'?' tagged "'+eventFilter+'"':' yet — select winners in the Reference Bank')+'.</div>';return;}
   sel.forEach(r=>{
     const c=wc(r);
-    const card=document.createElement('div'); card.className='ccard'; card.onclick=()=>openBrief(r.id);
+    const card=document.createElement('div'); card.className='ccard'+(r._clone?' clone':''); card.onclick=()=>openBrief(r.id);
     const thumbs=c.shots.slice(0,4).map(s=>{const k=s.location||(s.props&&s.props[0]);return tile((SCENES[k]&&SCENES[k].hue)||0,{cls:''});}).join('');
     card.innerHTML=`
       <div class="num">${r.concept}</div>
-      <div class="ceyebrow">Concept ${r.concept}</div>
+      <div class="ceyebrow">Concept ${r.concept}${r._clone?' · copy':''}</div>
       <h3>${esc(c.title)}</h3>
-      <div class="meta">${r.id} · from ${r.src}</div>
+      <div class="meta">${r._clone?'duplicate of '+r.srcId:r.id+' · from '+r.src}</div>
       <div class="thumbs">${thumbs}</div>
       <div class="row">
-        <span class="score ${scoreClass(r.outlier)}">${r.outlier}×</span>
+        ${r._clone?'<span class="badge b-clone">⎘ copy</span>':`<span class="score ${scoreClass(r.outlier)}">${r.outlier}×</span>`}
         <span class="prio ${c.prio.toLowerCase()}">${c.prio}</span>
+        ${c.event?`<span class="badge b-event">📍 ${c.event}</span>`:''}
         <span style="font-size:12px;color:var(--ink-60)">${c.shots.length} shots</span>
       </div>
       <span class="open">Open Concept Brief →</span>`;
@@ -833,12 +906,15 @@ function openBrief(id){
       <div class="eyebrow">${product?`${itemLabel(id)} · ${r.id} · ${r.type}`:`Concept ${r.concept} · ${r.id} · recreate from ${r.src}`}</div>
       <h2>${efield(id,'title',c.title)}</h2>
       <div class="row">
-        ${product?`<span class="badge b-ptype">${r.type}</span>`:`<span class="score ${scoreClass(r.outlier)}">${r.outlier}× outlier</span>`}
+        ${product?`<span class="badge b-ptype">${r.type}</span>`:(r._clone?`<span class="badge b-clone">⎘ copy</span>`:`<span class="score ${scoreClass(r.outlier)}">${r.outlier}× outlier</span>`)}
         <button class="prio ${c.prio.toLowerCase()}" onclick="cyclePrio('${id}')" title="tap to change priority">${c.prio}</button>
+        ${!product?`<select class="evsel" title="which event is this for?" onchange="setEvent('${id}',this.value)"><option value="">📍 — event —</option>${EVENTS.map(e=>`<option ${c.event===e?'selected':''}>${e}</option>`).join('')}</select>`:''}
         <span style="font-size:13px;color:var(--ink-60)">${c.shots.length} shots</span>
       </div>
-      <div class="ebanner">✎ Everything here is editable — tap any field, type, and it saves automatically.
+      <div class="ebanner">✎ Everything here is editable — auto-saves to your browser.
         <span id="savepill">Saved ✓</span>
+        ${!product?`<a onclick="duplicateConcept('${id}')">⎘ Duplicate for another event</a>`:''}
+        ${r._clone?`<a onclick="deleteConcept('${id}')" style="color:#c0392b">🗑 Delete this copy</a>`:''}
         <a onclick="resetConcept('${id}')">↺ reset to original</a></div>
       ${(!product&&r.thumb)?`<div class="refstrip">
         <a class="refthumb" href="${r.ig}" target="_blank" rel="noopener"><img src="${r.thumb}" alt=""/><span class="play">▶</span></a>
@@ -950,10 +1026,10 @@ function setShotField(id,i,f,v){materializeShots(id)[i][f]=v;saveEdits();openBri
 function addShotProp(id,i,k){const s=materializeShots(id)[i];s.props=s.props||[];if(!s.props.includes(k))s.props.push(k);saveEdits();openBrief(id);refreshDerived();}
 function removeShotProp(id,i,k){const s=materializeShots(id)[i];s.props=(s.props||[]).filter(x=>x!==k);saveEdits();openBrief(id);refreshDerived();}
 function addShot(id){materializeShots(id).push({t:'0:00',desc:'new shot',scene:null,script:''});saveEdits();openBrief(id);refreshDerived();}
-function removeShot(id,i){const s=materializeShots(id);s.splice(i,1);saveEdits();openBrief(id);refreshDerived();}
+function removeShot(id,i){if(!confirm('Remove this shot?'))return;const s=materializeShots(id);s.splice(i,1);saveEdits();openBrief(id);refreshDerived();}
 function cyclePrio(id){const order=['Must','Should','Could'];const cur=wc(getItem(id)).prio;
   ed(id).prio=order[(order.indexOf(cur)+1)%3];saveEdits();openBrief(id);refreshDerived();}
-function resetConcept(id){const e=EDITS[id]||{};const k={};if(e.sel!=null)k.sel=e.sel;if(e.seg)k.seg=e.seg;if(e.tags)k.tags=e.tags;EDITS[id]=k;saveEdits();openBrief(id);refreshDerived();toast('Brief reset (approval kept).');}
+function resetConcept(id){if(!confirm('Reset this brief to the original? Your edits to it will be cleared.'))return;const e=EDITS[id]||{};const k={};if(e.sel!=null)k.sel=e.sel;if(e.seg)k.seg=e.seg;if(e.tags)k.tags=e.tags;EDITS[id]=k;saveEdits();openBrief(id);refreshDerived();toast('Brief reset (approval kept).');}
 function addProduct(){
   const n=PSHOOTS.length+1; const id='P-'+String(n).padStart(3,'0');
   PSHOOTS.push({id,kind:'product',type:'Website asset',title:'New product shoot',prio:'Should',
@@ -972,11 +1048,11 @@ document.getElementById('briefmount').addEventListener('input',e=>{
 });
 
 /* seed: pre-select Concepts 1–5 so the team sees a populated example */
-// auto-approve every reference that has a detailed concept (the 9 gate-passers), then honour saved approvals/edits
-(function(){let mx=0;
-  REFS.forEach(r=>{if(CONCEPT_DETAILS[r.id]){r.selected=true;r.concept=++mx;if(!PIPE[r.id])PIPE[r.id]={stage:'Shot',editor:'Unassigned',pub:'TBD'};}});
-  REFS.forEach(r=>{const e=EDITS[r.id];if(e&&e.sel){r.selected=true;r.concept=e.sel;if(e.sel>mx)mx=e.sel;if(!PIPE[r.id])PIPE[r.id]={stage:'Shot',editor:'Unassigned',pub:'TBD'};}});
-  conceptSeq=mx;})();
+// auto-approve every reference that has a detailed concept (the 9 gate-passers) + restore any duplicates, then number
+loadClones();
+REFS.forEach(r=>{if(CONCEPT_DETAILS[r.id])r.selected=true;});
+REFS.forEach(r=>{const e=EDITS[r.id];if(e&&e.sel)r.selected=true;});
+reindexConcepts();
 setupFilters();
 renderRefs(); renderConcepts(); renderProduct(); renderSched(); renderKan();
 
