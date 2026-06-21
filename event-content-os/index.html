@@ -599,13 +599,24 @@ function ed(id){return EDITS[id]||(EDITS[id]={});}
 function saveEdits(){try{localStorage.setItem(LS,JSON.stringify(EDITS));}catch(e){} flashSaved();}
 function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 // working (merged) concept = defaults overlaid with the user's saved edits
+// normalize a shot to {t,desc,script,out,location,props}. Handles legacy array shape AND legacy {scene}
+// (so any edits you already saved in the browser keep working — scene → location or props automatically).
+function normShot(s){
+  if(Array.isArray(s)) s={t:s[0],desc:s[1],scene:s[2],script:s[3],out:s[4],props:s[5]};
+  s=s||{};
+  let location=(s.location!==undefined)?s.location:null;
+  let props=Array.isArray(s.props)?s.props.slice():[];
+  if(s.scene){ if(SCENES[s.scene]&&SCENES[s.scene].type==='location'){ if(location==null) location=s.scene; }
+    else if(SCENES[s.scene]){ if(!props.includes(s.scene)) props.push(s.scene); } }
+  return {t:s.t||'',desc:s.desc||'',script:s.script||'',out:s.out||'Video',location:location||null,props};
+}
 function wc(r){const e=EDITS[r.id]||{};
-  const shots=e.shots?e.shots:(r.shots||[]).map(s=>({t:s[0],desc:s[1],scene:s[2],script:s[3],out:s[4]||'Video',props:s[5]||[]}));
+  const shots=(e.shots||r.shots||[]).map(normShot);
   return {title:e.title??r.title,copy:e.copy??(r.copy||''),feedback:e.feedback??(r.feedback||''),
     vg:e.vg??r.vg,talent:e.talent??r.talent,wardrobe:e.wardrobe??r.wardrobe,
     prop:e.prop??r.prop,recipe:e.recipe??r.recipe,note:e.note??r.note,prio:e.prio??r.prio,shots};}
 function materializeShots(id){const r=getItem(id);const e=ed(id);
-  if(!e.shots)e.shots=(r.shots||[]).map(s=>({t:s[0],desc:s[1],scene:s[2],script:s[3],out:s[4]||'Video',props:s[5]||[]}));return e.shots;}
+  e.shots=(e.shots||r.shots||[]).map(normShot);return e.shots;}
 // unified item access across social (REFS) + product (PSHOOTS)
 function getItem(id){return REFS.find(x=>x.id===id) || PSHOOTS.find(x=>x.id===id);}
 function itemLabel(id){const r=REFS.find(x=>x.id===id); if(r&&r.concept)return 'Concept '+r.concept;
@@ -642,9 +653,19 @@ function outSelect(id,i,cur){const o=[['Video','🎬 Video'],['Photo','📷 Phot
   return `<select class="escene eout" onchange="setShotField('${id}',${i},'out',this.value)" title="capture as photo, video, or both">
     ${o.map(([v,l])=>`<option value="${v}"${v===cur?' selected':''}>${l}</option>`).join('')}</select>`;}
 function outIcon(o){return o==='Photo'?'📷':o==='Both'?'📷🎬':'🎬';}
+// single LOCATION picker (location-type only)
+function locationSelect(id,i,cur){return `<select class="escene" onchange="setShotField('${id}',${i},'location',this.value)">
+  <option value="">— pick location —</option>
+  ${Object.keys(SCENES).filter(k=>SCENES[k].type==='location').map(k=>`<option value="${k}"${k===cur?' selected':''}>📍 ${SCENES[k].name}</option>`).join('')}
+</select>`;}
+// PROPS / PRODUCTS (+ people) multi-tagger
+function propOptions(){const order=['prop','product','people'];const label={prop:'🎪 Prop',product:'🍋 Products',people:'🧑 People'};
+  return order.filter(t=>Object.values(SCENES).some(s=>s.type===t)).map(t=>{
+    const opts=Object.keys(SCENES).filter(k=>SCENES[k].type===t).map(k=>`<option value="${k}">📦 ${SCENES[k].name}</option>`).join('');
+    return `<optgroup label="${label[t]}">${opts}</optgroup>`;}).join('');}
 function addPropSelect(id,i){return `<select class="addprop" onchange="if(this.value){addShotProp('${id}',${i},this.value);this.value='';}">
-  <option value="">＋ tag prop</option>
-  ${sceneOptions('')}</select>`;}
+  <option value="">＋ tag prop / product</option>
+  ${propOptions()}</select>`;}
 
 /* ========================= RENDER ========================= */
 function fmt(n){n=+n||0;return n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,'')+'M':n>=1e3?Math.round(n/1e3)+'k':String(n);}
@@ -744,7 +765,7 @@ function renderConcepts(){
   sel.forEach(r=>{
     const c=wc(r);
     const card=document.createElement('div'); card.className='ccard'; card.onclick=()=>openBrief(r.id);
-    const thumbs=c.shots.slice(0,4).map(s=>tile((SCENES[s.scene]&&SCENES[s.scene].hue)||0,{cls:''})).join('');
+    const thumbs=c.shots.slice(0,4).map(s=>{const k=s.location||(s.props&&s.props[0]);return tile((SCENES[k]&&SCENES[k].hue)||0,{cls:''});}).join('');
     card.innerHTML=`
       <div class="num">${r.concept}</div>
       <div class="ceyebrow">Concept ${r.concept}</div>
@@ -768,7 +789,7 @@ function renderProduct(){
   PSHOOTS.forEach((p,idx)=>{
     const c=wc(p);
     const card=document.createElement('div'); card.className='ccard'; card.onclick=()=>openBrief(p.id);
-    const thumbs=c.shots.slice(0,4).map(s=>tile((SCENES[s.scene]&&SCENES[s.scene].hue)||0,{cls:''})).join('');
+    const thumbs=c.shots.slice(0,4).map(s=>{const k=s.location||(s.props&&s.props[0]);return tile((SCENES[k]&&SCENES[k].hue)||0,{cls:''});}).join('');
     card.innerHTML=`
       <div class="num" style="color:var(--sage-soft)">P${idx+1}</div>
       <div class="ceyebrow" style="color:var(--sage)">Product ${idx+1} · ${p.type}</div>
@@ -792,7 +813,7 @@ function openBrief(id){
     const rng=parseRange(s.t);
     const tileHtml=(!product && r.clip && rng)
       ? `<div class="media shotvid" title="Play this beat of the reference (${s.t})" onclick="playShot(this,'${r.clip}',${rng.start},${rng.end},'${r.ig}')"><img src="${r.thumb}" loading="lazy"/><div class="play">▶</div><div class="dur">${s.t}</div></div>`
-      : tile((SCENES[s.scene]&&SCENES[s.scene].hue)||0,{cls:'',dur:s.t});
+      : tile((SCENES[s.location]&&SCENES[s.location].hue)||0,{cls:'',dur:s.t});
     const propTags=(s.props||[]).filter(k=>SCENES[k]).map(k=>`<span class="proptag" title="remove tag" onclick="removeShotProp('${id}',${i},'${k}')">📦 ${SCENES[k].name} ✕</span>`).join('');
     return `<div class="shotrow">
       ${tileHtml}
@@ -801,8 +822,8 @@ function openBrief(id){
           <button class="xshot" title="remove shot" onclick="removeShot('${id}',${i})">✕</button></div>
         <div class="sdesc">${eshot(id,i,'desc',s.desc)}</div>
         <div class="sscript">🎙 ${eshot(id,i,'script',s.script||'')}</div>
-        <div class="sscene">${sceneSelect(id,i,s.scene)} ${outSelect(id,i,s.out||'Video')}</div>
-        <div class="propline"><span class="plk">extra props →</span> ${propTags}${addPropSelect(id,i)}</div>
+        <div class="sscene"><span class="plk">📍 location</span> ${locationSelect(id,i,s.location)} ${outSelect(id,i,s.out||'Video')}</div>
+        <div class="propline"><span class="plk">props / products →</span> ${propTags}${addPropSelect(id,i)}</div>
       </div>
     </div>`;
   }).join('');
@@ -864,7 +885,7 @@ function renderSched(){
   // map scene -> [{concept, shotIndex}]
   const use={};
   activeItems().forEach(it=>{const c=wc(it.obj);c.shots.forEach((s,i)=>{
-    const keys=[...new Set([s.scene,...(s.props||[])].filter(k=>k&&SCENES[k]))];
+    const keys=[...new Set([s.location,...(s.props||[])].filter(k=>k&&SCENES[k]))];
     keys.forEach(k=>{(use[k]=use[k]||[]).push({label:it.label,kind:it.kind,t:c.title,i:i+1,id:it.id});});
   });});
   let any=false;
@@ -926,7 +947,7 @@ $('#filters').addEventListener('click',e=>{const p=e.target.closest('.fpill');if
 /* ---- editing actions ---- */
 function setScene(id,i,v){materializeShots(id)[i].scene=v||null;saveEdits();openBrief(id);refreshDerived();}
 function setShotField(id,i,f,v){materializeShots(id)[i][f]=v;saveEdits();openBrief(id);refreshDerived();}
-function addShotProp(id,i,k){const s=materializeShots(id)[i];s.props=s.props||[];if(k!==s.scene&&!s.props.includes(k))s.props.push(k);saveEdits();openBrief(id);refreshDerived();}
+function addShotProp(id,i,k){const s=materializeShots(id)[i];s.props=s.props||[];if(!s.props.includes(k))s.props.push(k);saveEdits();openBrief(id);refreshDerived();}
 function removeShotProp(id,i,k){const s=materializeShots(id)[i];s.props=(s.props||[]).filter(x=>x!==k);saveEdits();openBrief(id);refreshDerived();}
 function addShot(id){materializeShots(id).push({t:'0:00',desc:'new shot',scene:null,script:''});saveEdits();openBrief(id);refreshDerived();}
 function removeShot(id,i){const s=materializeShots(id);s.splice(i,1);saveEdits();openBrief(id);refreshDerived();}
