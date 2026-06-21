@@ -145,7 +145,20 @@ main{padding:28px 0 80px}
 .refcap{font-size:12px;color:var(--ink-60);margin-top:8px;line-height:1.4}
 .refcap b{color:var(--ink)}
 .refcopy h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);margin-bottom:9px;display:flex;gap:8px;align-items:center}
-.copybox{background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:13px 15px;font-size:15px;font-family:var(--serif);min-height:84px;line-height:1.5}
+.copybox{background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:13px 15px;font-size:15px;font-family:var(--serif);min-height:72px;line-height:1.5}
+.copybox.muted{background:var(--cream-2);color:var(--ink-60)}
+.copycompare{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:680px){.copycompare{grid-template-columns:1fr}}
+.copycol h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);margin-bottom:9px;display:flex;gap:8px;align-items:center}
+.fbstrip{padding:16px 26px;border-bottom:1.5px solid var(--line);background:var(--cream)}
+.fbstrip h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-60);margin-bottom:9px;display:flex;gap:8px;align-items:center}
+.feedbox{background:var(--yellow-soft);border:1.5px dashed var(--yellow);border-radius:13px;padding:12px 15px;font-size:13.5px;min-height:54px;line-height:1.5}
+.ourctrls{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.eout{min-width:auto}
+ul.vglegend{list-style:none;font-size:12px;color:var(--ink-60);line-height:1.6;background:var(--cream-2);border-radius:9px;padding:9px 12px 9px 12px;margin-top:8px}
+ul.vglegend li{position:relative;padding-left:14px;margin-bottom:2px}
+ul.vglegend li:before{content:'•';position:absolute;left:2px;color:var(--pink)}
+ul.vglegend b{color:var(--ink)}
 
 .bbody{display:grid;grid-template-columns:1.45fr .55fr;gap:0}
 @media(max-width:880px){.bbody{grid-template-columns:1fr}}
@@ -337,19 +350,21 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
 /* ===================== EVENT PROPS / STATIONS (the segmentation unit) ===================== */
 // Each prop is a physical thing in one spot → its own time block, owned by one videographer.
 const STATIONS={
- court:  {name:'Paddle court (hero)',        area:'Center court', vg:'Corrine', hue:330},
- product:{name:'Product close-up',           area:'Product table',vg:'Corrine', hue:160},
- nick:   {name:'Shot with Nick (celeb)',     area:'Roaming',      vg:'Corrine', hue:300},
- founder:{name:'Founder (Momo)',             area:'Roaming',      vg:'Corrine', hue:18},
- lem:    {name:'Big Lem inflatable',         area:'Court corner', vg:'Jackie',  hue:48},
- berri:  {name:'Big Berri inflatable',       area:'Court edge',   vg:'Jackie',  hue:338},
- tennis: {name:'Big tennis-ball inflatable', area:'On court',     vg:'Jackie',  hue:62},
- truck:  {name:'Nancy truck',                area:'Truck',        vg:'Jackie',  hue:45},
- crowd:  {name:'Bleachers / cheer squad',    area:'Stands',       vg:'Jackie',  hue:280},
- street: {name:'Street / walk-up',           area:'Outside',      vg:'Susan',   hue:200},
- food:   {name:'Ice-cream giveaway',         area:'Food station', vg:'Susan',   hue:25},
+ court:    {name:'Paddle court (hero)',        area:'Center court', vg:'Corrine', hue:330},
+ product:  {name:'Product close-up',           area:'Product table',vg:'Corrine', hue:160},
+ watertank:{name:'Big water tank',             area:'Court / demo', vg:'Corrine', hue:188},
+ nick:     {name:'Shot with Nick (celeb)',     area:'Roaming',      vg:'Corrine', hue:300},
+ founder:  {name:'Founder (Momo)',             area:'Roaming',      vg:'Corrine', hue:18},
+ lem:      {name:'Big Lem inflatable',         area:'Court corner', vg:'Jackie',  hue:48},
+ berri:    {name:'Big Berri inflatable',       area:'Court edge',   vg:'Jackie',  hue:338},
+ tennis:   {name:'Big tennis-ball inflatable', area:'On court',     vg:'Jackie',  hue:62},
+ truck:    {name:'Nancy truck',                area:'Truck',        vg:'Jackie',  hue:45},
+ crowd:    {name:'Bleachers / cheer squad',    area:'Stands',       vg:'Jackie',  hue:280},
+ london:   {name:'London scene (city b-roll)', area:'Around London',vg:'Jackie',  hue:222},
+ street:   {name:'Street / walk-up',           area:'Outside',      vg:'Susan',   hue:200},
+ food:     {name:'Ice-cream giveaway',         area:'Food station', vg:'Susan',   hue:25},
 };
-const STATION_ORDER=['court','product','nick','founder','lem','berri','tennis','truck','crowd','street','food'];
+const STATION_ORDER=['court','product','watertank','nick','founder','lem','berri','tennis','truck','crowd','london','street','food'];
 const VIDEOGRAPHERS=[
  {name:'Corrine', focus:'Main — celeb & proper / product shots'},
  {name:'Jackie',  focus:'Event & lifestyle (shoots on phone)'},
@@ -432,6 +447,18 @@ const REFS=[
  {id:'R-010', src:'@trenddancer', hue:120, median:25000, views:30000, fmt:'Trend dance w/ product', why:'trend audio only', dur:'0:16', gated:true, talent:[], shots:[]},
 ];
 REFS.forEach(r=>{r.outlier=+(r.views/r.median).toFixed(1); r.selected=false; r.concept=null;});
+// the reference video's CURRENT caption (what the original used) — shown next to our suggestion
+const REFCAPTIONS={
+ 'R-001':'POV: you finally found the one 🤌 #fyp #foryou',
+ 'R-002':'3 things i wish someone told me at 30 🥲 #womenshealth',
+ 'R-003':'how it actually works ✨ (you asked) #satisfying',
+ 'R-004':'wait for it… 😳 #waitforit #fyp',
+ 'R-005':'pelvic floor PT here — let me bust this myth 🩺',
+ 'R-006':'when the drop finally hits 🥹 #restock',
+ 'R-007':'asmr unboxing 🤍 turn your sound on #asmr',
+ 'R-008':'rating viral wellness gadgets so you don’t have to',
+};
+REFS.forEach(r=>{r.refcaption=REFCAPTIONS[r.id]||'';});
 
 /* ===================== PRODUCT SHOOTS (our own production) ===================== */
 const PSHOOTS=[
@@ -495,7 +522,7 @@ function activeItems(){
   return social.concat(product);
 }
 function wc(r){const e=EDITS[r.id]||{};
-  return {title:e.title??r.title, copy:e.copy??r.copy, vg:e.vg??r.vg, talent:e.talent??(r.talent||[]),
+  return {title:e.title??r.title, copy:e.copy??r.copy, feedback:e.feedback??(r.feedback||''), vg:e.vg??r.vg, talent:e.talent??(r.talent||[]),
     recipe:e.recipe??r.recipe, note:e.note??r.note, prio:e.prio??r.prio,
     shots: e.shots? e.shots : (r.shots||[]).map(s=>({...s}))};}
 function materializeShots(id){const r=getItem(id);const e=ed(id);
@@ -509,6 +536,10 @@ function stationSelect(id,i,cur){return `<select class="estation" onchange="setS
   <option value="">✦ no prop (graphic / end card)</option>
   ${STATION_ORDER.map(k=>`<option value="${k}"${k===cur?' selected':''}>📦 ${STATIONS[k].name}</option>`).join('')}
 </select>`;}
+function outSelect(id,i,cur){const o=[['Video','🎬 Video'],['Photo','📷 Photo'],['Both','📷🎬 Both']];
+  return `<select class="estation eout" onchange="setShot('${id}',${i},'out',this.value)" title="capture as photo, video, or both">
+    ${o.map(([v,l])=>`<option value="${v}"${v===cur?' selected':''}>${l}</option>`).join('')}</select>`;}
+function outIcon(o){return o==='Photo'?'📷':o==='Both'?'📷🎬':'🎬';}
 function tile(hue,opts={}){return `<div class="media ${opts.cls||''}" style="--h:${hue}">
     <div class="play">▶</div>
     ${opts.dur?`<div class="dur">${opts.dur}</div>`:''}
@@ -588,7 +619,8 @@ function openBrief(id){
       </div>
       <div class="arrow">→</div>
       <div class="ourcol ${product?'prodv':''}">
-        <div class="ourtop"><span class="lbl our">OUR VERSION</span>${stationSelect(id,i,s.st)}</div>
+        <div class="ourtop"><span class="lbl our">OUR VERSION</span>
+          <div class="ourctrls">${outSelect(id,i,s.out||(product?'Both':'Video'))}${stationSelect(id,i,s.st)}</div></div>
         <div class="ourbody">
           <div class="ourmedia" title="in the real build: drop our reference image or clip here">＋ our<br/>ref</div>
           <div class="ourtxt">${eshot(id,i,'our',s.our||'')}</div>
@@ -616,10 +648,21 @@ function openBrief(id){
         <div class="refcap">${product?`<b>Reference / moodboard</b> (optional)`:`<b>Full reference</b> · ${r.src} · ${esc(r.fmt)}`}<br/>
           ${product?'drop a look-and-feel ref here in the real build.':`“${esc(r.why)}” — watch it, then recreate beat-for-beat.`}</div>
       </div>
-      <div class="refcopy">
-        <h4>Suggested copy <span class="tag">caption / hook — adjustable</span></h4>
-        <div class="copybox edit" contenteditable="true" data-id="${id}" data-field="copy">${esc(c.copy)}</div>
+      <div class="copycompare">
+        <div class="copycol">
+          <h4>${product?'Reference note':'Current caption'} <span class="tag" style="background:var(--cream-2);color:var(--ink-60)">${product?'optional':'the original'}</span></h4>
+          <div class="copybox muted">${product?'— (product asset)':esc(r.refcaption||'—')}</div>
+        </div>
+        <div class="copycol">
+          <h4>Our suggested caption <span class="tag">adjustable</span></h4>
+          <div class="copybox edit" contenteditable="true" data-id="${id}" data-field="copy">${esc(c.copy)}</div>
+        </div>
       </div>
+    </div>
+
+    <div class="fbstrip">
+      <h4>💬 Team feedback <span class="tag">leave notes for this concept — saves automatically</span></h4>
+      <div class="feedbox edit" contenteditable="true" data-id="${id}" data-field="feedback">${esc(c.feedback)}</div>
     </div>
 
     <div class="bbody">
@@ -633,12 +676,15 @@ function openBrief(id){
         <div class="blk"><h4>Crew</h4>
           <div class="specrow"><span class="k">Videographer</span>
             <select class="evg" onchange="setField('${id}','vg',this.value)">${VIDEOGRAPHERS.map(g=>`<option ${g.name===c.vg?'selected':''}>${g.name}</option>`).join('')}</select></div>
-          <div class="vglegend"><b>Corrine</b> — main, celeb & proper/product shots · <b>Jackie</b> — event & lifestyle (phone) · <b>Susan</b> — street & people (phone). Jackie &amp; Susan can self-edit + post, or hand to an editor.</div>
+          <ul class="vglegend">
+            <li><b>Corrine</b> — main, celeb &amp; proper / product shots</li>
+            <li><b>Jackie</b> — event &amp; lifestyle (phone)</li>
+            <li><b>Susan</b> — street &amp; people (phone)</li>
+          </ul>
         </div>
         <div class="blk"><h4>Talent <span class="tag">who’s in it</span></h4>
           <div class="talentchips">${TALENT_OPTS.map((n,j)=>`<button class="tchip ${c.talent.includes(n)?'on':''}" onclick="toggleTalent('${id}',${j})">${n}</button>`).join('')}</div>
         </div>
-        <div class="blk"><h4>Wardrobe</h4><div class="statline" style="color:var(--ink-60);font-weight:400">Everyone in the Nancy tee — nothing to brief.</div></div>
         <div class="blk"><h4>Props / stations <span class="tag">drives the schedule</span></h4>
           <div class="statline">${stations}</div></div>
         <div class="blk"><h4>Edit recipe <span class="tag">travels with the footage</span></h4>
@@ -656,7 +702,7 @@ function renderSched(){
   const cl=$('#crewlegend'); if(cl)cl.innerHTML=VIDEOGRAPHERS.map(g=>`<div class="crewcard"><div class="cn">🎥 ${g.name}</div><div class="cf">${g.focus}</div></div>`).join('');
   const use={};
   activeItems().forEach(it=>{const c=wc(it.obj);c.shots.forEach((s,i)=>{
-    if(!s.st||!STATIONS[s.st])return; (use[s.st]=use[s.st]||[]).push({label:it.label,kind:it.kind,our:s.our,t:c.title,i:i+1,id:it.id});
+    if(!s.st||!STATIONS[s.st])return; (use[s.st]=use[s.st]||[]).push({label:it.label,kind:it.kind,our:s.our,t:c.title,i:i+1,id:it.id,out:s.out||(it.kind==='product'?'Both':'Video')});
   });});
   const usedKeys=STATION_ORDER.filter(k=>use[k]);
   if(!usedKeys.length){m.innerHTML='<div class="empty">Pick a prop/station on each shot to build the schedule.</div>';return;}
@@ -673,7 +719,7 @@ function renderSched(){
         <div class="feeds ${multi?'multi':''}">${multi?'▶ '+u.length+' clips · '+distinct+' videos':u.length+' clip'+(u.length>1?'s':'')}</div>
       </div>
       <div class="needs">${u.map(x=>`<div class="needchip" onclick="openBrief('${x.id}')">
-        <div class="nq"><span class="sdot ${x.kind}"></span>${x.label} · shot ${x.i}</div>
+        <div class="nq"><span class="sdot ${x.kind}"></span>${x.label} · shot ${x.i} · ${outIcon(x.out)} ${x.out}</div>
         <div class="nt">${esc(x.our||x.t)}</div></div>`).join('')}</div>`;
     m.appendChild(el);
   });
