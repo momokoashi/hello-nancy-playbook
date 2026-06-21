@@ -220,6 +220,19 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
 .refthumb .play{position:absolute;inset:0;margin:auto;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;font-size:9px}
 .rb-hook{font-size:13px;background:var(--yellow-soft);border-radius:7px;padding:3px 8px;display:inline-block}
 .rb-cap{font-size:12px;color:var(--ink-60);font-style:italic;margin-top:4px}
+/* caption compare + team feedback */
+.capcompare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:680px){.capcompare{grid-template-columns:1fr}}
+.capk{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-60);margin-bottom:6px;font-weight:700}
+.capbox{background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:11px 13px;font-size:14px;font-family:var(--serif);line-height:1.5;min-height:54px}
+.capbox.muted{background:var(--cream-2);color:var(--ink-60)}
+.fbblk{margin-top:12px}
+.fbbox{background:var(--yellow-soft);border:1.5px dashed var(--yellow);border-radius:11px;padding:10px 13px;font-size:13.5px;min-height:44px;line-height:1.5}
+.vglegend{list-style:none;font-size:12px;color:var(--ink-60);line-height:1.6;background:var(--cream-2);border-radius:9px;padding:9px 12px;margin-top:12px}
+.vglegend li{position:relative;padding-left:14px}
+.vglegend li:before{content:'•';position:absolute;left:2px;color:var(--pink)}
+.vglegend b{color:var(--ink)}
+.eout{color:var(--ink)!important}
 
 /* ---------- Schedule (bundled by scene) ---------- */
 .sintro{background:var(--sage-soft);border-radius:14px;padding:13px 17px;font-size:13.5px;margin:16px 0 20px}
@@ -371,20 +384,28 @@ button.prio{border:1.5px solid currentColor;background:transparent;border-radius
 /* ========================= SCENES (the bundling unit) ========================= */
 // A scene = one physical setup/action you light & rig once, then capture for every concept that needs it.
 const SCENES = {
-  inOut:  {name:'Giant inflatable — zoom OUT reveal', loc:'Main stage',    props:'Giant inflatable · gimbal/crane', hue:300},
-  inIn:   {name:'Giant inflatable — zoom IN',         loc:'Main stage',    props:'Giant inflatable · wide lens',    hue:330},
-  inFall: {name:'Giant inflatable — FALLING',         loc:'Main stage',    props:'Giant inflatable · rigging · 3 takes', hue:350},
-  macro:  {name:'Product macro close-up',             loc:'Product table', props:'Product · macro lens · droplets', hue:160},
-  tank:   {name:'Waterproof tank dunk',               loc:'Product table', props:'Water tank · towels',             hue:185},
-  applic: {name:'Application close-up (skin)',         loc:'Product table', props:'Skin/forearm · macro lens',       hue:30},
-  talk:   {name:'Talking head',                       loc:'Bright wall',   props:'Stool · key light · lower-third', hue:42},
-  pov:    {name:'POV — hands holding product',        loc:'Bedroom set',   props:'Product · soft bedding · warm lamp', hue:20},
-  demoSet:{name:'How-to-use bedside set',             loc:'Bedroom set',   props:'Bedside styling · soft lamp',     hue:340},
-  unbox:  {name:'Unboxing / vanity',                  loc:'Bedroom set',   props:'Mailer · vanity',                 hue:260},
-  street: {name:'Street walk-up reaction',            loc:'Outdoor',       props:'Product · shotgun mic',           hue:200},
+  london:    {name:'London street',                loc:'London',  props:'Recognisable London street', hue:222},
+  court:     {name:'Paddle court (hero)',          loc:'Court',   props:'Court · play in progress',   hue:330},
+  lemInf:    {name:'Giant Lem inflatable',         loc:'Court',   props:'Giant inflatable Lem',       hue:48},
+  berriInf:  {name:'Giant Berri inflatable',       loc:'Court',   props:'Giant inflatable Berri',     hue:338},
+  tennisInf: {name:'Giant tennis-ball inflatable', loc:'Court',   props:'Giant inflatable tennis ball', hue:62},
+  crowd:     {name:'Crowd / cheer squad',          loc:'Stands',  props:'Bleachers · crowd · reactions', hue:280},
+  truck:     {name:'Nancy truck',                  loc:'Truck',   props:'Nancy truck',                hue:45},
+  food:      {name:'Ice-cream / freebie',          loc:'Truck',   props:'Ice cream · free giveaway',  hue:25},
+  merch:     {name:'Merch wall',                   loc:'Truck',   props:'Merch · totes · tees',       hue:200},
+  product:   {name:'Product close-up (Lem)',       loc:'Product', props:'Lem · macro lens',           hue:160},
+  nick:      {name:'Nick Kyrgios (celeb)',         loc:'Roaming', props:'Nick — roaming / celeb',     hue:300},
+  founder:   {name:'Founder (Momoko)',             loc:'Roaming', props:'Momoko — talking head',      hue:18},
+  ai:        {name:'AI / screen-record (desk)',    loc:'Desk',    props:'3D render / AI — no location', hue:265},
+  // product-shoot stations (kept so the Product Shoot track still works)
+  macro:     {name:'Product macro',                loc:'Product', props:'Product · macro lens', hue:160},
+  tank:      {name:'Waterproof tank dunk',         loc:'Product', props:'Water tank · towels',  hue:185},
+  applic:    {name:'Application close-up',          loc:'Product', props:'Skin · macro',         hue:30},
+  demoSet:   {name:'How-to-use set',               loc:'Product', props:'Bedside styling',      hue:340},
+  unbox:     {name:'Unboxing / vanity',            loc:'Product', props:'Mailer · vanity',      hue:260},
 };
-const LOC_ORDER=['Main stage','Product table','Bright wall','Bedroom set','Outdoor'];
-const LOC_TIME={'Main stage':'9:00 – 11:00','Product table':'11:00 – 12:30','Bright wall':'13:00 – 14:00','Bedroom set':'14:00 – 14:45','Outdoor':'15:00 – 15:45'};
+const LOC_ORDER=['London','Court','Stands','Truck','Product','Roaming','Desk'];
+const LOC_TIME={'London':'9:00 – 10:00','Court':'10:00 – 12:00','Stands':'12:00 – 12:30','Truck':'13:00 – 14:00','Product':'14:00 – 15:00','Roaming':'all day','Desk':'pre-event'};
 
 /* ========================= SEGMENTS (moment-based) + TAGS ========================= */
 const SEGMENTS=[
@@ -426,6 +447,83 @@ REFS.forEach(r=>{
   r.selected=false; r.concept=null; r.prio='Should'; r.shots=[];
   r.vg=undefined; r.talent=undefined; r.wardrobe=undefined; r.prop=undefined; r.recipe=''; r.note='';
 });
+
+/* ===================== CONCEPT DETAILS — our brief per reference (reference bank itself untouched) =====================
+   Only the 9 gate-passers (outlier ≥3). Mapped to the London "First come, first served" paddle-court event.
+   shot = [time, what we shoot (our version), prop/station, on-screen copy, 📷/🎬 output]. */
+const CONCEPT_DETAILS = {
+ 'DXuN52TDGD2':{prio:'Must', vg:'Jackie', talent:'Crowd + passersby', prop:'Giant Lem inflatable · court · merch',
+   copy:'we don’t do small 🍋 the Nancy London pop-up is LIVE — first come, first served. #SayItLouder',
+   recipe:'Wide establishing → crowd reactions → free giveaway → product macro → wide crowd. Trending “look at this” audio · bold location text · 9:16.',
+   note:'Spectacle = shares. Lead with the giant inflatable in one wide frame. Grab a still for the grid.',
+   shots:[['0:00–0:03','Wide: giant Lem inflatable towering over the court','lemInf','(text) “a giant lemon took over London 🍋”','Both'],
+          ['0:03–0:08','People reacting / selfies at the inflatable','crowd','—','Video'],
+          ['0:08–0:12','Staff in merch handing out free Lem kits','truck','“first come, first served”','Video'],
+          ['0:12–0:15','Wide crowd + location/date card','court','(text) “📍London · this weekend”','Both']]},
+ 'DWjgY1hiCF8':{prio:'Must', vg:'Susan', talent:'Crystal + crowd', prop:'Ice cream · court · merch',
+   copy:'FREE entry, FREE ice cream, FREE play 🍋 London — first come, first served. #SayItLouder',
+   recipe:'“FREE” hits in second 1 · fast cuts of the freebies · people playing · date/location end. Upbeat audio · 9:16.',
+   note:'The word FREE must be on screen immediately and stay. Show the value (ice cream, games, merch).',
+   shots:[['0:00–0:03','Wide of the activation; bold “FREE” text','court','(text) “FREE this weekend in London 🍋”','Both'],
+          ['0:03–0:09','Hands grabbing free ice cream / Lem kits','food','—','Video'],
+          ['0:09–0:14','People playing on the paddle court','court','“come play — it’s free”','Video'],
+          ['0:14–0:18','Merch giveaway + date/location card','merch','(text) “📍London · free entry”','Both']]},
+ 'DXXG2t8ASid':{prio:'Must', vg:'Corrine', talent:'Momoko (founder)', prop:'Lem · London street',
+   copy:'I can’t believe we’re doing this 🍋 London, we’re coming for you. First come, first served. #SayItLouder',
+   recipe:'Founder talking head, direct + warm · bold date/location text · cut to court/London · save-CTA. 9:16.',
+   note:'Founder-face builds trust. Big “first time / we’re coming for you” energy — state the date & time clearly.',
+   shots:[['0:00–0:04','Momoko to camera: “London, we’re coming for you”','founder','(text) “London, we’re coming for you 🍋”','Video'],
+          ['0:04–0:08','She holds up the Lem','product','“the one you’ve been waiting for”','Both'],
+          ['0:08–0:12','Cut to the court / a London street','london','—','Video'],
+          ['0:12–0:14','Date/time end card','court','(text) “📍London · [date] · 11AM”','Both']]},
+ 'DZQCDBpNlP8':{prio:'Should', vg:'Jackie', talent:'Crystal / Susan + crowd', prop:'Nancy truck · ice cream · snack pack',
+   copy:'the Nancy truck is in London — and it’s FREE 🍋 you know the rule: first come, first served. #SayItLouder',
+   recipe:'Wide of the truck → free item over the counter → close of freebie → happy crowd → location. Upbeat · 9:16.',
+   note:'Truck is the hero + the FREE item is the hook. Keep the line/crowd visible for FOMO.',
+   shots:[['0:00–0:03','Wide of the Nancy truck on a London street','truck','(text) “the Nancy truck landed in London 🍋”','Both'],
+          ['0:03–0:08','Free Lem-ade / ice cream handed over the counter','truck','“it’s free 👀”','Video'],
+          ['0:08–0:12','Close of the freebie + happy crowd','food','“first come, first served”','Video'],
+          ['0:12–0:15','Wide line at the truck + location card','truck','(text) “📍London”','Both']]},
+ 'DWbeVCQjLig':{prio:'Should', vg:'Jackie', talent:'Crowd / cheer squad + Nick', prop:'Court · bleachers · inflatable',
+   copy:'London showed UP 🍋🎾 first come, first served. #SayItLouder',
+   recipe:'Pure energy — packed stands, slow-mo roar, Nick point, inflatable drop. Big audio drop · 9:16.',
+   note:'Sell “you had to be there.” Get the crowd roar in slow-mo + one big payoff beat.',
+   shots:[['0:00–0:03','Wide of packed bleachers / cheer squad','crowd','(text) “the energy in London rn 🍋”','Video'],
+          ['0:03–0:08','Slow-mo crowd roar on a big point','court','—','Video'],
+          ['0:08–0:12','Nick reacts / inflatable drops into frame','nick','“first come, first served”','Video']]},
+ 'DIefmFwoRoL':{prio:'Should', vg:'Jackie', talent:'Team (BTS)', prop:'Court build · truck · inflatable',
+   copy:'the rumours are true 🍋 we’ve been building something in London. first come, first served. #SayItLouder',
+   recipe:'BTS/timelapse of the setup · inflatable inflating · merch wall · “rumours are true” text. Sped-up trending audio · 9:16.',
+   note:'Pre-event hype — show the build, not the full reveal. Ship this EARLY in the teaser wave.',
+   shots:[['0:00–0:03','Timelapse: court / truck being set up','court','(text) “the rumours are true…”','Both'],
+          ['0:03–0:06','Giant Lem inflatable inflating','lemInf','—','Video'],
+          ['0:06–0:09','Merch wall + “see you soon London” text','merch','(text) “see you soon, London 🍋”','Both']]},
+ 'DZmt8ivM-Wj':{prio:'Should', vg:'Corrine', talent:'Hands (Crystal / Susan)', prop:'Lem · court / London',
+   copy:'meet your new London obsession 🍋 first come, first served. #SayItLouder',
+   recipe:'POV hands raise the Lem against the court/sky · macro detail · turn in hand · clean end. ASMR product sound · 9:16 + 1:1.',
+   note:'Make the Lem look craveable — wellness-framed, never explicit. Shoot the macro as a still for PDP/ads too.',
+   shots:[['0:00–0:03','POV hands raise the Lem against the court/sky','product','(text) “your new London obsession 🍋”','Both'],
+          ['0:03–0:06','Macro detail of the Lem','product','—','Both'],
+          ['0:06–0:09','Turn it in hand, on-brand end card','product','“first come, first served”','Both']]},
+ 'DZVbXg2MP8Y':{prio:'Should', vg:'Susan', talent:'Crystal + crowd', prop:'Court · food · inflatable · merch · product',
+   copy:'5 things to do at the Nancy London pop-up (save this) 🍋 first come, first served. #SayItLouder',
+   recipe:'Numbered listicle 1–5 · clean text plates · quick aesthetic beats · save-CTA end. Trending audio · 9:16.',
+   note:'Listicles drive SAVES. Number each beat on screen. End with “save this for your London weekend.”',
+   shots:[['0:00–0:03','Hook: “5 things to do at the Nancy pop-up”','court','(text) “5 things to do 🍋 (save this)”','Video'],
+          ['0:03–0:06','#1 play the paddle court','court','“1. play the court”','Video'],
+          ['0:06–0:09','#2 free ice cream','food','“2. free ice cream”','Video'],
+          ['0:09–0:12','#3 selfie with the giant Lem','lemInf','“3. giant Lem selfie”','Both'],
+          ['0:12–0:15','#4 grab merch · #5 sample the Lem · save-CTA','merch','“4. merch · 5. sample 🍋 save this”','Both']]},
+ 'DZSlWcqCzcM':{prio:'Could', vg:'Susan', talent:'Anyone candid + Nick', prop:'Court · inflatable · crowd',
+   copy:'very London. 🎾🍋 #SayItLouder #FirstComeFirstServed',
+   recipe:'Pure visual candid — no script. Capture the funny/awkward unscripted moment, let it breathe. Trending meme audio · 9:16.',
+   note:'⚠ Went mega-viral (207×) as a MEME, not a repeatable format. Assign someone to film candidly ALL DAY and post the best unscripted moment (e.g. someone bonked by the inflatable, Nick’s reaction). Don’t force or script it.',
+   shots:[['0:00–0:05','Candid: the unscripted funny/awkward moment','court','(let the moment speak — no overlay)','Video'],
+          ['0:05–0:08','Reaction beat / cut to the crowd or Nick','crowd','—','Video']]},
+};
+REFS.forEach(r=>{const d=CONCEPT_DETAILS[r.id]; if(!d)return;
+  r.prio=d.prio; r.vg=d.vg; r.talent=d.talent; r.prop=d.prop; r.copy=d.copy; r.recipe=d.recipe; r.note=d.note; r.shots=d.shots; r.feedback='';});
+
 // effective segment honours a user "Move to" override; tags are editable too
 function segOf(r){const e=EDITS[r.id];return (e&&e.seg)||r.seg;}
 function tagsOf(r){const e=EDITS[r.id];return (e&&e.tags)||r.tags||[];}
@@ -487,11 +585,12 @@ function saveEdits(){try{localStorage.setItem(LS,JSON.stringify(EDITS));}catch(e
 function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 // working (merged) concept = defaults overlaid with the user's saved edits
 function wc(r){const e=EDITS[r.id]||{};
-  const shots=e.shots?e.shots:(r.shots||[]).map(s=>({t:s[0],desc:s[1],scene:s[2],script:s[3]}));
-  return {title:e.title??r.title,vg:e.vg??r.vg,talent:e.talent??r.talent,wardrobe:e.wardrobe??r.wardrobe,
+  const shots=e.shots?e.shots:(r.shots||[]).map(s=>({t:s[0],desc:s[1],scene:s[2],script:s[3],out:s[4]||'Video'}));
+  return {title:e.title??r.title,copy:e.copy??(r.copy||''),feedback:e.feedback??(r.feedback||''),
+    vg:e.vg??r.vg,talent:e.talent??r.talent,wardrobe:e.wardrobe??r.wardrobe,
     prop:e.prop??r.prop,recipe:e.recipe??r.recipe,note:e.note??r.note,prio:e.prio??r.prio,shots};}
 function materializeShots(id){const r=getItem(id);const e=ed(id);
-  if(!e.shots)e.shots=(r.shots||[]).map(s=>({t:s[0],desc:s[1],scene:s[2],script:s[3]}));return e.shots;}
+  if(!e.shots)e.shots=(r.shots||[]).map(s=>({t:s[0],desc:s[1],scene:s[2],script:s[3],out:s[4]||'Video'}));return e.shots;}
 // unified item access across social (REFS) + product (PSHOOTS)
 function getItem(id){return REFS.find(x=>x.id===id) || PSHOOTS.find(x=>x.id===id);}
 function itemLabel(id){const r=REFS.find(x=>x.id===id); if(r&&r.concept)return 'Concept '+r.concept;
@@ -510,8 +609,12 @@ function efield(id,field,val){return `<span class="edit" contenteditable="true" 
 function eshot(id,i,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-shot="${i}" data-field="${field}">${esc(val)}</span>`;}
 function sceneSelect(id,i,cur){return `<select class="escene" onchange="setScene('${id}',${i},this.value)">
   <option value="">✦ Graphic / end card — no shoot</option>
-  ${Object.keys(SCENES).map(k=>`<option value="${k}"${k===cur?' selected':''}>🎬 ${SCENES[k].name} · ${SCENES[k].loc}</option>`).join('')}
+  ${Object.keys(SCENES).map(k=>`<option value="${k}"${k===cur?' selected':''}>📦 ${SCENES[k].name} · ${SCENES[k].loc}</option>`).join('')}
 </select>`;}
+function outSelect(id,i,cur){const o=[['Video','🎬 Video'],['Photo','📷 Photo'],['Both','📷🎬 Both']];
+  return `<select class="escene eout" onchange="setShotField('${id}',${i},'out',this.value)" title="capture as photo, video, or both">
+    ${o.map(([v,l])=>`<option value="${v}"${v===cur?' selected':''}>${l}</option>`).join('')}</select>`;}
+function outIcon(o){return o==='Photo'?'📷':o==='Both'?'📷🎬':'🎬';}
 
 /* ========================= RENDER ========================= */
 function fmt(n){n=+n||0;return n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,'')+'M':n>=1e3?Math.round(n/1e3)+'k':String(n);}
@@ -596,7 +699,7 @@ function renderConcepts(){
   sel.forEach(r=>{
     const c=wc(r);
     const card=document.createElement('div'); card.className='ccard'; card.onclick=()=>openBrief(r.id);
-    const thumbs=c.shots.slice(0,4).map(s=>tile(s.scene?SCENES[s.scene].hue:0,{cls:''})).join('');
+    const thumbs=c.shots.slice(0,4).map(s=>tile((SCENES[s.scene]&&SCENES[s.scene].hue)||0,{cls:''})).join('');
     card.innerHTML=`
       <div class="num">${r.concept}</div>
       <div class="ceyebrow">Concept ${r.concept}</div>
@@ -620,7 +723,7 @@ function renderProduct(){
   PSHOOTS.forEach((p,idx)=>{
     const c=wc(p);
     const card=document.createElement('div'); card.className='ccard'; card.onclick=()=>openBrief(p.id);
-    const thumbs=c.shots.slice(0,4).map(s=>tile(s.scene?SCENES[s.scene].hue:0,{cls:''})).join('');
+    const thumbs=c.shots.slice(0,4).map(s=>tile((SCENES[s.scene]&&SCENES[s.scene].hue)||0,{cls:''})).join('');
     card.innerHTML=`
       <div class="num" style="color:var(--sage-soft)">P${idx+1}</div>
       <div class="ceyebrow" style="color:var(--sage)">Product ${idx+1} · ${p.type}</div>
@@ -649,7 +752,7 @@ function openBrief(id){
           <button class="xshot" title="remove shot" onclick="removeShot('${id}',${i})">✕</button></div>
         <div class="sdesc">${eshot(id,i,'desc',s.desc)}</div>
         <div class="sscript">🎙 ${eshot(id,i,'script',s.script||'')}</div>
-        <div class="sscene">${sceneSelect(id,i,s.scene)}</div>
+        <div class="sscene">${sceneSelect(id,i,s.scene)} ${outSelect(id,i,s.out||'Video')}</div>
       </div>
     </div>`;
   }).join('');
@@ -672,6 +775,12 @@ function openBrief(id){
           <div class="rb-cap">“${esc(r.caption||'')}”</div>
           <div style="font-size:12px;color:var(--ink-60);margin-top:4px">▶ ${fmt(r.views)} · avg ${fmt(r.median)} · ${r.outlier==null?'—':r.outlier+'× outlier'} · <a class="watch" href="${r.ig}" target="_blank" rel="noopener">↗ Watch original</a></div></div>
       </div>`:''}
+      ${!product?`<div class="capcompare">
+        <div class="capcol"><div class="capk">Current caption <span style="text-transform:none;font-weight:400">(the original)</span></div><div class="capbox muted">${esc(r.caption||'—')}</div></div>
+        <div class="capcol"><div class="capk">Our suggested caption</div><div class="capbox edit" contenteditable="true" data-id="${id}" data-field="copy">${esc(c.copy)}</div></div>
+      </div>`:`<div class="capcompare"><div class="capcol" style="grid-column:1/3"><div class="capk">Suggested caption</div><div class="capbox edit" contenteditable="true" data-id="${id}" data-field="copy">${esc(c.copy)}</div></div></div>`}
+      <div class="fbblk"><div class="capk">💬 Team feedback <span style="text-transform:none;font-weight:400">— leave notes, saves automatically</span></div>
+        <div class="fbbox edit" contenteditable="true" data-id="${id}" data-field="feedback">${esc(c.feedback)}</div></div>
     </div>
     <div class="bbody">
       <div class="bcol">
@@ -685,9 +794,13 @@ function openBrief(id){
           <div class="specs">
             <div class="spec"><div class="k">Videographer</div><div class="v">${efield(id,'vg',c.vg)}</div></div>
             <div class="spec"><div class="k">Talent</div><div class="v">${efield(id,'talent',c.talent)}</div></div>
-            <div class="spec"><div class="k">Wardrobe <span style="text-transform:none;font-weight:400">(if needed)</span></div><div class="v">${efield(id,'wardrobe',c.wardrobe)}</div></div>
-            <div class="spec"><div class="k">Prop</div><div class="v">${efield(id,'prop',c.prop)}</div></div>
+            <div class="spec" style="grid-column:1/3"><div class="k">Prop / station</div><div class="v">${efield(id,'prop',c.prop)}</div></div>
           </div>
+          <ul class="vglegend">
+            <li><b>Corrine</b> — main, celeb &amp; proper / product shots</li>
+            <li><b>Jackie</b> — event &amp; lifestyle (phone)</li>
+            <li><b>Susan</b> — street &amp; people (phone)</li>
+          </ul>
         </div>
         <div class="blk"><h4>Edit recipe <span class="tag">travels with the footage</span></h4>
           <div class="recipe"><b>Editor does exactly this:</b><br/>${efield(id,'recipe',c.recipe)}</div>
@@ -766,6 +879,7 @@ $('#filters').addEventListener('click',e=>{const p=e.target.closest('.fpill');if
 
 /* ---- editing actions ---- */
 function setScene(id,i,v){materializeShots(id)[i].scene=v||null;saveEdits();openBrief(id);refreshDerived();}
+function setShotField(id,i,f,v){materializeShots(id)[i][f]=v;saveEdits();openBrief(id);refreshDerived();}
 function addShot(id){materializeShots(id).push({t:'0:00',desc:'new shot',scene:null,script:''});saveEdits();openBrief(id);refreshDerived();}
 function removeShot(id,i){const s=materializeShots(id);s.splice(i,1);saveEdits();openBrief(id);refreshDerived();}
 function cyclePrio(id){const order=['Must','Should','Could'];const cur=wc(getItem(id)).prio;
@@ -789,8 +903,11 @@ document.getElementById('briefmount').addEventListener('input',e=>{
 });
 
 /* seed: pre-select Concepts 1–5 so the team sees a populated example */
-// restore approved concepts from saved memory
-(function(){let mx=0;REFS.forEach(r=>{const e=EDITS[r.id];if(e&&e.sel){r.selected=true;r.concept=e.sel;if(e.sel>mx)mx=e.sel;if(!PIPE[r.id])PIPE[r.id]={stage:'Shot',editor:'Unassigned',pub:'TBD'};}});conceptSeq=mx;})();
+// auto-approve every reference that has a detailed concept (the 9 gate-passers), then honour saved approvals/edits
+(function(){let mx=0;
+  REFS.forEach(r=>{if(CONCEPT_DETAILS[r.id]){r.selected=true;r.concept=++mx;if(!PIPE[r.id])PIPE[r.id]={stage:'Shot',editor:'Unassigned',pub:'TBD'};}});
+  REFS.forEach(r=>{const e=EDITS[r.id];if(e&&e.sel){r.selected=true;r.concept=e.sel;if(e.sel>mx)mx=e.sel;if(!PIPE[r.id])PIPE[r.id]={stage:'Shot',editor:'Unassigned',pub:'TBD'};}});
+  conceptSeq=mx;})();
 setupFilters();
 renderRefs(); renderConcepts(); renderProduct(); renderSched(); renderKan();
 
