@@ -614,9 +614,20 @@ let _rt; function refreshDerived(){renderConcepts();renderProduct();renderSched(
 function refreshDerivedDebounced(){clearTimeout(_rt);_rt=setTimeout(refreshDerived,400);}
 function efield(id,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-field="${field}">${esc(val)}</span>`;}
 function eshot(id,i,field,val){return `<span class="edit" contenteditable="true" data-id="${id}" data-shot="${i}" data-field="${field}">${esc(val)}</span>`;}
+// options grouped by location (Court first), so props are easy to scan/sort by where you shoot
+function sceneOptions(cur){
+  const order=['Court','Stands','London','Truck','Product','Roaming','Desk'];
+  const locs=[...new Set(Object.values(SCENES).map(s=>s.loc))];
+  order.push(...locs.filter(l=>!order.includes(l)));
+  return order.filter(l=>Object.values(SCENES).some(s=>s.loc===l)).map(loc=>{
+    const opts=Object.keys(SCENES).filter(k=>SCENES[k].loc===loc)
+      .map(k=>`<option value="${k}"${k===cur?' selected':''}>📦 ${SCENES[k].name}</option>`).join('');
+    return `<optgroup label="📍 ${loc}">${opts}</optgroup>`;
+  }).join('');
+}
 function sceneSelect(id,i,cur){return `<select class="escene" onchange="setScene('${id}',${i},this.value)">
   <option value="">✦ Graphic / end card — no shoot</option>
-  ${Object.keys(SCENES).map(k=>`<option value="${k}"${k===cur?' selected':''}>📦 ${SCENES[k].name} · ${SCENES[k].loc}</option>`).join('')}
+  ${sceneOptions(cur)}
 </select>`;}
 function outSelect(id,i,cur){const o=[['Video','🎬 Video'],['Photo','📷 Photo'],['Both','📷🎬 Both']];
   return `<select class="escene eout" onchange="setShotField('${id}',${i},'out',this.value)" title="capture as photo, video, or both">
@@ -624,7 +635,7 @@ function outSelect(id,i,cur){const o=[['Video','🎬 Video'],['Photo','📷 Phot
 function outIcon(o){return o==='Photo'?'📷':o==='Both'?'📷🎬':'🎬';}
 function addPropSelect(id,i){return `<select class="addprop" onchange="if(this.value){addShotProp('${id}',${i},this.value);this.value='';}">
   <option value="">＋ tag prop</option>
-  ${Object.keys(SCENES).map(k=>`<option value="${k}">📦 ${SCENES[k].name}</option>`).join('')}</select>`;}
+  ${sceneOptions('')}</select>`;}
 
 /* ========================= RENDER ========================= */
 function fmt(n){n=+n||0;return n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,'')+'M':n>=1e3?Math.round(n/1e3)+'k':String(n);}
